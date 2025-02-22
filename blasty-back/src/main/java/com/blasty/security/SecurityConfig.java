@@ -41,6 +41,7 @@ public class SecurityConfig {
                 .requestMatchers("/h2-console/**").permitAll()
                 .requestMatchers("/api/admin/**").hasRole("ADMIN")
                 .requestMatchers("/api/client/**").hasRole("CLIENT")
+                .requestMatchers("/api/parkings/**").hasAnyRole("ADMIN","CLIENT")
                 .anyRequest().authenticated()
             )
             .addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class);

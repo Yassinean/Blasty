@@ -6,8 +6,10 @@ import org.springframework.stereotype.Service;
 import com.blasty.dto.request.RegisterRequest;
 import com.blasty.dto.response.UserResponse;
 import com.blasty.mapper.UserMapper;
+import com.blasty.model.Client;
 import com.blasty.model.User;
 import com.blasty.model.enums.UserRole;
+import com.blasty.repository.ClientRepository;
 import com.blasty.repository.UserRepository;
 import com.blasty.service.Interface.UserService;
 
@@ -17,6 +19,7 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public class UserServiceImp implements UserService {
     private final UserRepository userRepository;
+    private final ClientRepository clientRepository;
     private final UserMapper userMapper;
     private final PasswordEncoder passwordEncoder;
 
@@ -29,7 +32,13 @@ public class UserServiceImp implements UserService {
         User user = userMapper.toEntity(request);
         user.setPassword(passwordEncoder.encode(request.getPassword()));
         user.setRole(UserRole.CLIENT);
-        return userMapper.toResponse(userRepository.save(user));
+        User savedUser = userRepository.save(user);
+
+        Client client = new Client();
+        client.setUserId(savedUser.getId());
+        clientRepository.save(client);
+
+        return userMapper.toResponse(savedUser);
     }
 
     @Override
