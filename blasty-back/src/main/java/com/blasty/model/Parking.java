@@ -2,8 +2,6 @@ package com.blasty.model;
 
 import java.util.List;
 
-import com.blasty.model.enums.PlaceStatus;
-
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -38,6 +36,8 @@ public class Parking {
 
     @Column(nullable = false)
     private int totalCapacity;
+
+    private int availablePlaces;
 
     @OneToMany(mappedBy = "parking", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     private List<Place> places;

@@ -41,7 +41,16 @@ public class SecurityConfig {
                 .requestMatchers("/h2-console/**").permitAll()
                 .requestMatchers("/api/admin/**").hasRole("ADMIN")
                 .requestMatchers("/api/client/**").hasRole("CLIENT")
-                .requestMatchers("/api/parkings/**").hasAnyRole("ADMIN","CLIENT")
+                .requestMatchers(HttpMethod.GET, "/api/parkings/**").hasAnyRole("ADMIN", "CLIENT")
+                .requestMatchers(HttpMethod.POST, "/api/parkings/**").hasRole("ADMIN")
+                .requestMatchers(HttpMethod.PUT, "/api/parkings/**").hasRole("ADMIN")
+                .requestMatchers(HttpMethod.DELETE, "/api/parkings/**").hasRole("ADMIN")
+                .requestMatchers("/api/transactions/**").hasRole("CLIENT")
+                .requestMatchers(HttpMethod.GET, "/api/places/**").hasAnyRole("ADMIN", "CLIENT")
+                .requestMatchers(HttpMethod.POST, "/api/places/**").hasRole("ADMIN")
+                .requestMatchers(HttpMethod.PUT, "/api/places/**").hasRole("ADMIN")
+                .requestMatchers(HttpMethod.DELETE, "/api/places/**").hasRole("ADMIN")
+
                 .anyRequest().authenticated()
             )
             .addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class);
@@ -55,8 +64,8 @@ public class SecurityConfig {
         configuration.setAllowedOrigins(Arrays.asList("http://localhost:4200"));
         configuration.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "DELETE", "OPTIONS", "PATCH"));
         configuration.setAllowedHeaders(Arrays.asList(
-            "Authorization", 
-            "Content-Type", 
+            "Authorization",
+            "Content-Type",
             "Access-Control-Allow-Origin",
             "Access-Control-Allow-Methods",
             "Access-Control-Allow-Headers",
@@ -65,7 +74,7 @@ public class SecurityConfig {
         configuration.setExposedHeaders(Arrays.asList("Authorization"));
         configuration.setAllowCredentials(true);
         configuration.setMaxAge(3600L);
-        
+
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
         source.registerCorsConfiguration("/**", configuration);
         return source;
