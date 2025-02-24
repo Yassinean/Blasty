@@ -25,6 +25,8 @@ public class TicketServiceImpl implements TicketService {
     @Override
     public TicketResponse createTicket(TicketRequest request) {
         Ticket ticket = ticketMapper.toEntity(request);
+        ticket.setDateEmission(LocalDateTime.now());
+        ticket.setDateExpiration(LocalDateTime.now().plusHours(1));
         return ticketMapper.toResponse(ticketRepository.save(ticket));
     }
 

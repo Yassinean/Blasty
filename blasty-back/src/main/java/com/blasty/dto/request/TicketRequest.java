@@ -13,6 +13,5 @@ public class TicketRequest {
     @NotNull(message = "L'ID de la place est obligatoire")
     private Long placeId;
 
-    @NotNull(message = "La date d'expiration est obligatoire")
     private LocalDateTime dateExpiration;
 }
