@@ -7,7 +7,7 @@ import {AuthService} from "../../../core/services/auth.service";
 @Component({
   selector: 'app-register',
   standalone: true,
-  imports: [CommonModule, ReactiveFormsModule],
+  imports: [CommonModule, ReactiveFormsModule, RouterLink],
   templateUrl: 'register.component.html'
 })
 export class RegisterComponent {

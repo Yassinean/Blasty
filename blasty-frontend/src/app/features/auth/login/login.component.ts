@@ -18,7 +18,7 @@ export class LoginComponent implements OnInit {
 
   error: string = '';
   loading: boolean = false;
-  role: 'admin' | 'client' = 'client'; // Par défaut, c'est un client
+  role: 'admin' | 'client' = 'client';
 
   constructor(
     private fb: FormBuilder,
