@@ -1,0 +1,144 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="AutoImportSettings">
+    <option name="autoReloadType" value="SELECTIVE" />
+  </component>
+  <component name="ChangeListManager">
+    <list default="true" id="7d0f7163-b093-482b-b06a-e67e4151f888" name="Changes" comment="">
+      <change afterPath="$PROJECT_DIR$/blasty-back/src/main/java/com/blasty/exception/IncorrectPasswordException.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/blasty-back/src/main/java/com/blasty/exception/UserNotFoundException.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/blasty-back/src/main/java/com/blasty/mapper/AdminMapper.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/blasty-back/src/main/java/com/blasty/mapper/ClientMapper.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/.gitignore" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/blasty.iml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/modules.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/modules.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/vcs.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/vcs.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/blasty-back/src/main/java/com/blasty/controller/AuthController.java" beforeDir="false" afterPath="$PROJECT_DIR$/blasty-back/src/main/java/com/blasty/controller/AuthController.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/blasty-back/src/main/java/com/blasty/controller/ProfileController.java" beforeDir="false" afterPath="$PROJECT_DIR$/blasty-back/src/main/java/com/blasty/controller/ProfileController.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/blasty-back/src/main/java/com/blasty/mapper/UserMapper.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/blasty-back/src/main/java/com/blasty/model/Admin.java" beforeDir="false" afterPath="$PROJECT_DIR$/blasty-back/src/main/java/com/blasty/model/Admin.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/blasty-back/src/main/java/com/blasty/model/Client.java" beforeDir="false" afterPath="$PROJECT_DIR$/blasty-back/src/main/java/com/blasty/model/Client.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/blasty-back/src/main/java/com/blasty/model/Transaction.java" beforeDir="false" afterPath="$PROJECT_DIR$/blasty-back/src/main/java/com/blasty/model/Transaction.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/blasty-back/src/main/java/com/blasty/model/User.java" beforeDir="false" afterPath="$PROJECT_DIR$/blasty-back/src/main/java/com/blasty/model/User.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/blasty-back/src/main/java/com/blasty/repository/ClientRepository.java" beforeDir="false" afterPath="$PROJECT_DIR$/blasty-back/src/main/java/com/blasty/repository/ClientRepository.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/blasty-back/src/main/java/com/blasty/repository/UserRepository.java" beforeDir="false" afterPath="$PROJECT_DIR$/blasty-back/src/main/java/com/blasty/repository/UserRepository.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/blasty-back/src/main/java/com/blasty/security/CustomUserDetails.java" beforeDir="false" afterPath="$PROJECT_DIR$/blasty-back/src/main/java/com/blasty/security/CustomUserDetails.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/blasty-back/src/main/java/com/blasty/security/JwtUtil.java" beforeDir="false" afterPath="$PROJECT_DIR$/blasty-back/src/main/java/com/blasty/security/JwtUtil.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/blasty-back/src/main/java/com/blasty/service/Implementation/UserDetailsServiceImpl.java" beforeDir="false" afterPath="$PROJECT_DIR$/blasty-back/src/main/java/com/blasty/service/Implementation/UserDetailsServiceImpl.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/blasty-back/src/main/java/com/blasty/service/Implementation/UserServiceImp.java" beforeDir="false" afterPath="$PROJECT_DIR$/blasty-back/src/main/java/com/blasty/service/Implementation/UserServiceImp.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/blasty-back/src/main/resources/application-dev.properties" beforeDir="false" afterPath="$PROJECT_DIR$/blasty-back/src/main/resources/application-dev.properties" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/blasty-back/src/main/resources/application-prod.properties" beforeDir="false" afterPath="$PROJECT_DIR$/blasty-back/src/main/resources/application-prod.properties" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/blasty-back/src/main/resources/application.properties" beforeDir="false" afterPath="$PROJECT_DIR$/blasty-back/src/main/resources/application.properties" afterDir="false" />
+    </list>
+    <option name="SHOW_DIALOG" value="false" />
+    <option name="HIGHLIGHT_CONFLICTS" value="true" />
+    <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
+    <option name="LAST_RESOLUTION" value="IGNORE" />
+  </component>
+  <component name="FileTemplateManagerImpl">
+    <option name="RECENT_TEMPLATES">
+      <list>
+        <option value="Class" />
+      </list>
+    </option>
+  </component>
+  <component name="Git.Settings">
+    <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
+  </component>
+  <component name="GitHubPullRequestSearchHistory">{
+  &quot;lastFilter&quot;: {
+    &quot;state&quot;: &quot;OPEN&quot;,
+    &quot;assignee&quot;: &quot;Yassinean&quot;
+  }
+}</component>
+  <component name="GithubPullRequestsUISettings">{
+  &quot;selectedUrlAndAccountId&quot;: {
+    &quot;url&quot;: &quot;https://github.com/Yassinean/Blasty.git&quot;,
+    &quot;accountId&quot;: &quot;5f299848-592b-4415-bd94-d364948209ea&quot;
+  }
+}</component>
+  <component name="KubernetesApiPersistence">{}</component>
+  <component name="KubernetesApiProvider">{
+  &quot;isMigrated&quot;: true
+}</component>
+  <component name="ProjectColorInfo">{
+  &quot;associatedIndex&quot;: 4
+}</component>
+  <component name="ProjectId" id="2tdKy4KFQMSuW3yOD36lXquwdAo" />
+  <component name="ProjectViewState">
+    <option name="hideEmptyMiddlePackages" value="true" />
+    <option name="showLibraryContents" value="true" />
+  </component>
+  <component name="PropertiesComponent">{
+  &quot;keyToString&quot;: {
+    &quot;Maven.blasty-back [clean].executor&quot;: &quot;Run&quot;,
+    &quot;Maven.blasty-back [package].executor&quot;: &quot;Run&quot;,
+    &quot;RequestMappingsPanelOrder0&quot;: &quot;0&quot;,
+    &quot;RequestMappingsPanelOrder1&quot;: &quot;1&quot;,
+    &quot;RequestMappingsPanelWidth0&quot;: &quot;75&quot;,
+    &quot;RequestMappingsPanelWidth1&quot;: &quot;75&quot;,
+    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
+    &quot;Spring Boot.BlastyApplication.executor&quot;: &quot;Run&quot;,
+    &quot;git-widget-placeholder&quot;: &quot;main&quot;,
+    &quot;kotlin-language-version-configured&quot;: &quot;true&quot;,
+    &quot;last_opened_file_path&quot;: &quot;C:/Users/youco/Desktop/BankApp-MicroService&quot;,
+    &quot;node.js.detected.package.eslint&quot;: &quot;true&quot;,
+    &quot;node.js.selected.package.eslint&quot;: &quot;(autodetect)&quot;,
+    &quot;node.js.selected.package.tslint&quot;: &quot;(autodetect)&quot;,
+    &quot;nodejs_package_manager_path&quot;: &quot;npm&quot;,
+    &quot;settings.editor.selected.configurable&quot;: &quot;preferences.pluginManager&quot;,
+    &quot;vue.rearranger.settings.migration&quot;: &quot;true&quot;
+  }
+}</component>
+  <component name="RecentsManager">
+    <key name="CreateClassDialog.RecentsKey">
+      <recent name="com.blasty.exception" />
+    </key>
+    <key name="CopyClassDialog.RECENTS_KEY">
+      <recent name="com.blasty.mapper" />
+    </key>
+  </component>
+  <component name="RunAnythingCache">
+    <option name="myCommands">
+      <command value="mvn clean" />
+      <command value="mvn package" />
+    </option>
+  </component>
+  <component name="RunManager">
+    <configuration name="BlastyApplication" type="SpringBootApplicationConfigurationType" factoryName="Spring Boot" nameIsGenerated="true">
+      <module name="blasty-back" />
+      <option name="SPRING_BOOT_MAIN_CLASS" value="com.blasty.BlastyApplication" />
+      <method v="2">
+        <option name="Make" enabled="true" />
+      </method>
+    </configuration>
+  </component>
+  <component name="SharedIndexes">
+    <attachedChunks>
+      <set>
+        <option value="bundled-jdk-9f38398b9061-39b83d9b5494-intellij.indexing.shared.core-IU-241.18034.62" />
+        <option value="bundled-js-predefined-1d06a55b98c1-0b3e54e931b4-JavaScript-IU-241.18034.62" />
+      </set>
+    </attachedChunks>
+  </component>
+  <component name="SpellCheckerSettings" RuntimeDictionaries="0" Folders="0" CustomDictionaries="0" DefaultDictionary="application-level" UseSingleDictionary="true" transferred="true" />
+  <component name="TaskManager">
+    <task active="true" id="Default" summary="Default task">
+      <changelist id="7d0f7163-b093-482b-b06a-e67e4151f888" name="Changes" comment="" />
+      <created>1740676771770</created>
+      <option name="number" value="Default" />
+      <option name="presentableId" value="Default" />
+      <updated>1740676771770</updated>
+      <workItem from="1740676773523" duration="9712000" />
+      <workItem from="1740703224304" duration="186000" />
+      <workItem from="1740734837041" duration="445000" />
+      <workItem from="1740782824489" duration="474000" />
+      <workItem from="1740783328316" duration="1420000" />
+      <workItem from="1740830595591" duration="7436000" />
+    </task>
+    <servers />
+  </component>
+  <component name="TypeScriptGeneratedFilesManager">
+    <option name="version" value="3" />
+  </component>
+</project>

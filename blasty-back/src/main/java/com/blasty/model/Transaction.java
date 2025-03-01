@@ -43,4 +43,8 @@ public class Transaction {
     @ManyToOne
     @JoinColumn(name = "ticket_id", nullable = false)
     private Ticket ticket;
+
+    @ManyToOne
+    @JoinColumn(name = "client_id", nullable = false)
+    private Client client;
 }

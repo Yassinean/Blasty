@@ -4,9 +4,12 @@ import com.blasty.dto.request.LoginRequest;
 import com.blasty.dto.request.RegisterRequest;
 import com.blasty.dto.request.TokenRequest;
 import com.blasty.dto.response.JwtResponse;
+import com.blasty.model.Admin;
+import com.blasty.model.Client;
 import com.blasty.model.User;
 import com.blasty.model.enums.UserRole;
-import com.blasty.repository.UserRepository;
+import com.blasty.repository.AdminRepository;
+import com.blasty.repository.ClientRepository;
 import com.blasty.security.JwtUtil;
 
 import jakarta.validation.Valid;
@@ -29,7 +32,8 @@ import org.springframework.web.bind.annotation.*;
 public class AuthController {
 
     private final AuthenticationManager authenticationManager;
-    private final UserRepository userRepository;
+    private final AdminRepository adminRepository;
+    private final ClientRepository clientRepository;
     private final PasswordEncoder passwordEncoder;
     private final JwtUtil jwtUtil;
 
@@ -42,19 +46,24 @@ public class AuthController {
 
             if (request.getEmail() != null) {
                 // Authentification Admin
+                Admin admin = adminRepository.findByEmail(request.getEmail())
+                        .orElseThrow(() -> new UsernameNotFoundException("Admin non trouvé"));
+
                 authentication = authenticationManager.authenticate(
                         new UsernamePasswordAuthenticationToken(request.getEmail(), request.getPassword()));
-                user = userRepository.findByEmail(request.getEmail())
-                        .orElseThrow(() -> new UsernameNotFoundException("Admin non trouvé"));
+
+                user = admin;
             } else {
                 // Authentification Client
-                user = userRepository.findByPhone(request.getPhone())
+                Client client = clientRepository.findByPhone(request.getPhone())
                         .orElseThrow(() -> new UsernameNotFoundException("Client non trouvé"));
-                if (!passwordEncoder.matches(request.getPassword(), user.getPassword())) {
+
+                if (!passwordEncoder.matches(request.getPassword(), client.getPassword())) {
                     throw new BadCredentialsException("Mot de passe incorrect");
                 }
 
-                authentication = new UsernamePasswordAuthenticationToken(user.getPhone(), null);
+                authentication = new UsernamePasswordAuthenticationToken(client.getPhone(), null);
+                user = client;
             }
 
             SecurityContextHolder.getContext().setAuthentication(authentication);
@@ -74,40 +83,40 @@ public class AuthController {
     // 🔹 2. Inscription (Seulement pour les clients)
     @PostMapping("/register")
     public ResponseEntity<JwtResponse> register(@Valid @RequestBody RegisterRequest request) {
-        if (userRepository.existsByPhone(request.getPhone())) {
+        if (clientRepository.existsByPhone(request.getPhone())) {
             return ResponseEntity.badRequest()
                     .body(new JwtResponse("Numéro de téléphone déjà utilisé", true));
         }
 
-        User newUser = User.builder()
+        Client newClient = Client.builder()
                 .name(request.getName())
                 .phone(request.getPhone())
                 .password(passwordEncoder.encode(request.getPassword()))
-                .role(UserRole.CLIENT)
                 .build();
 
-        userRepository.save(newUser);
-        String token = jwtUtil.generateToken(newUser);
-        String refreshToken = jwtUtil.refreshToken(newUser);
+        clientRepository.save(newClient);
+        String token = jwtUtil.generateToken(newClient);
+        String refreshToken = jwtUtil.refreshToken(newClient);
 
         return ResponseEntity.ok(new JwtResponse(token, refreshToken, "Client enregistré avec succès"));
     }
 
     // 🔹 3. Rafraîchissement du Token
-    @PostMapping("/refresh")
-    public ResponseEntity<JwtResponse> refreshToken(@RequestBody TokenRequest tokenRequest) {
-        try {
-            String username = jwtUtil.extractUsername(tokenRequest.getRefreshToken());
-            User user = userRepository.findByEmail(username)
-                    .orElseThrow(() -> new UsernameNotFoundException("Utilisateur non trouvé"));
-            
-            String newToken = jwtUtil.generateToken(user);
-            String newRefreshToken = jwtUtil.refreshToken(user);
-            
-            return ResponseEntity.ok(new JwtResponse(newToken, newRefreshToken, "Token rafraîchi avec succès"));
-        } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
-                    .body(new JwtResponse("Token de rafraîchissement invalide", true));
-        }
-    }
+//    @PostMapping("/refresh")
+//    public ResponseEntity<JwtResponse> refreshToken(@RequestBody TokenRequest tokenRequest) {
+//        try {
+//            String username = jwtUtil.extractUsername(tokenRequest.getRefreshToken());
+//            User user = adminRepository.findByEmail(username)
+//                    .orElse(clientRepository.findByPhone(username)
+//                            .orElseThrow(() -> new UsernameNotFoundException("Utilisateur non trouvé")));
+//
+//            String newToken = jwtUtil.generateToken(user);
+//            String newRefreshToken = jwtUtil.refreshToken(user);
+//
+//            return ResponseEntity.ok(new JwtResponse(newToken, newRefreshToken, "Token rafraîchi avec succès"));
+//        } catch (Exception e) {
+//            return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
+//                    .body(new JwtResponse("Token de rafraîchissement invalide", true));
+//        }
+//    }
 }
