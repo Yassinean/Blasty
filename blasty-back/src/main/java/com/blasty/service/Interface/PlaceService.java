@@ -6,7 +6,7 @@ import com.blasty.dto.response.PlaceResponse;
 import java.util.List;
 
 public interface PlaceService {
-    PlaceResponse createPlace(PlaceRequest request);
+    PlaceResponse createPlace(Long parkingId,PlaceRequest request);
     PlaceResponse getPlaceById(Long id);
     List<PlaceResponse> getAllPlaces();
     PlaceResponse updatePlace(Long id, PlaceRequest request);

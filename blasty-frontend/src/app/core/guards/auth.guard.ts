@@ -9,11 +9,20 @@ export class AuthGuard implements CanActivate {
   constructor(private authService: AuthService, private router: Router) {}
 
   canActivate(): boolean {
-    const isLogged = this.authService.isLoggedIn();
-    console.log("État connexion :", isLogged);
-    if (isLogged) return true;
-
-    this.router.navigate(['/auth/login']);
-    return false;
+    if (!this.authService.isLoggedIn()) {
+      this.router.navigate(['/auth/login']);
+      return false;
+    }
+  
+    const user = this.authService.getUser();
+    if (user.role === 'admin' && this.router.url.startsWith('/client')) {
+      this.router.navigate(['/admin/dashboard']);
+      return false;
+    } else if (user.role === 'client' && this.router.url.startsWith('/admin')) {
+      this.router.navigate(['/client/dashboard']);
+      return false;
+    }
+  
+    return true;
   }
 }

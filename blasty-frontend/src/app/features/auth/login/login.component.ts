@@ -49,20 +49,20 @@ export class LoginComponent implements OnInit {
 
   onSubmit() {
     if (this.loginForm.invalid) return;
-
+  
     this.loading = true;
     this.error = '';
-
+  
     const { identifier, password } = this.loginForm.value;
     const loginMethod = this.role === 'admin'
       ? this.authService.adminLogin(identifier!, password!)
       : this.authService.clientLogin(identifier!.replace(/\s/g, ''), password!);
-
+  
     loginMethod.subscribe({
       next: (response) => {
         this.loading = false;
         if (!response.error) {
-          this.router.navigate(['/dashboard']);
+          this.authService.redirectUser();
         } else {
           this.error = response.message;
         }

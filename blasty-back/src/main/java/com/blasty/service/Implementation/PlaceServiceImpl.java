@@ -3,7 +3,9 @@ package com.blasty.service.Implementation;
 import com.blasty.dto.request.PlaceRequest;
 import com.blasty.dto.response.PlaceResponse;
 import com.blasty.mapper.PlaceMapper;
+import com.blasty.model.Parking;
 import com.blasty.model.Place;
+import com.blasty.repository.ParkingRepository;
 import com.blasty.repository.PlaceRepository;
 import com.blasty.service.Interface.PlaceService;
 import lombok.RequiredArgsConstructor;
@@ -16,10 +18,13 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 public class PlaceServiceImpl implements PlaceService {
     private final PlaceRepository placeRepository;
+    private final ParkingRepository parkingRepository;
     private final PlaceMapper placeMapper;
 
     @Override
-    public PlaceResponse createPlace(PlaceRequest request) {
+    public PlaceResponse createPlace(Long parkingId , PlaceRequest request) {
+        Parking parking = parkingRepository.findById(parkingId)
+                .orElseThrow(() -> new RuntimeException("Parking non trouvé"));
         Place place = placeMapper.toEntity(request);
         return placeMapper.toResponse(placeRepository.save(place));
     }

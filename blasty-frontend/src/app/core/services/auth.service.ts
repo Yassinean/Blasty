@@ -3,19 +3,27 @@ import { HttpClient } from '@angular/common/http';
 import { BehaviorSubject, Observable, throwError } from 'rxjs';
 import { catchError, map, tap } from 'rxjs/operators';
 import { TokenService } from './token.service';
-import {LoginRequest, JwtResponse, User, RegisterRequest} from '../models/auth.model';
+import {
+  LoginRequest,
+  JwtResponse,
+  User,
+  RegisterRequest,
+} from '../models/auth.model';
+import { Router } from '@angular/router';
 
 @Injectable({
-  providedIn: 'root'
+  providedIn: 'root',
 })
 export class AuthService {
   private readonly API_URL = 'http://localhost:8080/api/auth';
   private currentUserSubject = new BehaviorSubject<User | null>(null);
   public currentUser$ = this.currentUserSubject.asObservable();
+  private readonly USER_KEY = 'user';
 
   constructor(
     private http: HttpClient,
-    private tokenService: TokenService
+    private tokenService: TokenService,
+    private router: Router
   ) {
     const user = this.tokenService.getUser();
     if (user) {
@@ -24,30 +32,47 @@ export class AuthService {
   }
 
   adminLogin(email: string, password: string): Observable<JwtResponse> {
-    return this.http.post<JwtResponse>(`${this.API_URL}/login`, {
-      email,
-      password
-    }).pipe(
-      tap(response => this.handleAuthResponse(response)),
-      catchError(this.handleError)
-    );
+    return this.http
+      .post<JwtResponse>(`${this.API_URL}/login`, {
+        email,
+        password,
+      })
+      .pipe(
+        tap((response) => this.handleAuthResponse(response)),
+        catchError(this.handleError)
+      );
   }
 
   clientLogin(phone: string, password: string): Observable<JwtResponse> {
-    return this.http.post<JwtResponse>(`${this.API_URL}/login`, {
-      phone,
-      password
-    }).pipe(
-      tap(response => this.handleAuthResponse(response)),
-      catchError(this.handleError)
-    );
+    return this.http
+      .post<JwtResponse>(`${this.API_URL}/login`, {
+        phone,
+        password,
+      })
+      .pipe(
+        tap((response) => this.handleAuthResponse(response)),
+        catchError(this.handleError)
+      );
   }
 
-  register(registerRequest:RegisterRequest  ): Observable<JwtResponse> {
-    return this.http.post<JwtResponse>(`${this.API_URL}/register`, registerRequest).pipe(
-      tap(response => this.handleAuthResponse(response)),
-      catchError(this.handleError)
-    );
+  register(registerRequest: RegisterRequest): Observable<JwtResponse> {
+    return this.http
+      .post<JwtResponse>(`${this.API_URL}/register`, registerRequest)
+      .pipe(
+        tap((response) => this.handleAuthResponse(response)),
+        catchError(this.handleError)
+      );
+  }
+
+  redirectUser(): void {
+    const user = this.tokenService.getUser();
+    if (user) {
+      if (user.role === 'admin') {
+        this.router.navigate(['/admin/dashboard']);
+      } else {
+        this.router.navigate(['/client/dashboard']);
+      }
+    }
   }
 
   refreshToken(): Observable<JwtResponse> {
@@ -56,14 +81,16 @@ export class AuthService {
       return throwError(() => new Error('No refresh token available'));
     }
 
-    return this.http.post<JwtResponse>(`${this.API_URL}/refresh`, { refreshToken }).pipe(
-      tap(response => {
-        if (!response.error) {
-          this.tokenService.setTokens(response.token, response.refreshToken);
-        }
-      }),
-      catchError(this.handleError)
-    );
+    return this.http
+      .post<JwtResponse>(`${this.API_URL}/refresh`, { refreshToken })
+      .pipe(
+        tap((response) => {
+          if (!response.error) {
+            this.tokenService.setTokens(response.token, response.refreshToken);
+          }
+        }),
+        catchError(this.handleError)
+      );
   }
 
   logout(): void {
@@ -90,7 +117,7 @@ export class AuthService {
         role: payload.role,
         email: payload.email,
         phone: payload.phone,
-        name: payload.name
+        name: payload.name,
       };
     } catch (error) {
       console.error('Error decoding token:', error);
@@ -108,7 +135,23 @@ export class AuthService {
     return throwError(() => new Error(errorMessage));
   }
 
+  isTokenExpired(token: string): boolean {
+    try {
+      const payload = JSON.parse(atob(token.split('.')[1]));
+      return payload.exp * 1000 < Date.now();
+    } catch (error) {
+      console.error('Error decoding token:', error);
+      return true;
+    }
+  }
+
   isLoggedIn(): boolean {
-    return !!localStorage.getItem('token');
+    const token = localStorage.getItem('auth_token');
+    console.log('Token présent:', token);
+    return token ? !this.isTokenExpired(token) : false;
+  }
+  getUser(): any {
+    const user = localStorage.getItem(this.USER_KEY);
+    return user ? JSON.parse(user) : null;
   }
 }

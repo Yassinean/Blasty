@@ -5,30 +5,14 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="7d0f7163-b093-482b-b06a-e67e4151f888" name="Changes" comment="">
-      <change afterPath="$PROJECT_DIR$/blasty-back/src/main/java/com/blasty/exception/IncorrectPasswordException.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/blasty-back/src/main/java/com/blasty/exception/UserNotFoundException.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/blasty-back/src/main/java/com/blasty/mapper/AdminMapper.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/blasty-back/src/main/java/com/blasty/mapper/ClientMapper.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/.gitignore" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/blasty.iml" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/modules.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/modules.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/vcs.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/vcs.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/blasty-back/src/main/java/com/blasty/controller/AuthController.java" beforeDir="false" afterPath="$PROJECT_DIR$/blasty-back/src/main/java/com/blasty/controller/AuthController.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/blasty-back/src/main/java/com/blasty/controller/ProfileController.java" beforeDir="false" afterPath="$PROJECT_DIR$/blasty-back/src/main/java/com/blasty/controller/ProfileController.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/blasty-back/src/main/java/com/blasty/mapper/UserMapper.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/blasty-back/src/main/java/com/blasty/model/Admin.java" beforeDir="false" afterPath="$PROJECT_DIR$/blasty-back/src/main/java/com/blasty/model/Admin.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/blasty-back/src/main/java/com/blasty/model/Client.java" beforeDir="false" afterPath="$PROJECT_DIR$/blasty-back/src/main/java/com/blasty/model/Client.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/blasty-back/src/main/java/com/blasty/model/Transaction.java" beforeDir="false" afterPath="$PROJECT_DIR$/blasty-back/src/main/java/com/blasty/model/Transaction.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/blasty-back/src/main/java/com/blasty/model/User.java" beforeDir="false" afterPath="$PROJECT_DIR$/blasty-back/src/main/java/com/blasty/model/User.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/blasty-back/src/main/java/com/blasty/repository/ClientRepository.java" beforeDir="false" afterPath="$PROJECT_DIR$/blasty-back/src/main/java/com/blasty/repository/ClientRepository.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/blasty-back/src/main/java/com/blasty/repository/UserRepository.java" beforeDir="false" afterPath="$PROJECT_DIR$/blasty-back/src/main/java/com/blasty/repository/UserRepository.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/blasty-back/src/main/java/com/blasty/security/CustomUserDetails.java" beforeDir="false" afterPath="$PROJECT_DIR$/blasty-back/src/main/java/com/blasty/security/CustomUserDetails.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/blasty-back/src/main/java/com/blasty/security/JwtUtil.java" beforeDir="false" afterPath="$PROJECT_DIR$/blasty-back/src/main/java/com/blasty/security/JwtUtil.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/blasty-back/src/main/java/com/blasty/service/Implementation/UserDetailsServiceImpl.java" beforeDir="false" afterPath="$PROJECT_DIR$/blasty-back/src/main/java/com/blasty/service/Implementation/UserDetailsServiceImpl.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/blasty-back/src/main/java/com/blasty/mapper/ClientMapper.java" beforeDir="false" afterPath="$PROJECT_DIR$/blasty-back/src/main/java/com/blasty/mapper/ClientMapper.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/blasty-back/src/main/java/com/blasty/service/Implementation/PlaceServiceImpl.java" beforeDir="false" afterPath="$PROJECT_DIR$/blasty-back/src/main/java/com/blasty/service/Implementation/PlaceServiceImpl.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/blasty-back/src/main/java/com/blasty/service/Implementation/UserServiceImp.java" beforeDir="false" afterPath="$PROJECT_DIR$/blasty-back/src/main/java/com/blasty/service/Implementation/UserServiceImp.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/blasty-back/src/main/resources/application-dev.properties" beforeDir="false" afterPath="$PROJECT_DIR$/blasty-back/src/main/resources/application-dev.properties" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/blasty-back/src/main/resources/application-prod.properties" beforeDir="false" afterPath="$PROJECT_DIR$/blasty-back/src/main/resources/application-prod.properties" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/blasty-back/src/main/resources/application.properties" beforeDir="false" afterPath="$PROJECT_DIR$/blasty-back/src/main/resources/application.properties" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/blasty-frontend/src/app/app.routes.ts" beforeDir="false" afterPath="$PROJECT_DIR$/blasty-frontend/src/app/app.routes.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/blasty-frontend/src/app/core/guards/auth.guard.ts" beforeDir="false" afterPath="$PROJECT_DIR$/blasty-frontend/src/app/core/guards/auth.guard.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/blasty-frontend/src/app/core/services/auth.service.ts" beforeDir="false" afterPath="$PROJECT_DIR$/blasty-frontend/src/app/core/services/auth.service.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/blasty-frontend/src/app/features/auth/login/login.component.ts" beforeDir="false" afterPath="$PROJECT_DIR$/blasty-frontend/src/app/features/auth/login/login.component.ts" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -81,7 +65,7 @@
     &quot;Spring Boot.BlastyApplication.executor&quot;: &quot;Run&quot;,
     &quot;git-widget-placeholder&quot;: &quot;main&quot;,
     &quot;kotlin-language-version-configured&quot;: &quot;true&quot;,
-    &quot;last_opened_file_path&quot;: &quot;C:/Users/youco/Desktop/BankApp-MicroService&quot;,
+    &quot;last_opened_file_path&quot;: &quot;C:/Users/youco/Documents&quot;,
     &quot;node.js.detected.package.eslint&quot;: &quot;true&quot;,
     &quot;node.js.selected.package.eslint&quot;: &quot;(autodetect)&quot;,
     &quot;node.js.selected.package.tslint&quot;: &quot;(autodetect)&quot;,
@@ -134,7 +118,9 @@
       <workItem from="1740734837041" duration="445000" />
       <workItem from="1740782824489" duration="474000" />
       <workItem from="1740783328316" duration="1420000" />
-      <workItem from="1740830595591" duration="7436000" />
+      <workItem from="1740830595591" duration="8125000" />
+      <workItem from="1740873121363" duration="17000" />
+      <workItem from="1740873165650" duration="2863000" />
     </task>
     <servers />
   </component>

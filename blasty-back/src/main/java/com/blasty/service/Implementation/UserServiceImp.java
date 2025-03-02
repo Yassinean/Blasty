@@ -1,12 +1,8 @@
 package com.blasty.service.Implementation;
 
-import com.blasty.exception.IncorrectPasswordException;
-import com.blasty.exception.InvalidPasswordException;
-import com.blasty.exception.UserNotFoundException;
 import com.blasty.mapper.AdminMapper;
 import com.blasty.mapper.ClientMapper;
 import com.blasty.model.Admin;
-import com.blasty.model.enums.UserRole;
 import com.blasty.repository.AdminRepository;
 import com.blasty.repository.ClientRepository;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -16,7 +12,6 @@ import com.blasty.dto.request.RegisterRequest;
 import com.blasty.dto.response.UserResponse;
 import com.blasty.model.Client;
 import com.blasty.model.User;
-import com.blasty.repository.UserRepository;
 import com.blasty.service.Interface.UserService;
 
 import lombok.RequiredArgsConstructor;
@@ -29,8 +24,7 @@ public class UserServiceImp implements UserService {
     private final AdminRepository adminRepository;
     private final AdminMapper adminMapper;
     private final PasswordEncoder passwordEncoder;
-    private final UserRepository userRepository;
-
+    
     @Override
     public UserResponse registerClient(RegisterRequest request) {
         if (clientRepository.existsByPhone(request.getPhone())) {

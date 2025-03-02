@@ -10,14 +10,14 @@ import org.mapstruct.Mapping;
 public interface ClientMapper {
 
     // Mappage de RegisterRequest vers Client
-//    @Mapping(target = "role", source = "role")
     @Mapping(target = "name", source = "name")
     @Mapping(target = "phone", source = "phone")
+//    @Mapping(target = "role", source = "role")
     Client toEntity(RegisterRequest request);
 
     // Mappage de Client vers UserResponse
-    @Mapping(target = "role", source = "role")
     @Mapping(target = "name", source = "name")
     @Mapping(target = "phone", source = "phone")
+//    @Mapping(target = "role", source = "role")
     UserResponse toResponse(Client client);
 }
