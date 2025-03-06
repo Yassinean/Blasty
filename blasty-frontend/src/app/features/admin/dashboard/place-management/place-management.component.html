@@ -1,1 +1,98 @@
-<p>place-management works!</p>
+<div class="p-6 bg-gray-100 min-h-screen">
+  <h2 class="text-xl font-bold mb-4">Gestion des Places</h2>
+
+  <button
+    class="mb-4 bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600 transition"
+    (click)="openAddPlaceModal()"
+  >
+    Ajouter une Place
+  </button>
+
+  <!-- Place Cards Grid -->
+  <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+    <div
+      *ngFor="let place of places"
+      class="bg-white shadow-md rounded-lg p-4 transition hover:shadow-lg"
+    >
+      <div class="flex justify-between items-center mb-2">
+        <h3 class="text-lg font-semibold">{{ place.type }}</h3>
+        <div class="flex space-x-2">
+          <button
+            class="bg-yellow-500 text-white px-3 py-1 rounded text-sm hover:bg-yellow-600"
+            (click)="openEditPlaceModal(place)"
+          >
+            Modifier
+          </button>
+          <button
+            class="bg-red-500 text-white px-3 py-1 rounded text-sm hover:bg-red-600"
+            (click)="deletePlace(place.id)"
+          >
+            Supprimer
+          </button>
+        </div>
+      </div>
+
+      <div class="space-y-1 text-gray-600">
+        <p><strong>Tarif Horaire:</strong> {{ place.tarifHoraire }} €</p>
+        <p><strong>Parking ID:</strong> {{ place.parkingId }}</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal for Adding/Editing a Place -->
+  <div *ngIf="isModalOpen" class="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50">
+    <div class="bg-white p-6 rounded-lg w-96">
+      <h3 class="text-xl font-semibold mb-4">{{ isEditMode ? 'Modifier la Place' : 'Ajouter une Place' }}</h3>
+      <form [formGroup]="placeForm" (ngSubmit)="submitPlaceForm()">
+        <div class="mb-4">
+          <label for="type" class="block text-sm font-medium text-gray-700">Type</label>
+          <input
+            id="type"
+            formControlName="type"
+            type="text"
+            class="mt-1 p-2 w-full border border-gray-300 rounded-md"
+            [ngClass]="{ 'border-red-500': isFieldInvalid('type') }"
+          />
+          <div *ngIf="isFieldInvalid('type')" class="text-red-500 text-sm">
+            {{ getErrorMessage('type') }}
+          </div>
+        </div>
+
+        <div class="mb-4">
+          <label for="tarifHoraire" class="block text-sm font-medium text-gray-700">Tarif Horaire (€)</label>
+          <input
+            id="tarifHoraire"
+            formControlName="tarifHoraire"
+            type="number"
+            class="mt-1 p-2 w-full border border-gray-300 rounded-md"
+            [ngClass]="{ 'border-red-500': isFieldInvalid('tarifHoraire') }"
+          />
+          <div *ngIf="isFieldInvalid('tarifHoraire')" class="text-red-500 text-sm">
+            {{ getErrorMessage('tarifHoraire') }}
+          </div>
+        </div>
+
+        <div class="mb-4">
+          <label for="parkingId" class="block text-sm font-medium text-gray-700">Parking ID</label>
+          <input
+            id="parkingId"
+            formControlName="parkingId"
+            type="number"
+            class="mt-1 p-2 w-full border border-gray-300 rounded-md"
+            [ngClass]="{ 'border-red-500': isFieldInvalid('parkingId') }"
+          />
+          <div *ngIf="isFieldInvalid('parkingId')" class="text-red-500 text-sm">
+            {{ getErrorMessage('parkingId') }}
+          </div>
+        </div>
+
+        <div class="flex justify-end">
+          <button type="button" class="bg-gray-300 text-black px-4 py-2 rounded-md mr-2" (click)="closeModal()">Annuler</button>
+          <button type="submit" class="bg-blue-500 text-white px-4 py-2 rounded-md hover:bg-blue-600" [disabled]="placeForm.invalid">
+            {{ isEditMode ? 'Modifier' : 'Ajouter' }}
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>

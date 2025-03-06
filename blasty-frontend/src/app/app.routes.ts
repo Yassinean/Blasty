@@ -111,5 +111,5 @@ export const routes: Routes = [
         (m) => m.DashboardComponent
       ),
   },
-  { path: '**', redirectTo: 'auth', pathMatch: 'full' },
+  { path: '**', loadComponent: () => import('./shared/not-found/not-found.component').then(m => m.NotFoundComponent) }
 ];

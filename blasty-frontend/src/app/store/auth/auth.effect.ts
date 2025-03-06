@@ -2,12 +2,12 @@ import { Injectable } from '@angular/core';
 import { Actions, createEffect, ofType } from '@ngrx/effects';
 import { of } from 'rxjs';
 import { catchError, map, mergeMap, tap } from 'rxjs/operators';
-import * as AuthActions from '../actions/auth.action';
+import * as AuthActions from './auth.action';
 import { AuthService } from '../../core/services/auth.service';
 import { TokenService } from '../../core/services/token.service';
 import { Router } from '@angular/router';
 import { Store } from '@ngrx/store';
-import { AuthState } from '../reducers/auth.reducer';
+import { AuthState } from './auth.reducer';
 
 @Injectable()
 export class AuthEffects {

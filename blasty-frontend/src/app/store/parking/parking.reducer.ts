@@ -1,5 +1,5 @@
 import { createReducer, on } from '@ngrx/store';
-import * as ParkingActions from '../actions/parking.action';
+import * as ParkingActions from './parking.action';
 import { Parking } from '../../core/models/parking.model';
 
 export interface ParkingState {

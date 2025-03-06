@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { Actions, createEffect, ofType } from '@ngrx/effects';
 import { catchError, map, mergeMap, of } from 'rxjs';
-import * as ParkingActions from '../actions/parking.action';
+import * as ParkingActions from './parking.action';
 import { ParkingService } from '../../core/services/parking.service';
 
 @Injectable()
