@@ -16,10 +16,12 @@ export class TokenService {
   }
 
   getToken(): string | null {
+    console.log('getToken method in token service:', localStorage.getItem(this.TOKEN_KEY));
     return localStorage.getItem(this.TOKEN_KEY);
   }
 
   getRefreshToken(): string | null {
+    console.log('getRefreshToken method in token service:', localStorage.getItem(this.REFRESH_TOKEN_KEY));
     return localStorage.getItem(this.REFRESH_TOKEN_KEY);
   }
 
@@ -29,11 +31,13 @@ export class TokenService {
 
   getUser(): any {
     const user = localStorage.getItem(this.USER_KEY);
+    console.log('getUser method in token service:', user);
     return user ? JSON.parse(user) : null;
   }
 
   getUserRole(): string | null {
     const user = this.getUser();
+    console.log('getUserRole method in token service:', user ? user.role : null);
     return user ? user.role : null;
   }
 
@@ -44,6 +48,7 @@ export class TokenService {
   }
 
   isAuthenticated(): boolean {
+    console.log('isAuthenticated method in token service:', !!this.getToken());
     return !!this.getToken();
   }
-}
+}  

@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { BehaviorSubject, Observable, throwError } from 'rxjs';
-import { catchError, map, tap } from 'rxjs/operators';
+import { catchError, tap } from 'rxjs/operators';
 import { TokenService } from './token.service';
 import {
   LoginRequest,
@@ -19,6 +19,7 @@ export class AuthService {
   private currentUserSubject = new BehaviorSubject<User | null>(null);
   public currentUser$ = this.currentUserSubject.asObservable();
   private readonly USER_KEY = 'user';
+  private readonly TOKEN_KEY = 'auth_token';
 
   constructor(
     private http: HttpClient,
@@ -67,9 +68,9 @@ export class AuthService {
   redirectUser(): void {
     const user = this.tokenService.getUser();
     if (user) {
-      if (user.role === 'admin') {
+      if (user.role === 'ADMIN') {
         this.router.navigate(['/admin/dashboard']);
-      } else {
+      } else if (user.role === 'CLIENT') {
         this.router.navigate(['/client/dashboard']);
       }
     }
@@ -93,32 +94,33 @@ export class AuthService {
       );
   }
 
-  logout(): void {
-    this.tokenService.clear();
-    this.currentUserSubject.next(null);
-  }
-
   private handleAuthResponse(response: JwtResponse): void {
     if (!response.error) {
       this.tokenService.setTokens(response.token, response.refreshToken);
-
-      // Décoder le token pour obtenir les informations utilisateur
       const user = this.decodeToken(response.token);
       this.tokenService.setUser(user);
       this.currentUserSubject.next(user);
+      this.redirectUser();
     }
   }
 
   private decodeToken(token: string): User {
     try {
       const payload = JSON.parse(atob(token.split('.')[1]));
-      return {
-        id: payload.sub,
-        role: payload.role,
-        email: payload.email,
-        phone: payload.phone,
-        name: payload.name,
-      };
+      if (payload.role === 'ADMIN') {
+        return {
+          id: payload.sub,
+          role: payload.role,
+          email: payload.sub,
+        };
+      } else {
+        return {
+          id: payload.sub,
+          role: payload.role,
+          phone: payload.phone,
+          name: payload.name,
+        };
+      }
     } catch (error) {
       console.error('Error decoding token:', error);
       throw error;
@@ -146,12 +148,27 @@ export class AuthService {
   }
 
   isLoggedIn(): boolean {
-    const token = localStorage.getItem('auth_token');
-    console.log('Token présent:', token);
+    const token = this.getToken();
     return token ? !this.isTokenExpired(token) : false;
   }
+
   getUser(): any {
     const user = localStorage.getItem(this.USER_KEY);
     return user ? JSON.parse(user) : null;
+  }
+
+  logout(): void {
+    this.tokenService.clear();
+    this.currentUserSubject.next(null);
+    this.router.navigate(['/login']);
+  }
+
+  getToken(): string | null {
+    return this.tokenService.getToken();
+  }
+
+  isAdmin(): boolean {
+    const user = this.tokenService.getUser();
+    return user && user.role === 'ADMIN';
   }
 }

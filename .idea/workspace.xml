@@ -6,13 +6,30 @@
   <component name="ChangeListManager">
     <list default="true" id="7d0f7163-b093-482b-b06a-e67e4151f888" name="Changes" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/blasty-back/src/main/java/com/blasty/mapper/ClientMapper.java" beforeDir="false" afterPath="$PROJECT_DIR$/blasty-back/src/main/java/com/blasty/mapper/ClientMapper.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/blasty-back/src/main/java/com/blasty/controller/PlaceController.java" beforeDir="false" afterPath="$PROJECT_DIR$/blasty-back/src/main/java/com/blasty/controller/PlaceController.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/blasty-back/src/main/java/com/blasty/dto/request/PlaceRequest.java" beforeDir="false" afterPath="$PROJECT_DIR$/blasty-back/src/main/java/com/blasty/dto/request/PlaceRequest.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/blasty-back/src/main/java/com/blasty/mapper/ParkingMapper.java" beforeDir="false" afterPath="$PROJECT_DIR$/blasty-back/src/main/java/com/blasty/mapper/ParkingMapper.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/blasty-back/src/main/java/com/blasty/mapper/PlaceMapper.java" beforeDir="false" afterPath="$PROJECT_DIR$/blasty-back/src/main/java/com/blasty/mapper/PlaceMapper.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/blasty-back/src/main/java/com/blasty/repository/ParkingRepository.java" beforeDir="false" afterPath="$PROJECT_DIR$/blasty-back/src/main/java/com/blasty/repository/ParkingRepository.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/blasty-back/src/main/java/com/blasty/security/JwtFilter.java" beforeDir="false" afterPath="$PROJECT_DIR$/blasty-back/src/main/java/com/blasty/security/JwtFilter.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/blasty-back/src/main/java/com/blasty/service/Implementation/ParkingServiceImpl.java" beforeDir="false" afterPath="$PROJECT_DIR$/blasty-back/src/main/java/com/blasty/service/Implementation/ParkingServiceImpl.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/blasty-back/src/main/java/com/blasty/service/Implementation/PlaceServiceImpl.java" beforeDir="false" afterPath="$PROJECT_DIR$/blasty-back/src/main/java/com/blasty/service/Implementation/PlaceServiceImpl.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/blasty-back/src/main/java/com/blasty/service/Implementation/UserServiceImp.java" beforeDir="false" afterPath="$PROJECT_DIR$/blasty-back/src/main/java/com/blasty/service/Implementation/UserServiceImp.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/blasty-frontend/package-lock.json" beforeDir="false" afterPath="$PROJECT_DIR$/blasty-frontend/package-lock.json" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/blasty-frontend/package.json" beforeDir="false" afterPath="$PROJECT_DIR$/blasty-frontend/package.json" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/blasty-frontend/src/app/app.component.ts" beforeDir="false" afterPath="$PROJECT_DIR$/blasty-frontend/src/app/app.component.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/blasty-frontend/src/app/app.config.ts" beforeDir="false" afterPath="$PROJECT_DIR$/blasty-frontend/src/app/app.config.ts" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/blasty-frontend/src/app/app.routes.ts" beforeDir="false" afterPath="$PROJECT_DIR$/blasty-frontend/src/app/app.routes.ts" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/blasty-frontend/src/app/core/guards/auth.guard.ts" beforeDir="false" afterPath="$PROJECT_DIR$/blasty-frontend/src/app/core/guards/auth.guard.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/blasty-frontend/src/app/core/guards/non-auth.guard.ts" beforeDir="false" afterPath="$PROJECT_DIR$/blasty-frontend/src/app/core/guards/non-auth.guard.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/blasty-frontend/src/app/core/interceptors/auth.interceptor.ts" beforeDir="false" afterPath="$PROJECT_DIR$/blasty-frontend/src/app/core/interceptors/auth.interceptor.ts" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/blasty-frontend/src/app/core/services/auth.service.ts" beforeDir="false" afterPath="$PROJECT_DIR$/blasty-frontend/src/app/core/services/auth.service.ts" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/blasty-frontend/src/app/features/auth/login/login.component.ts" beforeDir="false" afterPath="$PROJECT_DIR$/blasty-frontend/src/app/features/auth/login/login.component.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/blasty-frontend/src/app/core/services/token.service.ts" beforeDir="false" afterPath="$PROJECT_DIR$/blasty-frontend/src/app/core/services/token.service.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/blasty-frontend/src/app/shared/header/header.component.html" beforeDir="false" afterPath="$PROJECT_DIR$/blasty-frontend/src/app/shared/header/header.component.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/blasty-frontend/src/app/shared/header/header.component.ts" beforeDir="false" afterPath="$PROJECT_DIR$/blasty-frontend/src/app/shared/header/header.component.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/blasty-frontend/src/app/store/actions/auth.action.ts" beforeDir="false" afterPath="$PROJECT_DIR$/blasty-frontend/src/app/store/actions/auth.action.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/blasty-frontend/src/app/store/effects/auth.effect.ts" beforeDir="false" afterPath="$PROJECT_DIR$/blasty-frontend/src/app/store/effects/auth.effect.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/blasty-frontend/src/app/store/reducers/auth.reducer.ts" beforeDir="false" afterPath="$PROJECT_DIR$/blasty-frontend/src/app/store/reducers/auth.reducer.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/blasty-frontend/src/main.ts" beforeDir="false" afterPath="$PROJECT_DIR$/blasty-frontend/src/main.ts" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -53,27 +70,27 @@
     <option name="hideEmptyMiddlePackages" value="true" />
     <option name="showLibraryContents" value="true" />
   </component>
-  <component name="PropertiesComponent">{
-  &quot;keyToString&quot;: {
-    &quot;Maven.blasty-back [clean].executor&quot;: &quot;Run&quot;,
-    &quot;Maven.blasty-back [package].executor&quot;: &quot;Run&quot;,
-    &quot;RequestMappingsPanelOrder0&quot;: &quot;0&quot;,
-    &quot;RequestMappingsPanelOrder1&quot;: &quot;1&quot;,
-    &quot;RequestMappingsPanelWidth0&quot;: &quot;75&quot;,
-    &quot;RequestMappingsPanelWidth1&quot;: &quot;75&quot;,
-    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
-    &quot;Spring Boot.BlastyApplication.executor&quot;: &quot;Run&quot;,
-    &quot;git-widget-placeholder&quot;: &quot;main&quot;,
-    &quot;kotlin-language-version-configured&quot;: &quot;true&quot;,
-    &quot;last_opened_file_path&quot;: &quot;C:/Users/youco/Documents&quot;,
-    &quot;node.js.detected.package.eslint&quot;: &quot;true&quot;,
-    &quot;node.js.selected.package.eslint&quot;: &quot;(autodetect)&quot;,
-    &quot;node.js.selected.package.tslint&quot;: &quot;(autodetect)&quot;,
-    &quot;nodejs_package_manager_path&quot;: &quot;npm&quot;,
-    &quot;settings.editor.selected.configurable&quot;: &quot;preferences.pluginManager&quot;,
-    &quot;vue.rearranger.settings.migration&quot;: &quot;true&quot;
+  <component name="PropertiesComponent"><![CDATA[{
+  "keyToString": {
+    "Maven.blasty-back [clean].executor": "Run",
+    "Maven.blasty-back [package].executor": "Run",
+    "RequestMappingsPanelOrder0": "0",
+    "RequestMappingsPanelOrder1": "1",
+    "RequestMappingsPanelWidth0": "75",
+    "RequestMappingsPanelWidth1": "75",
+    "RunOnceActivity.ShowReadmeOnStart": "true",
+    "Spring Boot.BlastyApplication.executor": "Run",
+    "git-widget-placeholder": "FIL-62-connecter-le-frontend-au-backend-afin-de-recuperer-et-afficher-les…ibles",
+    "kotlin-language-version-configured": "true",
+    "last_opened_file_path": "C:/Users/youco/Documents",
+    "node.js.detected.package.eslint": "true",
+    "node.js.selected.package.eslint": "(autodetect)",
+    "node.js.selected.package.tslint": "(autodetect)",
+    "nodejs_package_manager_path": "npm",
+    "settings.editor.selected.configurable": "preferences.pluginManager",
+    "vue.rearranger.settings.migration": "true"
   }
-}</component>
+}]]></component>
   <component name="RecentsManager">
     <key name="CreateClassDialog.RecentsKey">
       <recent name="com.blasty.exception" />
@@ -120,7 +137,8 @@
       <workItem from="1740783328316" duration="1420000" />
       <workItem from="1740830595591" duration="8125000" />
       <workItem from="1740873121363" duration="17000" />
-      <workItem from="1740873165650" duration="2863000" />
+      <workItem from="1740873165650" duration="7597000" />
+      <workItem from="1741042803888" duration="15846000" />
     </task>
     <servers />
   </component>

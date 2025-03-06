@@ -20,8 +20,9 @@ public class PlaceController {
 
     @PostMapping
     @PreAuthorize("hasRole('ADMIN')")
-    public ResponseEntity<PlaceResponse> createPlace(@Valid @RequestBody PlaceRequest request , Long parkingId) {
-        PlaceResponse response = placeService.createPlace(parkingId, request);
+    public ResponseEntity<PlaceResponse> createPlace(@Valid @RequestBody PlaceRequest request) {
+        // Use the parkingId from the request itself
+        PlaceResponse response = placeService.createPlace(request.getParkingId(), request);
         return ResponseEntity.status(HttpStatus.CREATED).body(response);
     }
 
