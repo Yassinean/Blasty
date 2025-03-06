@@ -22,12 +22,21 @@ public class PlaceServiceImpl implements PlaceService {
     private final PlaceMapper placeMapper;
 
     @Override
-    public PlaceResponse createPlace(Long parkingId , PlaceRequest request) {
+    public PlaceResponse createPlace(Long parkingId, PlaceRequest request) {
         Parking parking = parkingRepository.findById(parkingId)
-                .orElseThrow(() -> new RuntimeException("Parking non trouvé"));
+                .orElseThrow(() -> new RuntimeException("Parking not found"));
+
         Place place = placeMapper.toEntity(request);
-        return placeMapper.toResponse(placeRepository.save(place));
+        place.setParking(parking);
+        place = placeRepository.save(place);
+
+        // Optionally, if you want to update the availablePlaces field in Parking:
+        parking.setAvailablePlaces(parking.getAvailablePlaces() - 1);
+        parkingRepository.save(parking);
+
+        return placeMapper.toResponse(place);
     }
+
 
     @Override
     public PlaceResponse getPlaceById(Long id) {

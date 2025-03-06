@@ -1,0 +1,26 @@
+<div>
+  <div class="p-6 bg-gray-100 min-h-screen pt-24">
+    <h1 class="text-2xl font-bold mb-4">Admin Dashboard</h1>
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+      <a
+        routerLink="/admin/dashboard/statistics"
+        class="block p-4 bg-white shadow rounded-lg text-center hover:bg-gray-200"
+        >Statistiques</a
+      >
+      <a
+        routerLink="/admin/dashboard/parking-management"
+        class="block p-4 bg-white shadow rounded-lg text-center hover:bg-gray-200"
+        >Gestion des Parkings</a
+      >
+      <a
+        routerLink="/admin/dashboard/place-management"
+        class="block p-4 bg-white shadow rounded-lg text-center hover:bg-gray-200"
+        >Gestion des Places</a
+      >
+    </div>
+
+    <div class="mt-6 p-4 bg-white shadow rounded-lg">
+      <router-outlet></router-outlet>
+    </div>
+  </div>
+</div>

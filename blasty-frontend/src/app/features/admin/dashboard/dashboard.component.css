@@ -1,0 +1,30 @@
+/* dashboard.component.css */
+.dashboard-container {
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
+}
+
+nav {
+  display: flex;
+  justify-content: center;
+  gap: 1rem;
+  margin-top: 1rem;
+}
+
+nav a {
+  color: white;
+  text-decoration: none;
+  padding: 0.5rem 1rem;
+  border-radius: 4px;
+  background-color: #555;
+}
+
+nav a:hover {
+  background-color: #777;
+}
+
+main {
+  flex: 1;
+  padding: 1rem;
+}

@@ -33,10 +33,13 @@ import {animate, state, style, transition, trigger} from "@angular/animations";
 export class HeaderComponent implements OnInit{
   isMobileMenuOpen = false
   isScrolled = false
+  isAuthenticated = true;
 
   constructor() {}
 
-  ngOnInit(): void {}
+  ngOnInit(): void {
+    this.isAuthenticated = !!localStorage.getItem('authToken');
+  }
 
   @HostListener("window:scroll", [])
   onWindowScroll() {
@@ -45,5 +48,13 @@ export class HeaderComponent implements OnInit{
 
   toggleMobileMenu() {
     this.isMobileMenuOpen = !this.isMobileMenuOpen
+  }
+
+  logout() {
+    // Remove token from localStorage and update authentication state
+    localStorage.removeItem('authToken'); // Replace 'authToken' with your actual token key
+    this.isAuthenticated = false; // Update authentication state
+    // Optionally, redirect the user to another route, like home or login
+    window.location.href = '/auth/login'; // Redirect to login or home after logout
   }
 }
