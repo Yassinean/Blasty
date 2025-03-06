@@ -88,7 +88,7 @@ export class AuthEffects {
         ofType(AuthActions.logout),
         tap(() => {
           this.authService.logout();
-          this.router.navigate(['/auth/login']);
+          this.router.navigate(['/auth']);
         })
       ),
     { dispatch: false }

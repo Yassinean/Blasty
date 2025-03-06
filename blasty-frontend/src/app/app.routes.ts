@@ -108,7 +108,7 @@ export const routes: Routes = [
     canActivate: [ClientGuard],
     loadComponent: () =>
       import('./features/dashboard/dashboard.component').then(
-        (m) => m.DashboardComponent
+        (m) => m.DashboardComponentClient
       ),
   },
   { path: '**', loadComponent: () => import('./shared/not-found/not-found.component').then(m => m.NotFoundComponent) }

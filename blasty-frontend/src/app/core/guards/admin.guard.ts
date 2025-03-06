@@ -15,7 +15,7 @@ import { TokenService } from '../services/token.service';
     canActivate(): boolean {
       const userRole = this.tokenService.getUserRole();
       if (userRole !== 'ADMIN') {
-        this.router.navigate(['/auth/login']);
+        this.router.navigate(['/auth']);
         return false;
       }
       return true;

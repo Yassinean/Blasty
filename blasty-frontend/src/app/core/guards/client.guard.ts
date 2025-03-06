@@ -12,7 +12,7 @@ export class ClientGuard implements CanActivate {
   canActivate(): boolean {
     const userRole = this.tokenService.getUserRole();
     if (userRole !== 'CLIENT') {
-      this.router.navigate(['/auth/login']);
+      this.router.navigate(['/auth']);
       return false;
     }
     return true;

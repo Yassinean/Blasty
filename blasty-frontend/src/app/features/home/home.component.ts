@@ -1,3 +1,4 @@
+import { HeaderComponent } from './../../shared/header/header.component';
 import { Component } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { HeroComponent } from './hero/hero.component';
@@ -13,10 +14,12 @@ import {FeaturesAppComponent} from "./features-app/features-app.component";
     HeroComponent,
     FeaturesAppComponent,
     HowItWorksComponent,
-    PricingComponent
+    PricingComponent,
+    HeaderComponent
   ],
   template: `
     <main class="min-h-screen p-5 m-2">
+      <app-header />
       <app-hero />
       <app-features />
       <app-how-it-works />

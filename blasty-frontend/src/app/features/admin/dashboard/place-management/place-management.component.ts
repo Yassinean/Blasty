@@ -1,52 +1,99 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { FormsModule, ReactiveFormsModule, FormBuilder, FormGroup, Validators } from '@angular/forms';
+import {
+  FormsModule,
+  ReactiveFormsModule,
+  FormBuilder,
+  FormGroup,
+  Validators,
+} from '@angular/forms';
 import { Place } from '../../../../core/models/place.model';
+import { Parking } from '../../../../core/models/parking.model';
 import { PlaceService } from '../../../../core/services/place.service';
-import { HttpHeaders } from '@angular/common/http';
+import { ParkingService } from '../../../../core/services/parking.service';
 
 @Component({
   selector: 'app-place-management',
   standalone: true,
   imports: [CommonModule, FormsModule, ReactiveFormsModule],
-  templateUrl: './place-management.component.html',
-  styleUrls: ['./place-management.component.css'],
+  templateUrl:'./place-management.component.html',
 })
 export class PlaceManagementComponent implements OnInit {
   places: Place[] = [];
+  filteredPlaces: Place[] = [];
+  parkings: Parking[] = [];
+  
+  // Search and filter
+  searchTerm: string = '';
+  filterOption: string = 'all';
+  
+  // Modal control
   isModalOpen = false;
   isEditMode = false;
   placeForm: FormGroup;
   currentPlaceId: number | null = null;
 
   constructor(
-    private placeService: PlaceService,
+    private placeService: PlaceService, 
+    private parkingService: ParkingService,
     private fb: FormBuilder
   ) {
     this.placeForm = this.fb.group({
       type: ['', [Validators.required]],
       tarifHoraire: [null, [Validators.required, Validators.min(0)]],
-      parkingId: [null, [Validators.required]],
+      parkingId: ['', [Validators.required]],
     });
   }
 
   ngOnInit(): void {
+    this.loadParkings();
     this.loadPlaces();
   }
 
-  private getAuthHeaders(): HttpHeaders {
-    const token = localStorage.getItem('auth_token');
-    return token
-      ? new HttpHeaders({ 'Authorization': `Bearer ${token}`, 'Content-Type': 'application/json' })
-      : new HttpHeaders();
+  loadParkings(): void {
+    this.parkingService.getAllParkings().subscribe({
+      next: (data) => {
+        this.parkings = data;
+      },
+      error: (error) =>
+        console.error('Erreur lors du chargement des parkings', error),
+    });
   }
 
   loadPlaces(): void {
-    const headers = this.getAuthHeaders();
     this.placeService.getAllPlaces().subscribe({
-      next: (data) => this.places = data,
-      error: (error) => console.error('Erreur lors du chargement des places', error),
+      next: (data) => {
+        this.places = data;
+        this.filterPlaces();
+      },
+      error: (error) =>
+        console.error('Erreur lors du chargement des places', error),
     });
+  }
+  
+  getParkingName(parkingId: number): string {
+    const parking = this.parkings.find(p => p.id === parkingId);
+    return parking ? parking.name : `Parking #${parkingId}`;
+  }
+  
+  filterPlaces(): void {
+    let result = this.places;
+    
+    // Apply search filter
+    if (this.searchTerm) {
+      const term = this.searchTerm.toLowerCase();
+      result = result.filter(place => 
+        place.type.toLowerCase().includes(term) || 
+        this.getParkingName(place.parkingId).toLowerCase().includes(term)
+      );
+    }
+    
+    // Apply type filter
+    if (this.filterOption !== 'all') {
+      result = result.filter(place => place.type === this.filterOption);
+    }
+    
+    this.filteredPlaces = result;
   }
 
   openAddPlaceModal(): void {
@@ -62,7 +109,7 @@ export class PlaceManagementComponent implements OnInit {
     this.placeForm.patchValue({
       type: place.type,
       tarifHoraire: place.tarifHoraire,
-      parkingId: place.parkingId,
+      parkingId: place.parkingId.toString(), // Convert to string for the select element
     });
     this.isModalOpen = true;
   }
@@ -76,18 +123,26 @@ export class PlaceManagementComponent implements OnInit {
       return;
     }
 
-    const placeData = this.placeForm.value;
+    const placeData = {
+      ...this.placeForm.value,
+      parkingId: parseInt(this.placeForm.value.parkingId, 10) // Convert back to number
+    };
+    
     this.isEditMode ? this.updatePlace(placeData) : this.createPlace(placeData);
   }
 
   private updatePlace(placeData: any): void {
     this.placeService.updatePlace(this.currentPlaceId!, placeData).subscribe({
       next: (updatedPlace) => {
-        const index = this.places.findIndex((p) => p.id === this.currentPlaceId);
+        const index = this.places.findIndex(
+          (p) => p.id === this.currentPlaceId
+        );
         if (index !== -1) this.places[index] = updatedPlace;
+        this.filterPlaces();
         this.closeModal();
       },
-      error: (error) => console.error('Erreur lors de la mise à jour de la place', error),
+      error: (error) =>
+        console.error('Erreur lors de la mise à jour de la place', error),
     });
   }
 
@@ -95,9 +150,11 @@ export class PlaceManagementComponent implements OnInit {
     this.placeService.createPlace(placeData).subscribe({
       next: (newPlace) => {
         this.places.push(newPlace);
+        this.filterPlaces();
         this.closeModal();
       },
-      error: (error) => console.error('Erreur lors de la création de la place', error),
+      error: (error) =>
+        console.error('Erreur lors de la création de la place', error),
     });
   }
 
@@ -111,8 +168,12 @@ export class PlaceManagementComponent implements OnInit {
   deletePlace(id: number): void {
     if (confirm('Voulez-vous vraiment supprimer cette place ?')) {
       this.placeService.deletePlace(id).subscribe({
-        next: () => this.places = this.places.filter((p) => p.id !== id),
-        error: (error) => console.error('Erreur lors de la suppression de la place', error),
+        next: () => {
+          this.places = this.places.filter((p) => p.id !== id);
+          this.filterPlaces();
+        },
+        error: (error) =>
+          console.error('Erreur lors de la suppression de la place', error),
       });
     }
   }

@@ -3,17 +3,24 @@ import { CommonModule } from '@angular/common';
 import { FormsModule, ReactiveFormsModule, FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { Parking } from '../../../../core/models/parking.model';
 import { ParkingService } from '../../../../core/services/parking.service';
-import { HttpHeaders } from '@angular/common/http';
+
 
 @Component({
   selector: 'app-parking-management',
   standalone: true,
   imports: [CommonModule, FormsModule, ReactiveFormsModule],
   templateUrl: './parking-management.component.html',
-  styleUrls: ['./parking-management.component.css']
+  styles: [`
+    /* Add any component-specific styles here */
+  `]
 })
 export class ParkingManagementComponent implements OnInit {
   parkings: Parking[] = [];
+  filteredParkings: Parking[] = [];
+  
+  // Search and filter
+  searchTerm: string = '';
+  filterOption: string = 'all';
   
   // Modal control
   isModalOpen = false;
@@ -36,27 +43,15 @@ export class ParkingManagementComponent implements OnInit {
     });
   }
 
-  private getAuthHeaders(): HttpHeaders {
-    const token = localStorage.getItem('auth_token');
-    // console.log("Token from localStorage:", token);
-    if (token) {
-      return new HttpHeaders({
-        'Authorization': `Bearer ${token}`,
-        'Content-Type': 'application/json',
-      });
-    }
-    return new HttpHeaders();
-  }
-
   ngOnInit(): void {
     this.loadParkings();
   }
 
   loadParkings(): void {
-    const headers = this.getAuthHeaders();
     this.parkingService.getAllParkings().subscribe({
       next: (data) => {
         this.parkings = data;
+        this.filterParkings();
         console.log("Liste des parkings:", data);
       },
       error: (error) => {
@@ -64,6 +59,28 @@ export class ParkingManagementComponent implements OnInit {
         // TODO: Add error handling toast or notification
       }
     });
+  }
+
+  filterParkings(): void {
+    let result = this.parkings;
+    
+    // Apply search filter
+    if (this.searchTerm) {
+      const term = this.searchTerm.toLowerCase();
+      result = result.filter(parking => 
+        parking.name.toLowerCase().includes(term) || 
+        parking.address.toLowerCase().includes(term)
+      );
+    }
+    
+    // Apply availability filter
+    if (this.filterOption === 'available') {
+      result = result.filter(parking => parking.availablePlaces > 0);
+    } else if (this.filterOption === 'full') {
+      result = result.filter(parking => parking.availablePlaces === 0);
+    }
+    
+    this.filteredParkings = result;
   }
 
   // Open modal for adding new parking
@@ -112,6 +129,7 @@ export class ParkingManagementComponent implements OnInit {
           if (index !== -1) {
             this.parkings[index] = updatedParking;
           }
+          this.filterParkings();
           this.closeModal();
         },
         error: (error) => {
@@ -124,6 +142,7 @@ export class ParkingManagementComponent implements OnInit {
       this.parkingService.createParking(parkingData).subscribe({
         next: (newParking) => {
           this.parkings.push(newParking);
+          this.filterParkings();
           this.closeModal();
         },
         error: (error) => {
@@ -148,12 +167,38 @@ export class ParkingManagementComponent implements OnInit {
       this.parkingService.deleteParking(id).subscribe({
         next: () => {
           this.parkings = this.parkings.filter((p) => p.id !== id);
+          this.filterParkings();
         },
         error: (error) => {
           console.error('Erreur lors de la suppression du parking', error);
           // TODO: Add error handling toast or notification
         }
       });
+    }
+  }
+
+  // Helper methods for UI
+  getAvailabilityColorClass(parking: Parking): string {
+    const availabilityPercentage = (parking.availablePlaces / parking.totalCapacity) * 100;
+    
+    if (availabilityPercentage === 0) {
+      return 'text-red-600 dark:text-red-400 font-medium';
+    } else if (availabilityPercentage < 20) {
+      return 'text-orange-600 dark:text-orange-400 font-medium';
+    } else {
+      return 'text-green-600 dark:text-green-400 font-medium';
+    }
+  }
+
+  getProgressBarColorClass(parking: Parking): string {
+    const availabilityPercentage = (parking.availablePlaces / parking.totalCapacity) * 100;
+    
+    if (availabilityPercentage === 0) {
+      return 'bg-red-600';
+    } else if (availabilityPercentage < 20) {
+      return 'bg-orange-500';
+    } else {
+      return 'bg-green-500';
     }
   }
 
@@ -170,7 +215,7 @@ export class ParkingManagementComponent implements OnInit {
     if (field.errors?.['required']) {
       return 'Ce champ est obligatoire';
     }
-    if (field.errors?.['minLength']) {
+    if (field.errors?.['minlength']) {
       return 'Le nom doit contenir au moins 3 caractères';
     }
     if (field.errors?.['min']) {

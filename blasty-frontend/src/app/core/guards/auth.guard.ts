@@ -1,7 +1,6 @@
 import { Injectable } from '@angular/core';
 import { CanActivate, ActivatedRouteSnapshot, RouterStateSnapshot, Router, CanActivateChild, CanLoad, Route, UrlSegment } from '@angular/router';
 import { Observable } from 'rxjs';
-import { map, take } from 'rxjs/operators';
 import { AuthService } from '../services/auth.service';
 import { TokenService } from '../services/token.service';
 
@@ -39,7 +38,7 @@ export class AuthGuard implements CanActivate, CanActivateChild, CanLoad {
 
   private checkAuth(route: ActivatedRouteSnapshot): Observable<boolean> | boolean {
     if (!this.authService.isLoggedIn()) {
-      this.router.navigate(['/auth/login'], {
+      this.router.navigate(['/auth'], {
         queryParams: { returnUrl: route.url.join('/') }
       });
       return false;
@@ -58,7 +57,7 @@ export class AuthGuard implements CanActivate, CanActivateChild, CanLoad {
       } else if (userRole === 'CLIENT') {
         this.router.navigate(['/client/dashboard']);
       } else {
-        this.router.navigate(['/auth/login']);
+        this.router.navigate(['/auth']);
       }
       return false;
     }

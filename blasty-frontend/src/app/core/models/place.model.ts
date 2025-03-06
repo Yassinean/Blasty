@@ -9,5 +9,5 @@ export interface Place {
 export enum TypePlace {
   STANDARD = 'STANDARD',
   VIP = 'VIP',
-  HANDICAP = 'HANDICAP',
+  HANDICAPE = 'HANDICAPE',
 }

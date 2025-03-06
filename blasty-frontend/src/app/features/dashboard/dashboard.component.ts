@@ -24,4 +24,4 @@ import { SidebarComponent } from '../../shared/sidebar/sidebar.component';
     </div>
   `,
 })
-export class DashboardComponent {}
+export class DashboardComponentClient {}
