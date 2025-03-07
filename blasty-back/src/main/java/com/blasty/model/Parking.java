@@ -2,17 +2,8 @@ package com.blasty.model;
 
 import java.util.List;
 
-import com.blasty.model.enums.PlaceStatus;
-
-import jakarta.persistence.CascadeType;
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.FetchType;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import jakarta.persistence.OneToMany;
-import jakarta.persistence.Table;
+import com.blasty.model.enums.ParkingStatus;
+import jakarta.persistence.*;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.AllArgsConstructor;
@@ -37,8 +28,26 @@ public class Parking {
     private String address;
 
     @Column(nullable = false)
-    private int totalCapacity;
+    private int capacity;
+
+    @Column(nullable = false)
+    private int occupiedSpaces;
+
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false)
+    private ParkingStatus status;
+
+    @Column
+    private Double latitude;
+
+    @Column
+    private Double longitude;
 
     @OneToMany(mappedBy = "parking", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     private List<Place> places;
+
+    // Méthode pour calculer les places disponibles
+    public int getAvailablePlaces() {
+        return capacity - occupiedSpaces;
+    }
 }

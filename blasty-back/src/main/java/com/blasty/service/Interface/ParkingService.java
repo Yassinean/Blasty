@@ -1,9 +1,8 @@
 package com.blasty.service.Interface;
-
-import java.util.List;
-
 import com.blasty.dto.request.ParkingRequest;
 import com.blasty.dto.response.ParkingResponse;
+
+import java.util.List;
 
 public interface ParkingService {
     ParkingResponse createParking(ParkingRequest request);

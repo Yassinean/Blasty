@@ -41,8 +41,7 @@ public class ParkingController {
 
     @PutMapping("/{id}")
     @PreAuthorize("hasRole('ADMIN')")
-    public ResponseEntity<ParkingResponse> updateParking(@PathVariable Long id,
-            @Valid @RequestBody ParkingRequest request) {
+    public ResponseEntity<ParkingResponse> updateParking(@PathVariable Long id, @Valid @RequestBody ParkingRequest request) {
         ParkingResponse response = parkingService.updateParking(id, request);
         return ResponseEntity.ok(response);
     }

@@ -4,7 +4,6 @@ import com.blasty.dto.request.ParkingRequest;
 import com.blasty.dto.response.ParkingResponse;
 import com.blasty.mapper.ParkingMapper;
 import com.blasty.model.Parking;
-import com.blasty.model.enums.PlaceStatus;
 import com.blasty.repository.ParkingRepository;
 import com.blasty.service.Interface.ParkingService;
 import lombok.RequiredArgsConstructor;
@@ -45,7 +44,10 @@ public class ParkingServiceImpl implements ParkingService {
                 .orElseThrow(() -> new RuntimeException("Parking non trouvé"));
         parking.setName(request.getName());
         parking.setAddress(request.getAddress());
-        parking.setTotalCapacity(request.getTotalCapacity());
+        parking.setCapacity(request.getCapacity());
+        parking.setStatus(request.getStatus());
+        parking.setLatitude(request.getLatitude());
+        parking.setLongitude(request.getLongitude());
         return parkingMapper.toResponse(parkingRepository.save(parking));
     }
 
@@ -53,9 +55,7 @@ public class ParkingServiceImpl implements ParkingService {
     public int getAvailablePlaces(Long parkingId) {
         Parking parking = parkingRepository.findById(parkingId)
                 .orElseThrow(() -> new RuntimeException("Parking non trouvé"));
-        return (int) parking.getPlaces().stream()
-                .filter(place -> place.getEtat() == PlaceStatus.DISPONIBLE)
-                .count();
+        return parking.getAvailablePlaces();
     }
 
     @Override

@@ -1,5 +1,6 @@
 package com.blasty.dto.request;
 
+import com.blasty.model.enums.ParkingStatus;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import lombok.Data;
@@ -13,5 +14,11 @@ public class ParkingRequest {
     private String address;
 
     @NotNull(message = "La capacité totale est obligatoire")
-    private Integer totalCapacity;
+    private Integer capacity;
+
+    @NotNull(message = "Le statut du parking est obligatoire")
+    private ParkingStatus status;
+
+    private Double latitude;
+    private Double longitude;
 }
