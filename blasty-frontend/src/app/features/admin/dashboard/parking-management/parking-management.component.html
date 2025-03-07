@@ -1,4 +1,3 @@
-`
 <div class="space-y-6">
   <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
     <div>
@@ -49,21 +48,37 @@
         >
           <option value="all">Tous les parkings</option>
           <option value="available">Places disponibles</option>
-          <option value="full">Complets</option>
+          <option value="full">Complet</option>
         </select>
       </div>
     </div>
   </div>
-  
+
   <!-- Parking Cards Grid -->
   <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-    <div 
-      *ngFor="let parking of filteredParkings" 
+    <div
+      *ngFor="let parking of filteredParkings"
       class="bg-white dark:bg-gray-800 rounded-lg shadow-md overflow-hidden transition-all duration-200 hover:shadow-lg border border-gray-200 dark:border-gray-700"
     >
       <div class="p-6">
         <div class="flex justify-between items-start mb-4">
-          <h3 class="text-lg font-semibold text-gray-800 dark:text-white">{{ parking.name }}</h3>
+          <div class="flex items-center">
+            <div 
+              [ngClass]="{
+                'bg-green-100 text-green-600 dark:bg-green-900 dark:text-green-200': parking.status === 'OPEN',
+                'bg-red-100 text-red-600 dark:bg-red-900 dark:text-red-200': parking.status === 'CLOSED',
+                'bg-yellow-100 text-yellow-600 dark:bg-yellow-900 dark:text-yellow-200': parking.status === 'MAINTENANCE'
+              }"
+              class="p-2 rounded-md mr-3"
+            >
+              <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <rect *ngIf="parking.status === 'OPEN'" x="3" y="3" width="18" height="18" rx="2" />
+                <circle *ngIf="parking.status === 'CLOSED'" cx="12" cy="12" r="10" />
+                <path *ngIf="parking.status === 'MAINTENANCE'" d="M10.3 6.74a1 1 0 0 0-1.42 1.42l1.42 1.42a1 1 0 0 0 1.42-1.42l-1.42-1.42zM12 2a1 1 0 0 0-1 1v2a1 1 0 0 0 2 0V3a1 1 0 0 0-1-1zM17.07 7.07a1 1 0 0 0-1.41 0l-1.42 1.42a1 1 0 0 0 1.42 1.42l1.42-1.42a1 1 0 0 0-.01-1.42zM18.5 11H17a1 1 0 0 0 0 2h1.5a1 1 0 0 0 0-2zM17.07 16.93a1 1 0 0 0 .01 1.42l1.42 1.42a1 1 0 0 0 1.41-1.42l-1.42-1.42a1 1 0 0 0-1.42 0zM12 20a1 1 0 0 0 1 1h0a1 1 0 0 0 1-1v-2a1 1 0 0 0-2 0v2zM6.93 16.93a1 1 0 0 0 0 1.42l1.42 1.42a1 1 0 0 0 1.41-1.42l-1.42-1.42a1 1 0 0 0-1.41 0zM6 12a1 1 0 0 0-1-1H3.5a1 1 0 0 0 0 2H5a1 1 0 0 0 1-1z" />
+              </svg>
+            </div>
+            <h3 class="text-lg font-semibold text-gray-800 dark:text-white">{{ parking.name }}</h3>
+          </div>
           <div class="flex space-x-1">
             <button 
               class="p-1 rounded-full text-yellow-500 hover:bg-yellow-100 dark:hover:bg-yellow-900 focus:outline-none"
@@ -90,41 +105,62 @@
           </div>
         </div>
         
+        <div class="mb-4">
+          <p class="text-gray-600 dark:text-gray-300 text-sm">{{ parking.address }}</p>
+        </div>
+        
         <div class="space-y-3">
-          <div class="flex items-center text-gray-600 dark:text-gray-300">
-            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2 text-gray-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-              <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z" />
-              <circle cx="12" cy="10" r="3" />
-            </svg>
-            <span>{{ parking.address }}</span>
+          <div class="flex items-center justify-between text-gray-600 dark:text-gray-300">
+            <div class="flex items-center">
+              <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2 text-gray-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <rect x="3" y="3" width="18" height="18" rx="2" />
+                <path d="M9 3v18" />
+                <path d="M3 9h6" />
+              </svg>
+              <span>Capacité Totale:</span>
+            </div>
+            <span class="font-medium text-gray-800 dark:text-white">{{ parking.capacity }}</span>
           </div>
           
           <div class="flex items-center justify-between">
             <div class="flex items-center text-gray-600 dark:text-gray-300">
               <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2 text-gray-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                <rect x="3" y="3" width="18" height="18" rx="2" ry="2" />
-                <path d="M9 3v18" />
+                <circle cx="12" cy="12" r="10" />
+                <path d="M12 8v4" />
+                <path d="M12 16h.01" />
               </svg>
-              <span>Capacité: {{ parking.totalCapacity }} places</span>
+              <span>Places Disponibles:</span>
             </div>
+            <span [ngClass]="getAvailabilityColorClass(parking)">{{ parking.availablePlaces  ?? 0}}</span>
           </div>
           
-          <div class="mt-4">
-            <div class="flex justify-between mb-1">
-              <span class="text-sm font-medium text-gray-700 dark:text-gray-300">Places disponibles</span>
-              <span 
-                [class]="getAvailabilityColorClass(parking)"
-              >
-                {{ parking.availablePlaces }} / {{ parking.totalCapacity }}
-              </span>
+          <!-- Availability Progress Bar -->
+          <div class="w-full bg-gray-200 dark:bg-gray-700 rounded-full h-2.5">
+            <div 
+              class="h-2.5 rounded-full" 
+              [ngClass]="getProgressBarColorClass(parking)"
+              [style.width.%]="(parking.availablePlaces  ?? 0/ parking.capacity) * 100"
+            ></div>
+          </div>
+          
+          <div class="flex items-center justify-between text-gray-600 dark:text-gray-300">
+            <div class="flex items-center">
+              <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2 text-gray-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <circle cx="12" cy="12" r="10" />
+                <path d="M12 16v.01" />
+                <path d="M12 8v4" />
+              </svg>
+              <span>Statut:</span>
             </div>
-            <div class="w-full bg-gray-200 rounded-full h-2.5 dark:bg-gray-700">
-              <div 
-                class="h-2.5 rounded-full" 
-                [class]="getProgressBarColorClass(parking)"
-                [style.width.%]="(parking.availablePlaces / parking.totalCapacity) * 100"
-              ></div>
-            </div>
+            <span 
+              [ngClass]="{
+                'text-green-600 dark:text-green-400': parking.status === 'OPEN',
+                'text-red-600 dark:text-red-400': parking.status === 'CLOSED',
+                'text-yellow-600 dark:text-yellow-400': parking.status === 'MAINTENANCE'
+              }"
+            >
+              {{ parking.status === 'OPEN' ? 'Ouvert' : parking.status === 'CLOSED' ? 'Fermé' : 'MAINTENANCE' }}
+            </span>
           </div>
         </div>
       </div>
@@ -138,6 +174,7 @@
       <svg xmlns="http://www.w3.org/2000/svg" class="h-16 w-16 text-gray-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1">
         <rect x="3" y="3" width="18" height="18" rx="2" />
         <path d="M9 3v18" />
+        <path d="M3 9h6" />
       </svg>
       <h3 class="mt-4 text-lg font-medium text-gray-900 dark:text-white">Aucun parking trouvé</h3>
       <p class="mt-1 text-sm text-gray-500 dark:text-gray-400">
@@ -156,9 +193,9 @@
     </div>
   </div>
   
-  <!-- Parking Modal -->
-  <div 
-    *ngIf="isModalOpen" 
+  <!-- Modal for Adding/Editing a Parking -->
+  <div
+    *ngIf="isModalOpen"
     class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50"
   >
     <div class="bg-white dark:bg-gray-800 rounded-lg shadow-xl p-6 w-full max-w-md mx-4 relative">
@@ -196,7 +233,7 @@
           </div>
           
           <div>
-            <label for="address" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Localisation</label>
+            <label for="address" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Adresse</label>
             <input 
               type="text" 
               id="address"
@@ -212,38 +249,98 @@
             </p>
           </div>
           
-          <div>
-            <label for="totalCapacity" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Capacité</label>
-            <input 
-              type="number" 
-              id="totalCapacity"
-              formControlName="totalCapacity" 
-              class="w-full px-3 py-2 border rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white"
-              [class.border-red-500]="isFieldInvalid('totalCapacity')"
-            >
-            <p 
-              *ngIf="isFieldInvalid('totalCapacity')" 
-              class="mt-1 text-sm text-red-500"
-            >
-              {{ getErrorMessage('totalCapacity') }}
-            </p>
+          <div class="grid grid-cols-2 gap-4">
+            <div>
+              <label for="capacity" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Capacité Totale</label>
+              <input 
+                type="number" 
+                id="capacity"
+                formControlName="capacity" 
+                class="w-full px-3 py-2 border rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white"
+                [class.border-red-500]="isFieldInvalid('capacity')"
+              >
+              <p 
+                *ngIf="isFieldInvalid('capacity')" 
+                class="mt-1 text-sm text-red-500"
+              >
+                {{ getErrorMessage('capacity') }}
+              </p>
+            </div>
+            
+            <div>
+              <label for="availablePlaces" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Places Disponibles</label>
+              <input 
+                type="number" 
+                id="availablePlaces"
+                formControlName="availablePlaces" 
+                class="w-full px-3 py-2 border rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white"
+                [class.border-red-500]="isFieldInvalid('availablePlaces')"
+              >
+              <p 
+                *ngIf="isFieldInvalid('availablePlaces')" 
+                class="mt-1 text-sm text-red-500"
+              >
+                {{ getErrorMessage('availablePlaces') }}
+              </p>
+            </div>
           </div>
           
           <div>
-            <label for="availablePlaces" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Places Disponibles</label>
-            <input 
-              type="number" 
-              id="availablePlaces"
-              formControlName="availablePlaces" 
+            <label for="status" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Statut</label>
+            <select 
+              id="status"
+              formControlName="status" 
               class="w-full px-3 py-2 border rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white"
-              [class.border-red-500]="isFieldInvalid('availablePlaces')"
+              [class.border-red-500]="isFieldInvalid('status')"
             >
+              <option value="OPEN">Ouvert</option>
+              <option value="CLOSED">Fermé</option>
+              <option value="MAINTENANCE">Maintenance</option>
+            </select>
             <p 
-              *ngIf="isFieldInvalid('availablePlaces')" 
+              *ngIf="isFieldInvalid('status')" 
               class="mt-1 text-sm text-red-500"
             >
-              {{ getErrorMessage('availablePlaces') }}
+              {{ getErrorMessage('status') }}
             </p>
+          </div>
+          
+          <div class="grid grid-cols-2 gap-4">
+            <div>
+              <label for="latitude" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Latitude (optionnel)</label>
+              <input 
+                type="number" 
+                id="latitude"
+                formControlName="latitude" 
+                class="w-full px-3 py-2 border rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white"
+                [class.border-red-500]="isFieldInvalid('latitude')"
+                step="0.000001"
+              >
+              <p 
+                *ngIf="isFieldInvalid('latitude')" 
+                class="mt-1 text-sm text-red-500"
+              >
+                {{ getErrorMessage('latitude') }}
+              </p>
+            </div>
+            
+            <div>
+              <label for="longitude" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Longitude (optionnel)</label>
+              <input 
+                type="number" 
+                id="longitude"
+                formControlName="longitude" 
+                class="w-full px-3 py-2 border rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white"
+                [class.border-red-500]="isFieldInvalid('longitude')"
+                step="0.000001"
+              >
+              <p 
+                *ngIf="isFieldInvalid('longitude')" 
+                class="mt-1 text-sm text-red-500"
+              >
+                {{ getErrorMessage('longitude') }}
+              </p>
+            </div>
           </div>
         </div>
         
@@ -266,5 +363,48 @@
       </form>
     </div>
   </div>
+  
+  <!-- Toast Notifications -->
+  <div class="fixed bottom-4 right-4 z-50 flex flex-col gap-2">
+    <div *ngFor="let toast of toasts" 
+      class="flex items-center p-4 rounded-lg shadow-lg transition-all duration-300 transform translate-y-0 opacity-100"
+      [ngClass]="{
+        'bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-100': toast.type === 'success',
+        'bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-100': toast.type === 'error',
+        'bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-100': toast.type === 'info',
+        'bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-100': toast.type === 'warning'
+      }"
+    >
+      <div class="mr-3">
+        <svg *ngIf="toast.type === 'success'" xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14" />
+          <path d="M22 4L12 14.01l-3-3" />
+        </svg>
+        <svg *ngIf="toast.type === 'error'" xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <circle cx="12" cy="12" r="10" />
+          <path d="M15 9l-6 6" />
+          <path d="M9 9l6 6" />
+        </svg>
+        <svg *ngIf="toast.type === 'info'" xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <circle cx="12" cy="12" r="10" />
+          <path d="M12 16v-4" />
+          <path d="M12 8h.01" />
+        </svg>
+        <svg *ngIf="toast.type === 'warning'" xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z" />
+          <path d="M12 9v4" />
+          <path d="M12 17h.01" />
+        </svg>
+      </div>
+      <div>{{ toast.message }}</div>
+      <button 
+        class="ml-auto pl-3 text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-300"
+        (click)="removeToast(toast.id)"
+      >
+        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M18 6L6 18M6 6l12 12" />
+        </svg>
+      </button>
+    </div>
+  </div>
 </div>
-`

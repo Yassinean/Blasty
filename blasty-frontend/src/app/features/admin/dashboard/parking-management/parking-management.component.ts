@@ -2,8 +2,16 @@ import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule, ReactiveFormsModule, FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { Parking } from '../../../../core/models/parking.model';
+import { ParkingOccupancyResponse } from '../../../../core/models/ParkingOccupancyResponse';
+import { ParkingRevenueResponse } from '../../../../core/models/ParkingRevenueResponse';
 import { ParkingService } from '../../../../core/services/parking.service';
 
+interface Toast {
+  id: number;
+  type: 'success' | 'error' | 'info' | 'warning';
+  message: string;
+  timeout?: any;
+}
 
 @Component({
   selector: 'app-parking-management',
@@ -17,6 +25,8 @@ import { ParkingService } from '../../../../core/services/parking.service';
 export class ParkingManagementComponent implements OnInit {
   parkings: Parking[] = [];
   filteredParkings: Parking[] = [];
+  parkingOccupancy: ParkingOccupancyResponse[] = [];
+  parkingRevenue: ParkingRevenueResponse[] = [];
   
   // Search and filter
   searchTerm: string = '';
@@ -25,6 +35,10 @@ export class ParkingManagementComponent implements OnInit {
   // Modal control
   isModalOpen = false;
   isEditMode = false;
+  
+  // Toast notifications
+  toasts: Toast[] = [];
+  toastIdCounter = 0;
   
   // Parking form
   parkingForm: FormGroup;
@@ -38,15 +52,21 @@ export class ParkingManagementComponent implements OnInit {
     this.parkingForm = this.fb.group({
       name: ['', [Validators.required, Validators.minLength(3)]],
       address: ['', [Validators.required]],
-      totalCapacity: [null, [Validators.required, Validators.min(1)]],
-      availablePlaces: [null, [Validators.required, Validators.min(0)]]
+      capacity:['' ,[Validators.minLength(3)]],
+      availablePlaces: [null, [Validators.required, Validators.min(0)]],
+      status: ['open', [Validators.required]], // Default status
+      latitude: [null, [Validators.min(-90), Validators.max(90)]], // Optional
+      longitude: [null, [Validators.min(-180), Validators.max(180)]] // Optional
     });
   }
 
   ngOnInit(): void {
     this.loadParkings();
+    this.loadParkingOccupancy();
+    this.loadParkingRevenue();
   }
 
+  // Load all parkings
   loadParkings(): void {
     this.parkingService.getAllParkings().subscribe({
       next: (data) => {
@@ -56,11 +76,40 @@ export class ParkingManagementComponent implements OnInit {
       },
       error: (error) => {
         console.error('Erreur lors du chargement des parkings', error);
-        // TODO: Add error handling toast or notification
+        this.showToast('error', 'Erreur lors du chargement des parkings');
       }
     });
   }
 
+  // Load parking occupancy data
+  loadParkingOccupancy(): void {
+    this.parkingService.getParkingOccupancy().subscribe({
+      next: (data) => {
+        this.parkingOccupancy = data;
+        console.log("Occupation des parkings:", data);
+      },
+      error: (error) => {
+        console.error('Erreur lors du chargement de l\'occupation des parkings', error);
+        this.showToast('error', 'Erreur lors du chargement des données d\'occupation');
+      }
+    });
+  }
+
+  // Load parking revenue data
+  loadParkingRevenue(): void {
+    this.parkingService.getParkingRevenue().subscribe({
+      next: (data) => {
+        this.parkingRevenue = data;
+        console.log("Revenus des parkings:", data);
+      },
+      error: (error) => {
+        console.error('Erreur lors du chargement des revenus des parkings', error);
+        this.showToast('error', 'Erreur lors du chargement des données de revenus');
+      }
+    });
+  }
+
+  // Filter parkings based on search term and filter option
   filterParkings(): void {
     let result = this.parkings;
     
@@ -75,7 +124,7 @@ export class ParkingManagementComponent implements OnInit {
     
     // Apply availability filter
     if (this.filterOption === 'available') {
-      result = result.filter(parking => parking.availablePlaces > 0);
+      result = result.filter(parking => parking.availablePlaces ?? 0  > 0);
     } else if (this.filterOption === 'full') {
       result = result.filter(parking => parking.availablePlaces === 0);
     }
@@ -87,7 +136,7 @@ export class ParkingManagementComponent implements OnInit {
   openAddParkingModal(): void {
     this.isEditMode = false;
     this.currentParkingId = null;
-    this.parkingForm.reset();
+    this.parkingForm.reset({ status: 'open' }); // Reset form with default status
     this.isModalOpen = true;
   }
 
@@ -100,8 +149,11 @@ export class ParkingManagementComponent implements OnInit {
     this.parkingForm.patchValue({
       name: parking.name,
       address: parking.address,
-      totalCapacity: parking.totalCapacity,
-      availablePlaces: parking.availablePlaces
+      capacity: parking.capacity,
+      availablePlaces: parking.availablePlaces,
+      status: parking.status,
+      latitude: parking.latitude,
+      longitude: parking.longitude
     });
     
     this.isModalOpen = true;
@@ -131,10 +183,11 @@ export class ParkingManagementComponent implements OnInit {
           }
           this.filterParkings();
           this.closeModal();
+          this.showToast('success', 'Parking mis à jour avec succès');
         },
         error: (error) => {
           console.error('Erreur lors de la mise à jour du parking', error);
-          // TODO: Add error handling toast or notification
+          this.showToast('error', 'Erreur lors de la mise à jour du parking');
         }
       });
     } else {
@@ -144,10 +197,11 @@ export class ParkingManagementComponent implements OnInit {
           this.parkings.push(newParking);
           this.filterParkings();
           this.closeModal();
+          this.showToast('success', 'Parking créé avec succès');
         },
         error: (error) => {
           console.error('Erreur lors de la création du parking', error);
-          // TODO: Add error handling toast or notification
+          this.showToast('error', 'Erreur lors de la création du parking');
         }
       });
     }
@@ -156,7 +210,7 @@ export class ParkingManagementComponent implements OnInit {
   // Close modal
   closeModal(): void {
     this.isModalOpen = false;
-    this.parkingForm.reset();
+    this.parkingForm.reset({ status: 'open' }); // Reset form with default status
     this.currentParkingId = null;
     this.isEditMode = false;
   }
@@ -168,18 +222,43 @@ export class ParkingManagementComponent implements OnInit {
         next: () => {
           this.parkings = this.parkings.filter((p) => p.id !== id);
           this.filterParkings();
+          this.showToast('success', 'Parking supprimé avec succès');
         },
         error: (error) => {
           console.error('Erreur lors de la suppression du parking', error);
-          // TODO: Add error handling toast or notification
+          this.showToast('error', 'Erreur lors de la suppression du parking');
         }
       });
     }
   }
 
+  // Toast notification methods
+  showToast(type: 'success' | 'error' | 'info' | 'warning', message: string, duration: number = 5000): void {
+    const id = ++this.toastIdCounter;
+    const toast: Toast = { id, type, message };
+    
+    // Add toast to the array
+    this.toasts.push(toast);
+    
+    // Set timeout to remove the toast after duration
+    toast.timeout = setTimeout(() => {
+      this.removeToast(id);
+    }, duration);
+  }
+  
+  removeToast(id: number): void {
+    const index = this.toasts.findIndex(t => t.id === id);
+    if (index !== -1) {
+      // Clear the timeout to prevent memory leaks
+      clearTimeout(this.toasts[index].timeout);
+      // Remove the toast from the array
+      this.toasts.splice(index, 1);
+    }
+  }
+
   // Helper methods for UI
   getAvailabilityColorClass(parking: Parking): string {
-    const availabilityPercentage = (parking.availablePlaces / parking.totalCapacity) * 100;
+    const availabilityPercentage = (parking.availablePlaces ?? 0 / parking.capacity) * 100;
     
     if (availabilityPercentage === 0) {
       return 'text-red-600 dark:text-red-400 font-medium';
@@ -191,7 +270,7 @@ export class ParkingManagementComponent implements OnInit {
   }
 
   getProgressBarColorClass(parking: Parking): string {
-    const availabilityPercentage = (parking.availablePlaces / parking.totalCapacity) * 100;
+    const availabilityPercentage = (parking.availablePlaces ?? 0 / parking.capacity) * 100;
     
     if (availabilityPercentage === 0) {
       return 'bg-red-600';
@@ -220,6 +299,9 @@ export class ParkingManagementComponent implements OnInit {
     }
     if (field.errors?.['min']) {
       return 'La valeur doit être supérieure à 0';
+    }
+    if (field.errors?.['max']) {
+      return 'La valeur doit être inférieure ou égale à 90 pour la latitude et 180 pour la longitude';
     }
     return '';
   }
