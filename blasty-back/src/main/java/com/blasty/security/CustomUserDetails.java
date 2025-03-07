@@ -1,5 +1,7 @@
 package com.blasty.security;
 
+import com.blasty.model.Admin;
+import com.blasty.model.Client;
 import com.blasty.model.User;
 import com.blasty.model.enums.UserRole;
 
@@ -19,8 +21,15 @@ public class CustomUserDetails implements UserDetails {
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
-        return List.of(new SimpleGrantedAuthority("ROLE_" + user.getRole().toString().toUpperCase()));
+        String role;
+        if (user instanceof Admin) {
+            role = "ADMIN";
+        } else {
+            role = "CLIENT";
+        }
+        return List.of(new SimpleGrantedAuthority("ROLE_" + role));
     }
+
 
     @Override
     public String getPassword() {
@@ -29,7 +38,14 @@ public class CustomUserDetails implements UserDetails {
 
     @Override
     public String getUsername() {
-        return (user.getRole() == UserRole.ADMIN) ? user.getEmail() : user.getPhone();
+        String username;
+        if(user instanceof Admin){
+            username = ((Admin)user).getEmail();
+        }else{
+            username = ((Client)user).getPhone();
+        }
+
+        return username;
     }
 
     @Override

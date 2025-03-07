@@ -43,6 +43,8 @@ public class Parking {
     @Column
     private Double longitude;
 
+    private int availablePlaces;
+
     @OneToMany(mappedBy = "parking", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     private List<Place> places;
 

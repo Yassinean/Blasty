@@ -4,6 +4,4 @@ import org.springframework.data.jpa.repository.JpaRepository;
 
 import com.blasty.model.Parking;
 
-public interface ParkingRepository extends JpaRepository<Parking,Long> {
-
-}
+public interface ParkingRepository extends JpaRepository<Parking,Long> {}

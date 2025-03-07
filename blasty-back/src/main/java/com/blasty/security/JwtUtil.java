@@ -5,8 +5,9 @@ import io.jsonwebtoken.security.Keys;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
+import com.blasty.model.Admin;
+import com.blasty.model.Client;
 import com.blasty.model.User;
-import com.blasty.model.enums.UserRole;
 
 import java.security.Key;
 import java.util.Date;
@@ -25,10 +26,19 @@ public class JwtUtil {
     }
 
     public String generateToken(User user) {
-        String username = (user.getRole() == UserRole.ADMIN) ? user.getEmail() : user.getPhone();
+        String username;
+        String role;
+
+        if (user instanceof Admin) {
+            username = ((Admin) user).getEmail();
+            role = "ADMIN";
+        } else {
+            username = ((Client) user).getPhone();
+            role = "CLIENT";
+        }
         return Jwts.builder()
                 .setSubject(username)
-                .claim("role", user.getRole().name())
+                .claim("role", role) // Ajouter le rôle dans le token
                 .setIssuedAt(new Date())
                 .setExpiration(new Date(System.currentTimeMillis() + expirationTime))
                 .signWith(getSigningKey(), SignatureAlgorithm.HS256)
@@ -59,7 +69,12 @@ public class JwtUtil {
     }
 
     public String refreshToken(User user) {
-        String username = (user.getRole() == UserRole.ADMIN) ? user.getEmail() : user.getPhone();
+        String username;
+        if (user instanceof Admin) {
+            username = ((Admin) user).getEmail();
+        } else {
+            username = ((Client) user).getPhone();
+        }
         return Jwts.builder()
                 .setSubject(username)
                 .setIssuedAt(new Date())

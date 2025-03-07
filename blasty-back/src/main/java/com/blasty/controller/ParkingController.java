@@ -58,5 +58,5 @@ public class ParkingController {
     public ResponseEntity<Integer> getAvailablePlaces(@PathVariable Long id) {
         int availablePlaces = parkingService.getAvailablePlaces(id);
         return ResponseEntity.ok(availablePlaces);
-    }
+    } 
 }

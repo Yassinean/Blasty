@@ -21,6 +21,7 @@ public class ParkingServiceImpl implements ParkingService {
     @Override
     public ParkingResponse createParking(ParkingRequest request) {
         Parking parking = parkingMapper.toEntity(request);
+        parking.setAvailablePlaces(request.getTotalCapacity());
         return parkingMapper.toResponse(parkingRepository.save(parking));
     }
 

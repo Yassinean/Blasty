@@ -1,0 +1,31 @@
+<section class="py-20 bg-gray-50" id="#how">
+  <div class="container mx-auto px-4">
+    <div class="text-center mb-16">
+      <h2 class="text-3xl lg:text-4xl font-bold text-gray-900 mb-4">
+        Comment ça marche ?
+      </h2>
+      <p class="text-xl text-gray-600">
+        Un processus simple en trois étapes
+      </p>
+    </div>
+
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+      <div *ngFor="let step of steps; let i = index" class="relative">
+        <div class="bg-white p-8 rounded-lg shadow-lg">
+          <div class="w-12 h-12 bg-parkingBlue-600 text-white rounded-full flex items-center justify-center text-xl font-bold mb-6">
+            {{i + 1}}
+          </div>
+          <h3 class="text-xl font-semibold text-gray-900 mb-4">
+            {{step.title}}
+          </h3>
+          <p class="text-gray-600">
+            {{step.description}}
+          </p>
+        </div>
+        <div *ngIf="i < steps.length - 1" class="hidden md:block absolute top-1/2 right-0 transform translate-x-1/2 -translate-y-1/2">
+          <div class="w-8 h-8 text-parkingBlue-600">→</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>

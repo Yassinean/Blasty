@@ -2,42 +2,37 @@ package com.blasty.model;
 
 import com.blasty.model.enums.PlaceStatus;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.EnumType;
-import jakarta.persistence.Enumerated;
-import jakarta.persistence.FetchType;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.ManyToOne;
-import jakarta.persistence.Table;
+import com.blasty.model.enums.TypePlace;
+import jakarta.persistence.*;
+import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.Builder;
+import lombok.NoArgsConstructor;
 
 @Data
 @Builder
 @Entity
+@NoArgsConstructor
+@AllArgsConstructor
 @Table(name = "places")
 public class Place {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-    
-    private String numero;
-    
-    private double tarifHoraire;
-    
+
     @Enumerated(EnumType.STRING)
+    @Column(nullable = false)
+    private TypePlace type;
+
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false)
     private PlaceStatus etat;
-    
-    // @OneToMany(mappedBy = "place")
-    // private List<PlaceTransaction> placeTransactions;
 
-    private boolean occupied;
+    @Column(nullable = false)
+    private double tarifHoraire;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "parking_id")
+    @ManyToOne
+    @JoinColumn(name = "parking_id", nullable = false)
     private Parking parking;
 }

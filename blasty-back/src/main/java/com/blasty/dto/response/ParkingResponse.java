@@ -5,6 +5,9 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+
+import com.blasty.model.enums.PlaceStatus;
+
 import lombok.AllArgsConstructor;
 
 @Data
