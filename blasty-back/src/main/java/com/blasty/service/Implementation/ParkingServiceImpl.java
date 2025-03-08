@@ -26,6 +26,10 @@ public class ParkingServiceImpl implements ParkingService {
     public ParkingResponse createParking(ParkingRequest request) {
         Parking parking = parkingMapper.toEntity(request);
         parking.setAvailablePlaces(request.getCapacity());
+        // Vérifier que le nombre de places occupées ne dépasse pas la capacité
+        if (request.getOccupiedSpaces() > request.getCapacity()) {
+            throw new RuntimeException("Le nombre de places occupées ne peut pas dépasser la capacité du parking");
+        }
         return parkingMapper.toResponse(parkingRepository.save(parking));
     }
 
@@ -47,12 +51,6 @@ public class ParkingServiceImpl implements ParkingService {
     public ParkingResponse updateParking(Long id, ParkingRequest request) {
         Parking parking = parkingRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Parking non trouvé"));
-
-        // Vérifier que le nombre de places occupées ne dépasse pas la capacité
-        if (request.getOccupiedSpaces() > request.getCapacity()) {
-            throw new RuntimeException("Le nombre de places occupées ne peut pas dépasser la capacité du parking");
-        }
-
 
         // Vérifier que le nombre de places occupées ne dépasse pas la capacité
         if (request.getOccupiedSpaces() > request.getCapacity()) {
