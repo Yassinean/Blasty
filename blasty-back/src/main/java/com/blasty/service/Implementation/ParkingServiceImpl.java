@@ -10,6 +10,8 @@ import com.blasty.repository.ParkingRepository;
 // import com.blasty.repository.TransactionRepository;
 import com.blasty.service.Interface.ParkingService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -36,10 +38,9 @@ public class ParkingServiceImpl implements ParkingService {
     }
 
     @Override
-    public List<ParkingResponse> getAllParkings() {
-        return parkingRepository.findAll().stream()
-                .map(parkingMapper::toResponse)
-                .collect(Collectors.toList());
+    public Page<ParkingResponse> getAllParkings(Pageable pageable) {
+        Page<Parking> pageParking = parkingRepository.findAll(pageable);
+        return pageParking.map(parkingMapper::toResponse);
     }
 
     @Override

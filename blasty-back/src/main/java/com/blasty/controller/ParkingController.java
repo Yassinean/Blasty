@@ -7,13 +7,15 @@ import com.blasty.dto.response.ParkingRevenueResponse;
 import com.blasty.service.Interface.ParkingService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
-
+ 
 @RestController
 @RequestMapping("/api/parkings")
 @RequiredArgsConstructor
@@ -36,8 +38,8 @@ public class ParkingController {
 
     @GetMapping
     @PreAuthorize("hasRole('ADMIN')")
-    public ResponseEntity<List<ParkingResponse>> getAllParkings() {
-        List<ParkingResponse> responses = parkingService.getAllParkings();
+    public ResponseEntity<Page<ParkingResponse>> getAllParkings(Pageable pageable) {
+        Page<ParkingResponse> responses = parkingService.getAllParkings(pageable);
         return ResponseEntity.ok(responses);
     }
 
