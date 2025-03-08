@@ -6,15 +6,12 @@ import com.blasty.dto.response.ParkingResponse;
 import com.blasty.dto.response.ParkingRevenueResponse;
 import com.blasty.mapper.ParkingMapper;
 import com.blasty.model.Parking;
-import com.blasty.model.Transaction;
 import com.blasty.repository.ParkingRepository;
-import com.blasty.repository.TransactionRepository;
+// import com.blasty.repository.TransactionRepository;
 import com.blasty.service.Interface.ParkingService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
-import java.time.LocalDate;
-import java.time.temporal.TemporalAdjusters;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -23,7 +20,7 @@ import java.util.stream.Collectors;
 public class ParkingServiceImpl implements ParkingService {
     private final ParkingRepository parkingRepository;
     private final ParkingMapper parkingMapper;
-    private final TransactionRepository transactionRepository;
+    // private final TransactionRepository transactionRepository;
 
     @Override
     public ParkingResponse createParking(ParkingRequest request) {
