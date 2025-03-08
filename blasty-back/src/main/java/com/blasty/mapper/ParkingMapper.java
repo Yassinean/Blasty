@@ -14,7 +14,6 @@ public interface ParkingMapper {
 
     ParkingMapper INSTANCE = Mappers.getMapper(ParkingMapper.class);
 
-    @Override
     @Mapping(target = "id", ignore = true)
     @Mapping(target = "places", ignore = true)
     @Mapping(target = "occupiedSpaces", expression = "java(0)")

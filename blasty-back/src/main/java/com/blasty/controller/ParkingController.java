@@ -1,7 +1,9 @@
 package com.blasty.controller;
 
 import com.blasty.dto.request.ParkingRequest;
+import com.blasty.dto.response.ParkingOccupancyResponse;
 import com.blasty.dto.response.ParkingResponse;
+import com.blasty.dto.response.ParkingRevenueResponse;
 import com.blasty.service.Interface.ParkingService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -58,5 +60,20 @@ public class ParkingController {
     public ResponseEntity<Integer> getAvailablePlaces(@PathVariable Long id) {
         int availablePlaces = parkingService.getAvailablePlaces(id);
         return ResponseEntity.ok(availablePlaces);
-    } 
+    }
+
+    @GetMapping("/occupancy")
+    @PreAuthorize("hasRole('ADMIN')")
+    public ResponseEntity<List<ParkingOccupancyResponse>> getParkingOccupancy() {
+        List<ParkingOccupancyResponse> responses = parkingService.getParkingOccupancy();
+        return ResponseEntity.ok(responses);
+    }
+
+    @GetMapping("/revenue")
+    @PreAuthorize("hasRole('ADMIN')")
+    public ResponseEntity<List<ParkingRevenueResponse>> getParkingRevenue(
+            @RequestParam(defaultValue = "month") String period) {
+        List<ParkingRevenueResponse> responses = parkingService.getParkingRevenue(period);
+        return ResponseEntity.ok(responses);
+    }
 }
