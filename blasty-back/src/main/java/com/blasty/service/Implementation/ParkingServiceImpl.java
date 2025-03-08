@@ -1,7 +1,9 @@
 package com.blasty.service.Implementation;
 
 import com.blasty.dto.request.ParkingRequest;
+import com.blasty.dto.response.ParkingOccupancyResponse;
 import com.blasty.dto.response.ParkingResponse;
+import com.blasty.dto.response.ParkingRevenueResponse;
 import com.blasty.mapper.ParkingMapper;
 import com.blasty.model.Parking;
 import com.blasty.repository.ParkingRepository;
@@ -21,7 +23,7 @@ public class ParkingServiceImpl implements ParkingService {
     @Override
     public ParkingResponse createParking(ParkingRequest request) {
         Parking parking = parkingMapper.toEntity(request);
-        parking.setAvailablePlaces(request.getTotalCapacity());
+        parking.setAvailablePlaces(request.getCapacity());
         return parkingMapper.toResponse(parkingRepository.save(parking));
     }
 
@@ -43,9 +45,16 @@ public class ParkingServiceImpl implements ParkingService {
     public ParkingResponse updateParking(Long id, ParkingRequest request) {
         Parking parking = parkingRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Parking non trouvé"));
+
+        // Vérifier que le nombre de places occupées ne dépasse pas la capacité
+        if (request.getOccupiedSpaces() > request.getCapacity()) {
+            throw new RuntimeException("Le nombre de places occupées ne peut pas dépasser la capacité du parking");
+        }
+
         parking.setName(request.getName());
         parking.setAddress(request.getAddress());
         parking.setCapacity(request.getCapacity());
+        parking.setOccupiedSpaces(request.getOccupiedSpaces());
         parking.setStatus(request.getStatus());
         parking.setLatitude(request.getLatitude());
         parking.setLongitude(request.getLongitude());
@@ -62,5 +71,54 @@ public class ParkingServiceImpl implements ParkingService {
     @Override
     public void deleteParking(Long id) {
         parkingRepository.deleteById(id);
+    }
+
+    @Override
+    public List<ParkingOccupancyResponse> getParkingOccupancy() {
+        return parkingRepository.findAll().stream()
+                .map(parking -> ParkingOccupancyResponse.builder()
+                        .parkingId(parking.getId())
+                        .parkingName(parking.getName())
+                        .totalCapacity(parking.getCapacity())
+                        .occupiedSpaces(parking.getOccupiedSpaces())
+                        .occupancyRate((double) parking.getOccupiedSpaces() / parking.getCapacity() * 100)
+                        .build())
+                .collect(Collectors.toList());
+    }
+
+    @Override
+    public List<ParkingRevenueResponse> getParkingRevenue(String period) {
+        return parkingRepository.findAll().stream()
+                .map(parking -> ParkingRevenueResponse.builder()
+                        .parkingId(parking.getId())
+                        .parkingName(parking.getName())
+                        .totalRevenue(calculateRevenueForParking(parking, period))
+                        .period(period)
+                        .build())
+                .collect(Collectors.toList());
+    }
+
+    private double calculateRevenueForParking(Parking parking, String period) {
+//        LocalDate startDate;
+//        LocalDate endDate = LocalDate.now();
+//
+//        switch (period.toLowerCase()) {
+//            case "month":
+//                startDate = endDate.with(TemporalAdjusters.firstDayOfMonth());
+//                break;
+//            case "year":
+//                startDate = endDate.with(TemporalAdjusters.firstDayOfYear());
+//                break;
+//            default:
+//                throw new IllegalArgumentException("Période non valide. Utilisez 'month' ou 'year'.");
+//        }
+//
+//        List<Transaction> transactions = transactionRepository.findByParkingAndTransactionDateBetween(
+//                parking, startDate.atStartOfDay(), endDate.atTime(23, 59, 59));
+//
+//        return transactions.stream()
+//                .mapToDouble(Transaction::getAmount)
+//                .sum();
+        return 1000 ;
     }
 }

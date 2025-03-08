@@ -19,6 +19,8 @@ public class ParkingRequest {
     @NotNull(message = "Le statut du parking est obligatoire")
     private ParkingStatus status;
 
+    private int occupiedSpaces;
+
     private Double latitude;
     private Double longitude;
 }

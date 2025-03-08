@@ -47,15 +47,15 @@
           (change)="filterParkings()"
         >
           <option value="all">Tous les parkings</option>
-          <option value="available">Places disponibles</option>
-          <option value="full">Complet</option>
+          <option value="OPEN">Ouverts</option>
+          <option value="MAINTENANCE">Maintenance</option>
+          <option value="CLOSED">Fermés</option>
         </select>
       </div>
-    </div>
   </div>
 
   <!-- Parking Cards Grid -->
-  <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+  <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mt-4">
     <div
       *ngFor="let parking of filteredParkings"
       class="bg-white dark:bg-gray-800 rounded-lg shadow-md overflow-hidden transition-all duration-200 hover:shadow-lg border border-gray-200 dark:border-gray-700"
