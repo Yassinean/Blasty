@@ -1,6 +1,5 @@
 package com.blasty.mapper;
 
-import com.blasty.model.enums.PlaceStatus;
 import com.blasty.dto.request.ParkingRequest;
 import com.blasty.dto.response.ParkingResponse;
 import com.blasty.model.Parking;

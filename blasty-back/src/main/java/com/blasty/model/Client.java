@@ -1,6 +1,5 @@
 package com.blasty.model;
 
-import com.blasty.model.enums.UserRole;
 import jakarta.persistence.*;
 
 import lombok.*;

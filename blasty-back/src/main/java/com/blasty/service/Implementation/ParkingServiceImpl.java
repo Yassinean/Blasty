@@ -7,6 +7,7 @@ import com.blasty.dto.response.ParkingRevenueResponse;
 import com.blasty.mapper.ParkingMapper;
 import com.blasty.model.Parking;
 import com.blasty.repository.ParkingRepository;
+// import com.blasty.repository.TransactionRepository;
 import com.blasty.service.Interface.ParkingService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -19,6 +20,7 @@ import java.util.stream.Collectors;
 public class ParkingServiceImpl implements ParkingService {
     private final ParkingRepository parkingRepository;
     private final ParkingMapper parkingMapper;
+    // private final TransactionRepository transactionRepository;
 
     @Override
     public ParkingResponse createParking(ParkingRequest request) {
@@ -51,9 +53,16 @@ public class ParkingServiceImpl implements ParkingService {
             throw new RuntimeException("Le nombre de places occupées ne peut pas dépasser la capacité du parking");
         }
 
+
+        // Vérifier que le nombre de places occupées ne dépasse pas la capacité
+        if (request.getOccupiedSpaces() > request.getCapacity()) {
+            throw new RuntimeException("Le nombre de places occupées ne peut pas dépasser la capacité du parking");
+        }
+
         parking.setName(request.getName());
         parking.setAddress(request.getAddress());
         parking.setCapacity(request.getCapacity());
+        parking.setOccupiedSpaces(request.getOccupiedSpaces());
         parking.setOccupiedSpaces(request.getOccupiedSpaces());
         parking.setStatus(request.getStatus());
         parking.setLatitude(request.getLatitude());
