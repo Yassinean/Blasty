@@ -5,6 +5,7 @@ import com.blasty.dto.response.ParkingResponse;
 import com.blasty.service.Interface.ParkingService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -34,8 +35,8 @@ public class ParkingController {
 
     @GetMapping
     @PreAuthorize("hasRole('ADMIN')")
-    public ResponseEntity<List<ParkingResponse>> getAllParkings() {
-        List<ParkingResponse> responses = parkingService.getAllParkings();
+    public ResponseEntity<List<ParkingResponse>> getAllParkings(Pageable pageable) {
+        List<ParkingResponse> responses = parkingService.getAllParkings(pageable);
         return ResponseEntity.ok(responses);
     }
 
