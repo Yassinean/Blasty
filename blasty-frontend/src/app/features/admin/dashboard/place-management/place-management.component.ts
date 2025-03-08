@@ -1,6 +1,12 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { FormsModule, ReactiveFormsModule, FormBuilder, FormGroup, Validators } from '@angular/forms';
+import {
+  FormsModule,
+  ReactiveFormsModule,
+  FormBuilder,
+  FormGroup,
+  Validators,
+} from '@angular/forms';
 import { Place } from '../../../../core/models/place.model';
 import { Parking } from '../../../../core/models/parking.model';
 import { PlaceService } from '../../../../core/services/place.service';
@@ -10,18 +16,17 @@ import { ParkingService } from '../../../../core/services/parking.service';
   selector: 'app-place-management',
   standalone: true,
   imports: [CommonModule, FormsModule, ReactiveFormsModule],
-  templateUrl: './place-management.component.html',
+  templateUrl:'./place-management.component.html',
 })
 export class PlaceManagementComponent implements OnInit {
   places: Place[] = [];
   filteredPlaces: Place[] = [];
   parkings: Parking[] = [];
-
+  
   // Search and filter
   searchTerm: string = '';
   filterOption: string = 'all';
-  filterParkingId: string | number = 'all' ;
-
+  
   // Modal control
   isModalOpen = false;
   isEditMode = false;
@@ -29,7 +34,7 @@ export class PlaceManagementComponent implements OnInit {
   currentPlaceId: number | null = null;
 
   constructor(
-    private placeService: PlaceService,
+    private placeService: PlaceService, 
     private parkingService: ParkingService,
     private fb: FormBuilder
   ) {
@@ -45,58 +50,52 @@ export class PlaceManagementComponent implements OnInit {
     this.loadPlaces();
   }
 
-  // Load parkings from the service
   loadParkings(): void {
     this.parkingService.getAllParkings().subscribe({
-      next: (data) => (this.parkings = data),
-      error: (error) => console.error('Erreur lors du chargement des parkings', error),
+      next: (data) => {
+        this.parkings = data;
+      },
+      error: (error) =>
+        console.error('Erreur lors du chargement des parkings', error),
     });
   }
 
-  // Load places from the service
   loadPlaces(): void {
     this.placeService.getAllPlaces().subscribe({
       next: (data) => {
         this.places = data;
         this.filterPlaces();
       },
-      error: (error) => console.error('Erreur lors du chargement des places', error),
+      error: (error) =>
+        console.error('Erreur lors du chargement des places', error),
     });
   }
-
-  // Get parking name by ID
+  
   getParkingName(parkingId: number): string {
-    const parking = this.parkings.find((p) => p.id === parkingId);
+    const parking = this.parkings.find(p => p.id === parkingId);
     return parking ? parking.name : `Parking #${parkingId}`;
   }
-
-  // Filter places based on search term and filter option
+  
   filterPlaces(): void {
     let result = this.places;
-
+    
     // Apply search filter
     if (this.searchTerm) {
       const term = this.searchTerm.toLowerCase();
-      result = result.filter(
-        (place) =>
-          place.type.toLowerCase().includes(term) ||
-          this.getParkingName(place.parkingId).toLowerCase().includes(term)
+      result = result.filter(place => 
+        place.type.toLowerCase().includes(term) || 
+        this.getParkingName(place.parkingId).toLowerCase().includes(term)
       );
     }
-
+    
     // Apply type filter
     if (this.filterOption !== 'all') {
-      result = result.filter((place) => place.type === this.filterOption);
+      result = result.filter(place => place.type === this.filterOption);
     }
-
-    if (this.filterParkingId !== 'all') {
-      result = result.filter((place) => place.parkingId === +this.filterParkingId);
-    }
-
+    
     this.filteredPlaces = result;
   }
 
-  // Open modal for adding a new place
   openAddPlaceModal(): void {
     this.isEditMode = false;
     this.currentPlaceId = null;
@@ -104,7 +103,6 @@ export class PlaceManagementComponent implements OnInit {
     this.isModalOpen = true;
   }
 
-  // Open modal for editing an existing place
   openEditPlaceModal(place: Place): void {
     this.isEditMode = true;
     this.currentPlaceId = place.id;
@@ -116,39 +114,38 @@ export class PlaceManagementComponent implements OnInit {
     this.isModalOpen = true;
   }
 
-  // Submit the place form (create or update)
   submitPlaceForm(): void {
     if (this.placeForm.invalid) {
-      this.markFormAsTouched();
+      Object.keys(this.placeForm.controls).forEach((key) => {
+        const control = this.placeForm.get(key);
+        control?.markAsTouched();
+      });
       return;
     }
 
     const placeData = {
       ...this.placeForm.value,
-      parkingId: parseInt(this.placeForm.value.parkingId, 10), // Convert back to number
+      parkingId: parseInt(this.placeForm.value.parkingId, 10) // Convert back to number
     };
-
-    if (this.isEditMode) {
-      this.updatePlace(placeData);
-    } else {
-      this.createPlace(placeData);
-    }
+    
+    this.isEditMode ? this.updatePlace(placeData) : this.createPlace(placeData);
   }
 
-  // Update an existing place
   private updatePlace(placeData: any): void {
     this.placeService.updatePlace(this.currentPlaceId!, placeData).subscribe({
       next: (updatedPlace) => {
-        const index = this.places.findIndex((p) => p.id === this.currentPlaceId);
+        const index = this.places.findIndex(
+          (p) => p.id === this.currentPlaceId
+        );
         if (index !== -1) this.places[index] = updatedPlace;
         this.filterPlaces();
         this.closeModal();
       },
-      error: (error) => console.error('Erreur lors de la mise à jour de la place', error),
+      error: (error) =>
+        console.error('Erreur lors de la mise à jour de la place', error),
     });
   }
 
-  // Create a new place
   private createPlace(placeData: any): void {
     this.placeService.createPlace(placeData).subscribe({
       next: (newPlace) => {
@@ -156,11 +153,11 @@ export class PlaceManagementComponent implements OnInit {
         this.filterPlaces();
         this.closeModal();
       },
-      error: (error) => console.error('Erreur lors de la création de la place', error),
+      error: (error) =>
+        console.error('Erreur lors de la création de la place', error),
     });
   }
 
-  // Close the modal and reset the form
   closeModal(): void {
     this.isModalOpen = false;
     this.placeForm.reset();
@@ -168,7 +165,6 @@ export class PlaceManagementComponent implements OnInit {
     this.currentPlaceId = null;
   }
 
-  // Delete a place
   deletePlace(id: number): void {
     if (confirm('Voulez-vous vraiment supprimer cette place ?')) {
       this.placeService.deletePlace(id).subscribe({
@@ -176,29 +172,20 @@ export class PlaceManagementComponent implements OnInit {
           this.places = this.places.filter((p) => p.id !== id);
           this.filterPlaces();
         },
-        error: (error) => console.error('Erreur lors de la suppression de la place', error),
+        error: (error) =>
+          console.error('Erreur lors de la suppression de la place', error),
       });
     }
   }
 
-  // Mark all form fields as touched to show validation errors
-  private markFormAsTouched(): void {
-    Object.keys(this.placeForm.controls).forEach((key) => {
-      this.placeForm.get(key)?.markAsTouched();
-    });
-  }
-
-  // Check if a form field is invalid
   isFieldInvalid(fieldName: string): boolean {
     const field = this.placeForm.get(fieldName);
     return field ? field.invalid && (field.dirty || field.touched) : false;
   }
 
-  // Get the error message for a form field
   getErrorMessage(fieldName: string): string {
     const field = this.placeForm.get(fieldName);
     if (!field) return '';
-
     if (field.errors?.['required']) return 'Ce champ est obligatoire';
     if (field.errors?.['min']) return 'La valeur doit être supérieure à 0';
     return '';

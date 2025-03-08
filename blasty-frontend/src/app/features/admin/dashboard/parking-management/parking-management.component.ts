@@ -123,12 +123,10 @@ export class ParkingManagementComponent implements OnInit {
     }
     
     // Apply availability filter
-    if (this.filterOption === 'OPEN') {
-      result = result.filter(parking => parking.status === 'OPEN');
-    } else if (this.filterOption === 'MAINTENANCE') {
-      result = result.filter(parking => parking.status === 'MAINTENANCE');
-    }else if (this.filterOption === 'CLOSED') {
-      result = result.filter(parking => parking.status === 'CLOSED');
+    if (this.filterOption === 'available') {
+      result = result.filter(parking => parking.availablePlaces ?? 0  > 0);
+    } else if (this.filterOption === 'full') {
+      result = result.filter(parking => parking.availablePlaces === 0);
     }
     
     this.filteredParkings = result;
