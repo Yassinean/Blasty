@@ -24,6 +24,9 @@ public class TicketServiceImpl implements TicketService {
 
     @Override
     public TicketResponse createTicket(TicketRequest request) {
+//        if (!placeService.isPlaceAvailable(request.getPlaceId())) {
+//            throw new RuntimeException("Place non disponible");
+//        }
         Ticket ticket = ticketMapper.toEntity(request);
         ticket.setDateEmission(LocalDateTime.now());
         ticket.setDateExpiration(LocalDateTime.now().plusHours(1));
@@ -48,6 +51,9 @@ public class TicketServiceImpl implements TicketService {
     public TicketResponse validateTicket(Long id) {
         Ticket ticket = ticketRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Ticket non trouvé"));
+        if (ticket.getDateExpiration().isBefore(LocalDateTime.now())) {
+            throw new RuntimeException("Ticket expiré");
+        }
         ticket.setStatut(StatutTicket.VALIDE);
         return ticketMapper.toResponse(ticketRepository.save(ticket));
     }

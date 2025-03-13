@@ -12,6 +12,9 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @Builder
 public class PlaceRequest {
+    @NotNull(message = "Le numero de place est obligatoire")
+    private Long numero;
+
     @NotNull(message = "Le type de place est obligatoire")
     private TypePlace type;
 

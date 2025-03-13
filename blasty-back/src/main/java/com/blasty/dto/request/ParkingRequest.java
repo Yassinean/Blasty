@@ -7,6 +7,7 @@ import lombok.Data;
 
 @Data
 public class ParkingRequest {
+
     @NotBlank(message = "Le nom du parking est obligatoire")
     private String name;
 
@@ -16,11 +17,13 @@ public class ParkingRequest {
     @NotNull(message = "La capacité totale est obligatoire")
     private Integer capacity;
 
+    @NotNull(message = "La largeur du parking est obligatoire")
+    private Integer width;
+
+    @NotNull(message = "La longueur du parking est obligatoire")
+    private Integer length;
+
     @NotNull(message = "Le statut du parking est obligatoire")
     private ParkingStatus status;
-
-    private int occupiedSpaces;
-
-    private Double latitude;
-    private Double longitude;
 }
+

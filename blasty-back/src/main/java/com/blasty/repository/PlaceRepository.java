@@ -1,9 +1,13 @@
 package com.blasty.repository;
 
+import com.blasty.model.enums.PlaceStatus;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import com.blasty.model.Place;
 
-public interface PlaceRepository extends JpaRepository<Place,Long>{
+import java.time.LocalDateTime;
+import java.util.List;
 
+public interface PlaceRepository extends JpaRepository<Place,Long>{
+    List<Place> findByEtatAndReservedUntilBefore(PlaceStatus etat, LocalDateTime dateTime);
 }

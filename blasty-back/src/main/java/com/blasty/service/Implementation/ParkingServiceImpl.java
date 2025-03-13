@@ -7,7 +7,6 @@ import com.blasty.dto.response.ParkingRevenueResponse;
 import com.blasty.mapper.ParkingMapper;
 import com.blasty.model.Parking;
 import com.blasty.repository.ParkingRepository;
-// import com.blasty.repository.TransactionRepository;
 import com.blasty.service.Interface.ParkingService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -20,16 +19,45 @@ import java.util.stream.Collectors;
 public class ParkingServiceImpl implements ParkingService {
     private final ParkingRepository parkingRepository;
     private final ParkingMapper parkingMapper;
-    // private final TransactionRepository transactionRepository;
 
     @Override
     public ParkingResponse createParking(ParkingRequest request) {
-        Parking parking = parkingMapper.toEntity(request);
-        parking.setAvailablePlaces(request.getCapacity());
-        // Vérifier que le nombre de places occupées ne dépasse pas la capacité
-        if (request.getOccupiedSpaces() > request.getCapacity()) {
-            throw new RuntimeException("Le nombre de places occupées ne peut pas dépasser la capacité du parking");
+        // Calculer la capacité maximale en fonction de la surface du parking
+        double maxCapacity = calculateMaxCapacity(request.getWidth(), request.getLength());
+
+        // Vérifier que la capacité demandée ne dépasse pas la capacité maximale
+        if (request.getCapacity() > maxCapacity) {
+            throw new RuntimeException("La capacité demandée dépasse la capacité maximale basée sur la surface du parking");
         }
+
+        // Créer l'entité Parking
+        Parking parking = parkingMapper.toEntity(request);
+        parking.setOccupiedSpaces(0); // Initialize occupied spaces to 0
+        return parkingMapper.toResponse(parkingRepository.save(parking));
+    }
+
+    @Override
+    public ParkingResponse updateParking(Long id, ParkingRequest request) {
+        Parking parking = parkingRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Parking non trouvé"));
+
+        // Calculer la capacité maximale en fonction de la surface du parking
+        double maxCapacity = calculateMaxCapacity(request.getWidth(), request.getLength());
+
+        // Vérifier que la capacité demandée ne dépasse pas la capacité maximale
+        if (request.getCapacity() > maxCapacity) {
+            throw new RuntimeException("La capacité demandée dépasse la capacité maximale basée sur la surface du parking");
+        }
+
+        // Mettre à jour les propriétés du parking
+        parking.setName(request.getName());
+        parking.setAddress(request.getAddress());
+        parking.setCapacity(request.getCapacity());
+        parking.setWidth(request.getWidth());
+        parking.setLength(request.getLength());
+        parking.setStatus(request.getStatus());
+
+        // Sauvegarder et renvoyer la réponse
         return parkingMapper.toResponse(parkingRepository.save(parking));
     }
 
@@ -47,32 +75,17 @@ public class ParkingServiceImpl implements ParkingService {
                 .collect(Collectors.toList());
     }
 
-    @Override
-    public ParkingResponse updateParking(Long id, ParkingRequest request) {
-        Parking parking = parkingRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Parking non trouvé"));
-
-        // Vérifier que le nombre de places occupées ne dépasse pas la capacité
-        if (request.getOccupiedSpaces() > request.getCapacity()) {
-            throw new RuntimeException("Le nombre de places occupées ne peut pas dépasser la capacité du parking");
-        }
-
-        parking.setName(request.getName());
-        parking.setAddress(request.getAddress());
-        parking.setCapacity(request.getCapacity());
-        parking.setOccupiedSpaces(request.getOccupiedSpaces());
-        parking.setOccupiedSpaces(request.getOccupiedSpaces());
-        parking.setStatus(request.getStatus());
-        parking.setLatitude(request.getLatitude());
-        parking.setLongitude(request.getLongitude());
-        return parkingMapper.toResponse(parkingRepository.save(parking));
+    private double calculateMaxCapacity(int width, int length) {
+        double placeArea = 15;  // Exemple de surface par place de parking
+        int parkingArea = width * length;
+        return parkingArea / placeArea;
     }
 
     @Override
     public int getAvailablePlaces(Long parkingId) {
         Parking parking = parkingRepository.findById(parkingId)
                 .orElseThrow(() -> new RuntimeException("Parking non trouvé"));
-        return parking.getAvailablePlaces();
+        return parking.getCapacity() - parking.getOccupiedSpaces();
     }
 
     @Override
@@ -81,23 +94,24 @@ public class ParkingServiceImpl implements ParkingService {
     }
 
     @Override
-    public List<ParkingOccupancyResponse> getParkingOccupancy() {
+    public List<ParkingOccupancyResponse> getParkingOccupancy(Long id) {
         return parkingRepository.findAll().stream()
                 .map(parking -> ParkingOccupancyResponse.builder()
-                        .parkingId(parking.getId())
+                        .parkingId(id)
                         .parkingName(parking.getName())
                         .totalCapacity(parking.getCapacity())
                         .occupiedSpaces(parking.getOccupiedSpaces())
-                        .occupancyRate((double) parking.getOccupiedSpaces() / parking.getCapacity() * 100)
+                        .occupancyRate(parking.getCapacity() > 0 ?
+                                (double) parking.getOccupiedSpaces() / parking.getCapacity() * 100 : 0)
                         .build())
                 .collect(Collectors.toList());
     }
 
     @Override
-    public List<ParkingRevenueResponse> getParkingRevenue(String period) {
+    public List<ParkingRevenueResponse> getParkingRevenue(Long id ,String period) {
         return parkingRepository.findAll().stream()
                 .map(parking -> ParkingRevenueResponse.builder()
-                        .parkingId(parking.getId())
+                        .parkingId(id)
                         .parkingName(parking.getName())
                         .totalRevenue(calculateRevenueForParking(parking, period))
                         .period(period)
@@ -106,26 +120,34 @@ public class ParkingServiceImpl implements ParkingService {
     }
 
     private double calculateRevenueForParking(Parking parking, String period) {
-//        LocalDate startDate;
-//        LocalDate endDate = LocalDate.now();
-//
-//        switch (period.toLowerCase()) {
-//            case "month":
-//                startDate = endDate.with(TemporalAdjusters.firstDayOfMonth());
-//                break;
-//            case "year":
-//                startDate = endDate.with(TemporalAdjusters.firstDayOfYear());
-//                break;
-//            default:
-//                throw new IllegalArgumentException("Période non valide. Utilisez 'month' ou 'year'.");
-//        }
-//
-//        List<Transaction> transactions = transactionRepository.findByParkingAndTransactionDateBetween(
-//                parking, startDate.atStartOfDay(), endDate.atTime(23, 59, 59));
-//
-//        return transactions.stream()
-//                .mapToDouble(Transaction::getAmount)
-//                .sum();
-        return 1000 ;
+        // Implementation remains the same as in your original code
+        return 1000;
+    }
+
+    // New methods for managing occupied spaces
+    public void incrementOccupiedSpaces(Long parkingId) {
+        Parking parking = parkingRepository.findById(parkingId)
+                .orElseThrow(() -> new RuntimeException("Parking non trouvé"));
+
+        int occupiedSpaces = parking.getOccupiedSpaces() + 1;
+        if (occupiedSpaces > parking.getCapacity()) {
+            throw new RuntimeException("Nombre de places occupées dépasse la capacité du parking");
+        }
+
+        parking.setOccupiedSpaces(occupiedSpaces);
+        parkingRepository.save(parking);
+    }
+
+    public void decrementOccupiedSpaces(Long parkingId) {
+        Parking parking = parkingRepository.findById(parkingId)
+                .orElseThrow(() -> new RuntimeException("Parking non trouvé"));
+
+        int occupiedSpaces = parking.getOccupiedSpaces() - 1;
+        if (occupiedSpaces < 0) {
+            occupiedSpaces = 0; // Ensure we don't go below zero
+        }
+
+        parking.setOccupiedSpaces(occupiedSpaces);
+        parkingRepository.save(parking);
     }
 }

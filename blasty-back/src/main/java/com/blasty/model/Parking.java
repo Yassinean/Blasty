@@ -3,6 +3,7 @@ package com.blasty.model;
 import java.util.List;
 
 import com.blasty.model.enums.ParkingStatus;
+import com.blasty.model.enums.PlaceStatus;
 import jakarta.persistence.*;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -30,23 +31,27 @@ public class Parking {
     @Column(nullable = false)
     private int capacity;
 
-    @Column(nullable = false)
-    private int occupiedSpaces;
-
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
     private ParkingStatus status;
 
-    @Column
-    private Double latitude;
+    @Column(nullable = false)
+    private int width; // Largeur du parking en mètres
 
-    @Column
-    private Double longitude;
+    @Column(nullable = false)
+    private int length; // Longueur du parking en mètres
 
-    private int availablePlaces;
+    private int occupiedSpaces;
 
     @OneToMany(mappedBy = "parking", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     private List<Place> places;
+
+    // Méthode pour calculer la surface du parking
+
+    public double getSurface() {
+        return width * length;
+    }
+    // Méthode pour calculer les places occupées
 
     // Méthode pour calculer les places disponibles
     public int getAvailablePlaces() {

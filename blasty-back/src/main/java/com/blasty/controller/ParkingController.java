@@ -13,39 +13,26 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
- 
+
 @RestController
 @RequestMapping("/api/parkings")
 @RequiredArgsConstructor
 public class ParkingController {
     private final ParkingService parkingService;
 
+    // Admin endpoints
     @PostMapping
     @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<ParkingResponse> createParking(@Valid @RequestBody ParkingRequest request) {
-        ParkingResponse response = parkingService.createParking(request);
-        return ResponseEntity.status(HttpStatus.CREATED).body(response);
-    }
-
-    @GetMapping("/{id}")
-    @PreAuthorize("hasRole('CLIENT')")
-    public ResponseEntity<ParkingResponse> getParkingById(@PathVariable Long id) {
-        ParkingResponse response = parkingService.getParkingById(id);
-        return ResponseEntity.ok(response);
-    }
-
-    @GetMapping
-    @PreAuthorize("hasRole('ADMIN')")
-    public ResponseEntity<List<ParkingResponse>> getAllParkings() {
-        List<ParkingResponse> responses = parkingService.getAllParkings();
-        return ResponseEntity.ok(responses);
+        return ResponseEntity.status(HttpStatus.CREATED).body(parkingService.createParking(request));
     }
 
     @PutMapping("/{id}")
     @PreAuthorize("hasRole('ADMIN')")
-    public ResponseEntity<ParkingResponse> updateParking(@PathVariable Long id, @Valid @RequestBody ParkingRequest request) {
-        ParkingResponse response = parkingService.updateParking(id, request);
-        return ResponseEntity.ok(response);
+    public ResponseEntity<ParkingResponse> updateParking(
+            @PathVariable Long id,
+            @Valid @RequestBody ParkingRequest request) {
+        return ResponseEntity.ok(parkingService.updateParking(id, request));
     }
 
     @DeleteMapping("/{id}")
@@ -55,25 +42,33 @@ public class ParkingController {
         return ResponseEntity.noContent().build();
     }
 
-    @GetMapping("/{id}/available-places")
-    @PreAuthorize("hasRole('CLIENT')")
-    public ResponseEntity<Integer> getAvailablePlaces(@PathVariable Long id) {
-        int availablePlaces = parkingService.getAvailablePlaces(id);
-        return ResponseEntity.ok(availablePlaces);
-    } 
-
-      @GetMapping("/occupancy")
+    @GetMapping("/{id}/occupancy")
     @PreAuthorize("hasRole('ADMIN')")
-    public ResponseEntity<List<ParkingOccupancyResponse>> getParkingOccupancy() {
-        List<ParkingOccupancyResponse> responses = parkingService.getParkingOccupancy();
-        return ResponseEntity.ok(responses);
+    public ResponseEntity<List<ParkingOccupancyResponse>> getParkingOccupancy(@PathVariable Long id) {
+        return ResponseEntity.ok(parkingService.getParkingOccupancy(id));
     }
 
-    @GetMapping("/revenue")
+    @GetMapping("/{id}/revenue")
     @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<List<ParkingRevenueResponse>> getParkingRevenue(
-            @RequestParam(defaultValue = "month") String period) {
-        List<ParkingRevenueResponse> responses = parkingService.getParkingRevenue(period);
-        return ResponseEntity.ok(responses);
+            @PathVariable Long id ,@RequestParam(defaultValue = "month") String period) {
+        return ResponseEntity.ok(parkingService.getParkingRevenue(id, period));
+    }
+
+    // Client accessible endpoints
+    @GetMapping("/{id}")
+    public ResponseEntity<ParkingResponse> getParkingById(@PathVariable Long id) {
+        return ResponseEntity.ok(parkingService.getParkingById(id));
+    }
+
+    @GetMapping
+    public ResponseEntity<List<ParkingResponse>> getAllParkings() {
+        return ResponseEntity.ok(parkingService.getAllParkings());
+    }
+
+    @GetMapping("/{id}/available-places")
+    @PreAuthorize("hasAnyRole('ADMIN','CLIENT')")
+    public ResponseEntity<Integer> getAvailablePlaces(@PathVariable Long id) {
+        return ResponseEntity.ok(parkingService.getAvailablePlaces(id));
     }
 }

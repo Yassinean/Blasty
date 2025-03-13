@@ -24,18 +24,22 @@ public class UserDetailsServiceImpl implements UserDetailsService {
 
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-        // Vérifier si l'utilisateur est un admin
-        Admin admin = adminRepository.findByEmail(username)
-                .orElseThrow(()-> new UsernameNotFoundException("Admin non trouve"));
+        Admin admin = adminRepository.findByEmail(username).orElse(null);
 
         if (admin != null) {
+            // If Admin is found, return CustomUserDetails for Admin
             return new CustomUserDetails(admin);
         }
 
-        // Vérifier si l'utilisateur est un client
-        Client client = clientRepository.findByPhone(username)
-                .orElseThrow(() -> new UsernameNotFoundException("Utilisateur non trouvé"));
+        // If not found as Admin, try to find the user as Client
+        Client client = clientRepository.findByPhone(username).orElse(null);
 
-        return new CustomUserDetails(client);
+        if (client != null) {
+            // If Client is found, return CustomUserDetails for Client
+            return new CustomUserDetails(client);
+        }
+
+        // If neither Admin nor Client is found, throw UsernameNotFoundException
+        throw new UsernameNotFoundException("User not found for username: " + username);
     }
 }

@@ -17,10 +17,6 @@ import java.util.List;
 @DiscriminatorValue("CLIENT")
 public class Client extends User {
 
-//    @Enumerated(EnumType.STRING)
-//    @Column(nullable = false)
-//    private UserRole role;
-
     @Column(nullable = false)
     private String name;
 
@@ -30,6 +26,4 @@ public class Client extends User {
     @OneToMany(mappedBy = "client", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Vehicle> vehicules;
 
-    @OneToMany(mappedBy = "client", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<Transaction> transactions;
 }

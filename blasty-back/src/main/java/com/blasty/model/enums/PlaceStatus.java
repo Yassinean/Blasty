@@ -4,4 +4,4 @@ public enum PlaceStatus {
     DISPONIBLE,
     OCCUPEE,
     RESERVEE
-} 
+}   

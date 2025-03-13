@@ -2,13 +2,7 @@ package com.blasty.dto.response;
 
 import com.blasty.model.enums.ParkingStatus;
 import com.fasterxml.jackson.annotation.JsonInclude;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
-
-import com.blasty.model.enums.PlaceStatus;
-
-import lombok.AllArgsConstructor;
+import lombok.*;
 
 @Data
 @Builder
@@ -16,7 +10,6 @@ import lombok.AllArgsConstructor;
 @AllArgsConstructor
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class ParkingResponse {
-
     private Long id;
     private String name;
     private String address;
@@ -24,6 +17,7 @@ public class ParkingResponse {
     private int occupiedSpaces;
     private int availablePlaces;
     private ParkingStatus status;
-    private Double latitude;
-    private Double longitude;
+    private int width;
+    private int length;
+    private double surface;
 }
