@@ -90,6 +90,15 @@ public class PlaceServiceImpl implements PlaceService {
     }
 
     @Override
+    public List<PlaceResponse> getPlacesByParkingId(Long parkingId) {
+        Parking parking = parkingRepository.findById(parkingId).orElseThrow(()-> new ResourceNotFoundException("Parking not found with id: " + parkingId));
+        List<Place> places = placeRepository.findByParkingId(parking.getId());
+        return places.stream()
+                .map(placeMapper::toResponse)
+                .collect(Collectors.toList());
+    }
+
+    @Override
     public boolean isPlaceAvailableInTime(Long placeId, LocalDateTime requestedTime) {
         Place place = findPlaceById(placeId);
 

@@ -2,7 +2,6 @@ import { Routes } from '@angular/router';
 import { AdminGuard } from './core/guards/admin.guard';
 import { ClientGuard } from './core/guards/client.guard';
 import { NonAuthGuard } from './core/guards/non-auth.guard';
-import { ClientPlacesComponent } from './features/client/client-places/client-places.component';
 
 export const routes: Routes = [
   {
@@ -43,7 +42,7 @@ export const routes: Routes = [
   },
   {
     path: 'auth',
-    canActivate: [NonAuthGuard], // Un-commented this line
+    canActivate: [NonAuthGuard],
     children: [
       {
         path: '',
@@ -78,7 +77,7 @@ export const routes: Routes = [
     children: [
       {
         path: '',
-        redirectTo: 'statistics', // Ensure there's a valid default child
+        redirectTo: 'statistics',
         pathMatch: 'full',
       },
       {
@@ -89,20 +88,18 @@ export const routes: Routes = [
           ).then((m) => m.StatisticsComponent),
       },
       {
-        path: 'parking-management',
+        path: 'parkings',
         loadComponent: () =>
           import(
             './features/admin/dashboard/parking-management/parking-management.component'
           ).then((m) => m.ParkingManagementComponent),
-        children: [
-          // {
-          //   path: 'place-management/:parkingId',
-          //   loadComponent: () =>
-          //     import(
-          //       './features/admin/dashboard/place-management/place-management.component'
-          //     ).then((m) => m.PlaceManagementComponent),
-          // },
-        ],
+      },
+      {
+        path: 'parkings/:id/places',
+        loadComponent: () =>
+          import(
+            './features/admin/dashboard/place-management/place-management.component'
+          ).then((m) => m.PlaceManagementComponent),
       },
     ],
   },

@@ -17,7 +17,7 @@ export interface PlaceRequest {
 export interface PlaceResponse {
   id: number
   numero: string
-  type: string
+  type: PlaceType
   tarifHoraire: number
   etat: PlaceStatus
   reservedUntil?: string
@@ -26,9 +26,9 @@ export interface PlaceResponse {
 }
 
 export enum PlaceStatus {
-  DISPONIBLE = "DISPONIBLE",
-  RESERVEE = "RESERVEE",
-  OCCUPEE = "OCCUPEE",
+  DISPONIBLE = 'DISPONIBLE',
+  RESERVEE = 'RESERVEE',
+  OCCUPEE = 'OCCUPEE',
 }
 
 export enum PlaceType {

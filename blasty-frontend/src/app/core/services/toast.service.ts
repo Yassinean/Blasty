@@ -24,9 +24,9 @@ export class ToastService {
 
   constructor() {}
 
-  private show(title: string, message: string, type: ToastType, autoClose = true, timeout = 5000): Toast {
+  private show(title:string, message: string, type: ToastType, autoClose = true, timeout = 5000): Toast {
     const id = ++this.toastCounter
-    const toast: Toast = { id, title, message, type, autoClose, timeout }
+    const toast: Toast = { id, title , message, type, autoClose, timeout }
 
     this.toasts.push(toast)
     this.toastsSubject.next([...this.toasts])
@@ -38,8 +38,8 @@ export class ToastService {
     return toast
   }
 
-  showSuccess(title: string, message: string): Toast {
-    return this.show(title, message, "success")
+  showSuccess(title:string,message: string): Toast {
+    return this.show(title,message, "success")
   }
 
   showError(title: string, message: string): Toast {

@@ -7,13 +7,19 @@ import {
 } from '../../../../core/models/parking.model';
 import { ParkingService } from '../../../../core/services/parking.service';
 import { CommonModule } from '@angular/common';
-import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
+import {
+  FormBuilder,
+  FormGroup,
+  ReactiveFormsModule,
+  Validators,
+} from '@angular/forms';
 import { Toast } from '../../../../core/models/toast';
 import { Router } from '@angular/router';
+import { ToastService } from '../../../../core/services/toast.service';
 
 @Component({
   selector: 'app-parking-management',
-  standalone:true ,
+  standalone: true,
   imports: [CommonModule, ReactiveFormsModule],
   templateUrl: './parking-management.component.html',
   styleUrls: ['./parking-management.component.css'],
@@ -34,7 +40,12 @@ export class ParkingManagementComponent implements OnInit {
   toasts: Toast[] = [];
   toastIdCounter = 0;
 
-  constructor(private parkingService: ParkingService, private fb: FormBuilder, private router:Router) {
+  constructor(
+    private parkingService: ParkingService,
+    private toastService: ToastService,
+    private fb: FormBuilder,
+    private router: Router
+  ) {
     this.parkingForm = this.fb.group({
       name: ['', [Validators.required, Validators.minLength(3)]],
       address: ['', [Validators.required]],
@@ -248,9 +259,14 @@ export class ParkingManagementComponent implements OnInit {
     this.isModalOpen = true;
   }
 
-
-  navigateToPlaceManagement(parkingId: number): void {
-    this.router.navigate(['/admin/dashboard/parking-management/place-management', parkingId]);
+  managePlaces(parkingId: string): void {
+    const id = +parkingId; // Convert to number
+    console.log('Parking ID:', id);
+    if (isNaN(id)) {
+      this.toastService.showError('Error', 'Invalid parking ID');
+      return;
+    }
+    this.router.navigate([`/admin/dashboard/parkings/${id}/places`]);
   }
 
   // Submit parking form (create or update)
@@ -375,8 +391,10 @@ export class ParkingManagementComponent implements OnInit {
 
   // Helper methods for UI
   getAvailabilityColorClass(parking: Parking): string {
-    const availabilityPercentage = ((parking.capacity - (parking.occupiedSpaces ?? 0)) / parking.capacity) * 100;
-    
+    const availabilityPercentage =
+      ((parking.capacity - (parking.occupiedSpaces ?? 0)) / parking.capacity) *
+      100;
+
     if (availabilityPercentage === 0) {
       return 'text-red-600 dark:text-red-400 font-medium';
     } else if (availabilityPercentage < 20) {
@@ -387,8 +405,10 @@ export class ParkingManagementComponent implements OnInit {
   }
 
   getProgressBarColorClass(parking: Parking): string {
-    const availabilityPercentage = ((parking.capacity - (parking.occupiedSpaces ?? 0)) / parking.capacity) * 100;
-    
+    const availabilityPercentage =
+      ((parking.capacity - (parking.occupiedSpaces ?? 0)) / parking.capacity) *
+      100;
+
     if (availabilityPercentage === 0) {
       return 'bg-red-600';
     } else if (availabilityPercentage < 20) {
@@ -398,10 +418,9 @@ export class ParkingManagementComponent implements OnInit {
     }
   }
 
-   // Validation helpers
+  // Validation helpers
   isFieldInvalid(fieldName: string): boolean {
     const field = this.parkingForm.get(fieldName);
     return field ? field.invalid && (field.dirty || field.touched) : false;
   }
-
 }

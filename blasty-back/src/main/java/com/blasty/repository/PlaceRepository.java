@@ -10,4 +10,5 @@ import java.util.List;
 
 public interface PlaceRepository extends JpaRepository<Place,Long>{
     List<Place> findByEtatAndReservedUntilBefore(PlaceStatus etat, LocalDateTime dateTime);
+    List<Place> findByParkingId(Long parkingId);
 }

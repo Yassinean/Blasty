@@ -114,7 +114,7 @@
         <!-- Parking Management -->
         <li *ngIf="user.role == 'ADMIN'">
           <a
-            routerLink="/admin/dashboard/parking-management"
+            routerLink="/admin/dashboard/parkings"
             routerLinkActive="bg-blue-100 text-blue-600 dark:bg-blue-900 dark:text-blue-200"
             class="flex items-center p-2 rounded-lg text-gray-600 hover:bg-gray-100 dark:text-gray-300 dark:hover:bg-gray-700 group"
           >
@@ -133,31 +133,6 @@
             </svg>
             <span *ngIf="!isSidebarCollapsed" class="ml-3"
               >Gestion des Parkings</span
-            >
-          </a>
-        </li>
-
-        <!-- Place Management -->
-        <li *ngIf="user.role == 'ADMIN'">
-          <a
-            routerLink="/admin/dashboard/place-management"
-            routerLinkActive="bg-blue-100 text-blue-600 dark:bg-blue-900 dark:text-blue-200"
-            class="flex items-center p-2 rounded-lg text-gray-600 hover:bg-gray-100 dark:text-gray-300 dark:hover:bg-gray-700 group"
-          >
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              class="h-5 w-5"
-              viewBox="0 0 24 24"
-              fill="none"
-              stroke="currentColor"
-              stroke-width="2"
-            >
-              <path d="M4 9h16" />
-              <path d="M4 15h16" />
-              <path d="M10 3v18" />
-            </svg>
-            <span *ngIf="!isSidebarCollapsed" class="ml-3"
-              >Gestion des Places</span
             >
           </a>
         </li>

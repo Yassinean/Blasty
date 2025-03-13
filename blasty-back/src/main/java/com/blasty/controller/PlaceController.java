@@ -63,6 +63,13 @@ public class PlaceController {
         return ResponseEntity.ok(placeService.getAllPlaces());
     }
 
+    @GetMapping("/parkings/{id}/places")
+    public ResponseEntity<List<PlaceResponse>> getPlacesByParking(@PathVariable Long id) {
+        log.debug("Fetching places for parking with id: {}", id);
+        List<PlaceResponse> places = placeService.getPlacesByParkingId(id);
+        return ResponseEntity.ok(places);
+    }
+
     // Availability check endpoints
     @GetMapping("/places/{id}/availability")
     public ResponseEntity<Boolean> checkPlaceAvailability(@PathVariable Long id) {

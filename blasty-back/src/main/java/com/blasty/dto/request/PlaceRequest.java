@@ -20,7 +20,4 @@ public class PlaceRequest {
 
     @NotNull(message = "Le tarif horaire est obligatoire")
     private Double tarifHoraire;
-
-    @NotNull(message = "L'ID du parking est obligatoire")
-    private Long parkingId;
 }

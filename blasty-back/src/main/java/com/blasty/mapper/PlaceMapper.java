@@ -19,7 +19,6 @@ public abstract class PlaceMapper implements GenericMapper<PlaceRequest, PlaceRe
     @Override
     @Mapping(target = "id", ignore = true)
     @Mapping(target = "etat", expression = "java(com.blasty.model.enums.PlaceStatus.DISPONIBLE)")
-    @Mapping(target = "parking", expression = "java(mapParking(request.getParkingId()))") // Use the mapParking method
     public abstract Place toEntity(PlaceRequest request);
 
     @Override
