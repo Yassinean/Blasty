@@ -15,7 +15,7 @@ import { SidebarComponent } from '../../shared/sidebar/sidebar.component';
       
       <!-- Main Content -->
       <div class="flex flex-col flex-1 overflow-hidden">
-        <app-header></app-header>
+        <!-- <app-header></app-header> -->
         
         <main class="flex-1 overflow-y-auto p-4 md:p-6">
           <router-outlet></router-outlet>

@@ -4,6 +4,7 @@ import com.blasty.dto.request.ParkingRequest;
 import com.blasty.dto.response.ParkingOccupancyResponse;
 import com.blasty.dto.response.ParkingResponse;
 import com.blasty.dto.response.ParkingRevenueResponse;
+import com.blasty.exception.ResourceNotFoundException;
 import com.blasty.mapper.ParkingMapper;
 import com.blasty.model.Parking;
 import com.blasty.repository.ParkingRepository;
@@ -64,7 +65,7 @@ public class ParkingServiceImpl implements ParkingService {
     @Override
     public ParkingResponse getParkingById(Long id) {
         Parking parking = parkingRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Parking non trouvé"));
+                .orElseThrow(() -> new ResourceNotFoundException("Parking non trouvé"));
         return parkingMapper.toResponse(parking);
     }
 
@@ -84,13 +85,14 @@ public class ParkingServiceImpl implements ParkingService {
     @Override
     public int getAvailablePlaces(Long parkingId) {
         Parking parking = parkingRepository.findById(parkingId)
-                .orElseThrow(() -> new RuntimeException("Parking non trouvé"));
+                .orElseThrow(() -> new ResourceNotFoundException("Parking non trouvé"));
         return parking.getCapacity() - parking.getOccupiedSpaces();
     }
 
     @Override
     public void deleteParking(Long id) {
-        parkingRepository.deleteById(id);
+        Parking parking = parkingRepository.findById(id).orElseThrow(()->new ResourceNotFoundException("Pakring not found with id :" + id));
+        parkingRepository.delete(parking);
     }
 
     @Override
