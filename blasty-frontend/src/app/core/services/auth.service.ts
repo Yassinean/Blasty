@@ -71,7 +71,7 @@ export class AuthService {
       if (user.role === 'ADMIN') {
         this.router.navigate(['/admin/dashboard']);
       } else if (user.role === 'CLIENT') {
-        this.router.navigate(['/client/dashboard']);
+        this.router.navigate(['/client/places']);
       }
     }
   }
@@ -160,7 +160,7 @@ export class AuthService {
   logout(): void {
     this.tokenService.clear();
     this.currentUserSubject.next(null);
-    this.router.navigate(['/login']);
+    this.router.navigate(['/auth/login']);
   }
 
   getToken(): string | null {

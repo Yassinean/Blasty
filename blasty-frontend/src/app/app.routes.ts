@@ -2,6 +2,7 @@ import { Routes } from '@angular/router';
 import { AdminGuard } from './core/guards/admin.guard';
 import { ClientGuard } from './core/guards/client.guard';
 import { NonAuthGuard } from './core/guards/non-auth.guard';
+import { ClientPlacesComponent } from './features/client/client-places/client-places.component';
 
 export const routes: Routes = [
   {
@@ -93,13 +94,15 @@ export const routes: Routes = [
           import(
             './features/admin/dashboard/parking-management/parking-management.component'
           ).then((m) => m.ParkingManagementComponent),
-      },
-      {
-        path: 'place-management',
-        loadComponent: () =>
-          import(
-            './features/admin/dashboard/place-management/place-management.component'
-          ).then((m) => m.PlaceManagementComponent),
+        children: [
+          // {
+          //   path: 'place-management/:parkingId',
+          //   loadComponent: () =>
+          //     import(
+          //       './features/admin/dashboard/place-management/place-management.component'
+          //     ).then((m) => m.PlaceManagementComponent),
+          // },
+        ],
       },
     ],
   },
@@ -110,6 +113,21 @@ export const routes: Routes = [
       import('./features/dashboard/dashboard.component').then(
         (m) => m.DashboardComponentClient
       ),
+    children: [
+      {
+        path: 'places',
+        loadComponent: () =>
+          import(
+            './features/client/client-places/client-places.component'
+          ).then((m) => m.ClientPlacesComponent),
+      },
+    ],
   },
-  { path: '**', loadComponent: () => import('./shared/not-found/not-found.component').then(m => m.NotFoundComponent) }
+  {
+    path: '**',
+    loadComponent: () =>
+      import('./shared/not-found/not-found.component').then(
+        (m) => m.NotFoundComponent
+      ),
+  },
 ];

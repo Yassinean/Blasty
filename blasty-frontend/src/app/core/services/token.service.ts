@@ -48,7 +48,28 @@ export class TokenService {
   }
 
   isAuthenticated(): boolean {
-    console.log('isAuthenticated method in token service:', !!this.getToken());
-    return !!this.getToken();
+    const token = this.getToken();
+    const isAuth = !!token;
+    console.log('TokenService: isAuthenticated called, result:', isAuth);
+    
+    // Basic token validation - check if it's not expired
+    if (token) {
+      try {
+        // Simple check for JWT expiration
+        const payload = JSON.parse(atob(token.split('.')[1]));
+        const expiry = payload.exp * 1000; // Convert to milliseconds
+        const now = Date.now();
+        
+        if (expiry < now) {
+          console.log('TokenService: Token is expired, clearing tokens');
+          this.clear();
+          return false;
+        }
+      } catch (e) {
+        console.error('TokenService: Error parsing token', e);
+      }
+    }
+    
+    return isAuth;
   }
 }  

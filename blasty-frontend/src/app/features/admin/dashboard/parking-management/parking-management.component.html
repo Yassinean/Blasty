@@ -1,29 +1,51 @@
 <div class="space-y-6">
-  <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
+  <div
+    class="flex flex-col md:flex-row md:items-center md:justify-between gap-4"
+  >
     <div>
-      <h2 class="text-2xl font-bold text-gray-800 dark:text-white">Gestion des Parkings</h2>
-      <p class="text-gray-600 dark:text-gray-300">Gérez vos parkings et leur capacité</p>
+      <h2 class="text-2xl font-bold text-gray-800 dark:text-white">
+        Gestion des Parkings
+      </h2>
+      <p class="text-gray-600 dark:text-gray-300">
+        Gérez vos parkings et leur capacité
+      </p>
     </div>
-    
-    <button 
+
+    <button
       (click)="openAddParkingModal()"
       class="inline-flex items-center justify-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
     >
-      <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+      <svg
+        xmlns="http://www.w3.org/2000/svg"
+        class="h-5 w-5 mr-2"
+        viewBox="0 0 24 24"
+        fill="none"
+        stroke="currentColor"
+        stroke-width="2"
+      >
         <path d="M12 5v14M5 12h14" />
       </svg>
       Ajouter un Parking
     </button>
   </div>
-  
+
   <!-- Search and Filter -->
   <div class="bg-white dark:bg-gray-800 rounded-lg shadow-md p-4">
     <div class="flex flex-col md:flex-row gap-4">
       <div class="flex-1">
         <label for="search" class="sr-only">Rechercher</label>
         <div class="relative">
-          <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-gray-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <div
+            class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none"
+          >
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              class="h-5 w-5 text-gray-400"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2"
+            >
               <circle cx="11" cy="11" r="8" />
               <path d="M21 21l-4.35-4.35" />
             </svg>
@@ -31,20 +53,18 @@
           <input
             type="text"
             id="search"
-            class="block w-full pl-10 pr-3 py-2 border border-gray-300 rounded-md leading-5 bg-white dark:bg-gray-700 dark:border-gray-600 dark:text-white placeholder-gray-500 dark:placeholder-gray-400 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
-            placeholder="Rechercher un parking..."
-            [(ngModel)]="searchTerm"
-            (input)="filterParkings()"
+            (input)="onSearchChange($event)"
+            placeholder="Rechercher par nom ou adresse"
+            class="pl-10 pr-3 py-2 border border-gray-300 dark:bg-gray-800 dark:text-gray-300 rounded-md w-full focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
           />
         </div>
       </div>
-      
+
       <div class="flex-shrink-0">
         <select
-          id="filter"
-          class="block w-full pl-3 pr-10 py-2 text-base border border-gray-300 rounded-md leading-5 bg-white dark:bg-gray-700 dark:border-gray-600 dark:text-white focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
-          [(ngModel)]="filterOption"
-          (change)="filterParkings()"
+          id="status-filter"
+          (change)="onStatusFilterChange($event)"
+          class="border border-gray-300 rounded-md w-full py-2 px-3 dark:bg-gray-800 dark:text-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
         >
           <option value="all">Tous les parkings</option>
           <option value="OPEN">Ouverts</option>
@@ -52,359 +72,559 @@
           <option value="CLOSED">Fermés</option>
         </select>
       </div>
-  </div>
+    </div>
 
-  <!-- Parking Cards Grid -->
-  <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mt-4">
+    <!-- Parking Cards Grid -->
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mt-4">
+      <div
+        *ngFor="let parking of filteredParkings"
+        class="bg-white dark:bg-gray-800 rounded-lg shadow-md overflow-hidden transition-all duration-200 hover:shadow-lg border border-gray-200 dark:border-gray-700"
+      >
+        <div class="p-6">
+          <div class="flex justify-between items-start mb-4">
+            <div class="flex items-center">
+              <div
+                [ngClass]="{
+                  'bg-green-100 text-green-600 dark:bg-green-900 dark:text-green-200':
+                    parking.status === 'OPEN',
+                  'bg-red-100 text-red-600 dark:bg-red-900 dark:text-red-200':
+                    parking.status === 'CLOSED',
+                  'bg-yellow-100 text-yellow-600 dark:bg-yellow-900 dark:text-yellow-200':
+                    parking.status === 'MAINTENANCE'
+                }"
+                class="p-2 rounded-md mr-3"
+              >
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  class="h-5 w-5"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  stroke-width="2"
+                >
+                  <rect
+                    *ngIf="parking.status === 'OPEN'"
+                    x="3"
+                    y="3"
+                    width="18"
+                    height="18"
+                    rx="2"
+                  />
+                  <circle
+                    *ngIf="parking.status === 'CLOSED'"
+                    cx="12"
+                    cy="12"
+                    r="10"
+                  />
+                  <path
+                    *ngIf="parking.status === 'MAINTENANCE'"
+                    d="M10.3 6.74a1 1 0 0 0-1.42 1.42l1.42 1.42a1 1 0 0 0 1.42-1.42l-1.42-1.42zM12 2a1 1 0 0 0-1 1v2a1 1 0 0 0 2 0V3a1 1 0 0 0-1-1zM17.07 7.07a1 1 0 0 0-1.41 0l-1.42 1.42a1 1 0 0 0 1.42 1.42l1.42-1.42a1 1 0 0 0-.01-1.42zM18.5 11H17a1 1 0 0 0 0 2h1.5a1 1 0 0 0 0-2zM17.07 16.93a1 1 0 0 0 .01 1.42l1.42 1.42a1 1 0 0 0 1.41-1.42l-1.42-1.42a1 1 0 0 0-1.42 0zM12 20a1 1 0 0 0 1 1h0a1 1 0 0 0 1-1v-2a1 1 0 0 0-2 0v2zM6.93 16.93a1 1 0 0 0 0 1.42l1.42 1.42a1 1 0 0 0 1.41-1.42l-1.42-1.42a1 1 0 0 0-1.41 0zM6 12a1 1 0 0 0-1-1H3.5a1 1 0 0 0 0 2H5a1 1 0 0 0 1-1z"
+                  />
+                </svg>
+              </div>
+              <h3 class="text-lg font-semibold text-gray-800 dark:text-white">
+                {{ parking.name }}
+              </h3>
+            </div>
+            <div class="flex space-x-1">
+              <button
+                class="p-1 rounded-full text-yellow-500 hover:bg-yellow-100 dark:hover:bg-yellow-900 focus:outline-none"
+                (click)="openEditParkingModal(parking)"
+                title="Modifier"
+              >
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  class="h-5 w-5"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  stroke-width="2"
+                >
+                  <path
+                    d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"
+                  />
+                  <path
+                    d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"
+                  />
+                </svg>
+              </button>
+              <button
+                class="p-1 rounded-full text-red-500 hover:bg-red-100 dark:hover:bg-red-900 focus:outline-none"
+                (click)="deleteParking(parking.id)"
+                title="Supprimer"
+              >
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  class="h-5 w-5"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  stroke-width="2"
+                >
+                  <path d="M3 6h18" />
+                  <path
+                    d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"
+                  />
+                  <path d="M10 11v6" />
+                  <path d="M14 11v6" />
+                </svg>
+              </button>
+            </div>
+          </div>
+
+          <div class="flex mb-4">
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              viewBox="0 0 24 24"
+              width="24"
+              height="24"
+              class="text-black dark:text-gray-400"
+              fill="none"
+            >
+              <path
+                d="M14.5 9C14.5 10.3807 13.3807 11.5 12 11.5C10.6193 11.5 9.5 10.3807 9.5 9C9.5 7.61929 10.6193 6.5 12 6.5C13.3807 6.5 14.5 7.61929 14.5 9Z"
+                stroke="currentColor"
+                stroke-width="1.5"
+              />
+              <path
+                d="M18.2222 17C19.6167 18.9885 20.2838 20.0475 19.8865 20.8999C19.8466 20.9854 19.7999 21.0679 19.7469 21.1467C19.1724 22 17.6875 22 14.7178 22H9.28223C6.31251 22 4.82765 22 4.25311 21.1467C4.20005 21.0679 4.15339 20.9854 4.11355 20.8999C3.71619 20.0475 4.38326 18.9885 5.77778 17"
+                stroke="currentColor"
+                stroke-width="1.5"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+              />
+              <path
+                d="M13.2574 17.4936C12.9201 17.8184 12.4693 18 12.0002 18C11.531 18 11.0802 17.8184 10.7429 17.4936C7.6543 14.5008 3.51519 11.1575 5.53371 6.30373C6.6251 3.67932 9.24494 2 12.0002 2C14.7554 2 17.3752 3.67933 18.4666 6.30373C20.4826 11.1514 16.3536 14.5111 13.2574 17.4936Z"
+                stroke="currentColor"
+                stroke-width="1.5"
+              />
+            </svg>
+            <p class="text-gray-600 dark:text-gray-300 text-sm">
+              {{ parking.address }}
+            </p>
+          </div>
+
+          <div class="space-y-3">
+            <div
+              class="flex items-center justify-between text-gray-600 dark:text-gray-300"
+            >
+              <div class="flex items-center">
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  class="h-5 w-5 mr-2 text-gray-400"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  stroke-width="2"
+                >
+                  <rect x="3" y="3" width="18" height="18" rx="2" />
+                  <path d="M9 3v18" />
+                  <path d="M3 9h6" />
+                </svg>
+                <span>Capacité Totale:</span>
+              </div>
+              <span class="font-medium text-gray-800 dark:text-white">{{
+                parking.capacity
+              }}</span>
+            </div>
+
+            <div class="flex items-center justify-between">
+              <div class="flex items-center text-gray-600 dark:text-gray-300">
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  class="h-5 w-5 mr-2 text-gray-400"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  stroke-width="2"
+                >
+                  <circle cx="12" cy="12" r="10" />
+                  <path d="M12 8v4" />
+                  <path d="M12 16h.01" />
+                </svg>
+                <span>Places Disponibles:</span>
+              </div>
+              <span (input)="getAvailabilityColorClass(parking)">{{
+                parking.capacity - parking.occupiedSpaces
+              }}</span>
+            </div>
+
+            <!-- Availability Progress Bar -->
+            <div class="w-full bg-gray-200 dark:bg-gray-700 rounded-full h-2.5">
+              <div
+                class="h-2.5 rounded-full"
+                (input)="getProgressBarColorClass(parking)"
+                [style.width.%]="
+                  (parking.capacity -
+                    parking.occupiedSpaces / parking.capacity) *
+                  100
+                "
+              ></div>
+            </div>
+
+            <div
+              class="flex items-center justify-between text-gray-600 dark:text-gray-300"
+            >
+              <div class="flex items-center">
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  class="h-5 w-5 mr-2 text-gray-400"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  stroke-width="2"
+                >
+                  <circle cx="12" cy="12" r="10" />
+                  <path d="M12 16v.01" />
+                  <path d="M12 8v4" />
+                </svg>
+                <span>Statut:</span>
+              </div>
+              <span
+                [ngClass]="{
+                  'text-green-600 dark:text-green-400':
+                    parking.status === 'OPEN',
+                  'text-red-600 dark:text-red-400': parking.status === 'CLOSED',
+                  'text-yellow-600 dark:text-yellow-400':
+                    parking.status === 'MAINTENANCE'
+                }"
+              >
+                {{
+                  parking.status === "OPEN"
+                    ? "Ouvert"
+                    : parking.status === "CLOSED"
+                    ? "Fermé"
+                    : "MAINTENANCE"
+                }}
+              </span>
+            </div>
+          </div>
+          <div class="mt-4">
+            <button
+              (click)="navigateToPlaceManagement(parking.id)"
+              class="inline-flex items-center justify-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-green-600 hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500"
+            >
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                class="h-5 w-5 mr-2"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="2"
+              >
+                <path d="M12 5v14M5 12h14" />
+              </svg>
+              Gérer les Places
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Empty state -->
+      <div
+        *ngIf="filteredParkings.length === 0"
+        class="col-span-full flex flex-col items-center justify-center p-8 bg-white dark:bg-gray-800 rounded-lg shadow-md"
+      >
+        <svg
+          xmlns="http://www.w3.org/2000/svg"
+          class="h-16 w-16 text-gray-400"
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          stroke-width="1"
+        >
+          <rect x="3" y="3" width="18" height="18" rx="2" />
+          <path d="M9 3v18" />
+          <path d="M3 9h6" />
+        </svg>
+        <h3 class="mt-4 text-lg font-medium text-gray-900 dark:text-white">
+          Aucun parking trouvé
+        </h3>
+        <p class="mt-1 text-sm text-gray-500 dark:text-gray-400">
+          {{
+            parkings.length === 0
+              ? "Commencez par ajouter un parking"
+              : "Aucun résultat ne correspond à votre recherche"
+          }}
+        </p>
+        <button
+          *ngIf="parkings.length === 0"
+          (click)="openAddParkingModal()"
+          class="mt-4 inline-flex items-center px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
+        >
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            class="h-5 w-5 mr-2"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2"
+          >
+            <path d="M12 5v14M5 12h14" />
+          </svg>
+          Ajouter un Parking
+        </button>
+      </div>
+    </div>
+
+    <!-- Modal for Adding/Editing a Parking -->
     <div
-      *ngFor="let parking of filteredParkings"
-      class="bg-white dark:bg-gray-800 rounded-lg shadow-md overflow-hidden transition-all duration-200 hover:shadow-lg border border-gray-200 dark:border-gray-700"
+      *ngIf="isModalOpen"
+      class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50"
     >
-      <div class="p-6">
-        <div class="flex justify-between items-start mb-4">
-          <div class="flex items-center">
-            <div 
-              [ngClass]="{
-                'bg-green-100 text-green-600 dark:bg-green-900 dark:text-green-200': parking.status === 'OPEN',
-                'bg-red-100 text-red-600 dark:bg-red-900 dark:text-red-200': parking.status === 'CLOSED',
-                'bg-yellow-100 text-yellow-600 dark:bg-yellow-900 dark:text-yellow-200': parking.status === 'MAINTENANCE'
-              }"
-              class="p-2 rounded-md mr-3"
-            >
-              <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                <rect *ngIf="parking.status === 'OPEN'" x="3" y="3" width="18" height="18" rx="2" />
-                <circle *ngIf="parking.status === 'CLOSED'" cx="12" cy="12" r="10" />
-                <path *ngIf="parking.status === 'MAINTENANCE'" d="M10.3 6.74a1 1 0 0 0-1.42 1.42l1.42 1.42a1 1 0 0 0 1.42-1.42l-1.42-1.42zM12 2a1 1 0 0 0-1 1v2a1 1 0 0 0 2 0V3a1 1 0 0 0-1-1zM17.07 7.07a1 1 0 0 0-1.41 0l-1.42 1.42a1 1 0 0 0 1.42 1.42l1.42-1.42a1 1 0 0 0-.01-1.42zM18.5 11H17a1 1 0 0 0 0 2h1.5a1 1 0 0 0 0-2zM17.07 16.93a1 1 0 0 0 .01 1.42l1.42 1.42a1 1 0 0 0 1.41-1.42l-1.42-1.42a1 1 0 0 0-1.42 0zM12 20a1 1 0 0 0 1 1h0a1 1 0 0 0 1-1v-2a1 1 0 0 0-2 0v2zM6.93 16.93a1 1 0 0 0 0 1.42l1.42 1.42a1 1 0 0 0 1.41-1.42l-1.42-1.42a1 1 0 0 0-1.41 0zM6 12a1 1 0 0 0-1-1H3.5a1 1 0 0 0 0 2H5a1 1 0 0 0 1-1z" />
-              </svg>
+      <div
+        class="bg-white dark:bg-gray-800 rounded-lg shadow-xl p-6 w-full max-w-md mx-4 relative"
+      >
+        <button
+          (click)="closeModal()"
+          class="absolute top-4 right-4 text-gray-400 hover:text-gray-500 dark:hover:text-gray-300"
+        >
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            class="h-6 w-6"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2"
+          >
+            <path d="M18 6L6 18M6 6l12 12" />
+          </svg>
+          <span class="sr-only">Fermer</span>
+        </button>
+
+        <h2 class="text-xl font-bold text-gray-800 dark:text-white mb-6">
+          {{ isEditMode ? "Modifier le Parking" : "Ajouter un Parking" }}
+        </h2>
+
+        <form [formGroup]="parkingForm" (ngSubmit)="submitParkingForm()">
+          <div class="space-y-4">
+            <div>
+              <label
+                for="name"
+                class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1"
+                >Nom du Parking</label
+              >
+              <input
+                type="text"
+                id="name"
+                formControlName="name"
+                class="w-full px-3 py-2 border rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white"
+                [class.border-red-500]="isFieldInvalid('name')"
+              />
+              <p
+                *ngIf="isFieldInvalid('name')"
+                class="mt-1 text-sm text-red-500"
+              >
+                {{ getErrorMessage("name") }}
+              </p>
             </div>
-            <h3 class="text-lg font-semibold text-gray-800 dark:text-white">{{ parking.name }}</h3>
+
+            <div>
+              <label
+                for="address"
+                class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1"
+                >Adresse</label
+              >
+              <input
+                type="text"
+                id="address"
+                formControlName="address"
+                class="w-full px-3 py-2 border rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white"
+                [class.border-red-500]="isFieldInvalid('address')"
+              />
+              <p
+                *ngIf="isFieldInvalid('address')"
+                class="mt-1 text-sm text-red-500"
+              >
+                {{ getErrorMessage("address") }}
+              </p>
+            </div>
+
+            <div class="grid grid-cols-1 gap-4">
+              <div>
+                <label
+                  for="capacity"
+                  class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1"
+                  >Capacité Totale</label
+                >
+                <input
+                  type="number"
+                  id="capacity"
+                  formControlName="capacity"
+                  class="w-full px-3 py-2 border rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white"
+                  [class.border-red-500]="isFieldInvalid('capacity')"
+                />
+                <p
+                  *ngIf="isFieldInvalid('capacity')"
+                  class="mt-1 text-sm text-red-500"
+                >
+                  {{ getErrorMessage("capacity") }}
+                </p>
+              </div>
+            </div>
+
+            <div>
+              <label
+                for="status"
+                class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1"
+                >Statut</label
+              >
+              <select
+                id="status"
+                formControlName="status"
+                class="w-full px-3 py-2 border rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white"
+                [class.border-red-500]="isFieldInvalid('status')"
+              >
+                <option value="OPEN">Ouvert</option>
+                <option value="CLOSED">Fermé</option>
+                <option value="MAINTENANCE">Maintenance</option>
+              </select>
+              <p
+                *ngIf="isFieldInvalid('status')"
+                class="mt-1 text-sm text-red-500"
+              >
+                {{ getErrorMessage("status") }}
+              </p>
+            </div>
+
+            <div class="grid grid-cols-2 gap-4">
+              <div>
+                <label
+                  for="width"
+                  class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1"
+                  >Largeur (optionnel)</label
+                >
+                <input
+                  type="number"
+                  id="width"
+                  formControlName="width"
+                  class="w-full px-3 py-2 border rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white"
+                  [class.border-red-500]="isFieldInvalid('width')"
+                  step="0.000001"
+                />
+                <p
+                  *ngIf="isFieldInvalid('width')"
+                  class="mt-1 text-sm text-red-500"
+                >
+                  {{ getErrorMessage("width") }}
+                </p>
+              </div>
+
+              <div>
+                <label
+                  for="length"
+                  class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1"
+                  >Longueur (optionnel)</label
+                >
+                <input
+                  type="number"
+                  id="length"
+                  formControlName="length"
+                  class="w-full px-3 py-2 border rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white"
+                  [class.border-red-500]="isFieldInvalid('length')"
+                  step="0.000001"
+                />
+                <p
+                  *ngIf="isFieldInvalid('length')"
+                  class="mt-1 text-sm text-red-500"
+                >
+                  {{ getErrorMessage("length") }}
+                </p>
+              </div>
+            </div>
           </div>
-          <div class="flex space-x-1">
-            <button 
-              class="p-1 rounded-full text-yellow-500 hover:bg-yellow-100 dark:hover:bg-yellow-900 focus:outline-none"
-              (click)="openEditParkingModal(parking)"
-              title="Modifier"
+
+          <div class="mt-6 flex justify-end space-x-3">
+            <button
+              type="button"
+              class="px-4 py-2 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 dark:bg-gray-700 dark:text-gray-300 dark:border-gray-600 dark:hover:bg-gray-600"
+              (click)="closeModal()"
             >
-              <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7" />
-                <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z" />
-              </svg>
+              Annuler
             </button>
-            <button 
-              class="p-1 rounded-full text-red-500 hover:bg-red-100 dark:hover:bg-red-900 focus:outline-none"
-              (click)="deleteParking(parking.id)"
-              title="Supprimer"
+            <button
+              type="submit"
+              class="px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
+              [disabled]="parkingForm.invalid"
             >
-              <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                <path d="M3 6h18" />
-                <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2" />
-                <path d="M10 11v6" />
-                <path d="M14 11v6" />
-              </svg>
+              {{ isEditMode ? "Mettre à jour" : "Ajouter" }}
             </button>
           </div>
-        </div>
-        
-        <div class="mb-4">
-          <p class="text-gray-600 dark:text-gray-300 text-sm">{{ parking.address }}</p>
-        </div>
-        
-        <div class="space-y-3">
-          <div class="flex items-center justify-between text-gray-600 dark:text-gray-300">
-            <div class="flex items-center">
-              <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2 text-gray-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                <rect x="3" y="3" width="18" height="18" rx="2" />
-                <path d="M9 3v18" />
-                <path d="M3 9h6" />
-              </svg>
-              <span>Capacité Totale:</span>
-            </div>
-            <span class="font-medium text-gray-800 dark:text-white">{{ parking.capacity }}</span>
-          </div>
-          
-          <div class="flex items-center justify-between">
-            <div class="flex items-center text-gray-600 dark:text-gray-300">
-              <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2 text-gray-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                <circle cx="12" cy="12" r="10" />
-                <path d="M12 8v4" />
-                <path d="M12 16h.01" />
-              </svg>
-              <span>Places Disponibles:</span>
-            </div>
-            <span [ngClass]="getAvailabilityColorClass(parking)">{{ parking.availablePlaces  ?? 0}}</span>
-          </div>
-          
-          <!-- Availability Progress Bar -->
-          <div class="w-full bg-gray-200 dark:bg-gray-700 rounded-full h-2.5">
-            <div 
-              class="h-2.5 rounded-full" 
-              [ngClass]="getProgressBarColorClass(parking)"
-              [style.width.%]="(parking.availablePlaces  ?? 0/ parking.capacity) * 100"
-            ></div>
-          </div>
-          
-          <div class="flex items-center justify-between text-gray-600 dark:text-gray-300">
-            <div class="flex items-center">
-              <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2 text-gray-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                <circle cx="12" cy="12" r="10" />
-                <path d="M12 16v.01" />
-                <path d="M12 8v4" />
-              </svg>
-              <span>Statut:</span>
-            </div>
-            <span 
-              [ngClass]="{
-                'text-green-600 dark:text-green-400': parking.status === 'OPEN',
-                'text-red-600 dark:text-red-400': parking.status === 'CLOSED',
-                'text-yellow-600 dark:text-yellow-400': parking.status === 'MAINTENANCE'
-              }"
-            >
-              {{ parking.status === 'OPEN' ? 'Ouvert' : parking.status === 'CLOSED' ? 'Fermé' : 'MAINTENANCE' }}
-            </span>
-          </div>
-        </div>
+        </form>
       </div>
     </div>
-    
-    <!-- Empty state -->
-    <div 
-      *ngIf="filteredParkings.length === 0" 
-      class="col-span-full flex flex-col items-center justify-center p-8 bg-white dark:bg-gray-800 rounded-lg shadow-md"
-    >
-      <svg xmlns="http://www.w3.org/2000/svg" class="h-16 w-16 text-gray-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1">
-        <rect x="3" y="3" width="18" height="18" rx="2" />
-        <path d="M9 3v18" />
-        <path d="M3 9h6" />
-      </svg>
-      <h3 class="mt-4 text-lg font-medium text-gray-900 dark:text-white">Aucun parking trouvé</h3>
-      <p class="mt-1 text-sm text-gray-500 dark:text-gray-400">
-        {{ parkings.length === 0 ? "Commencez par ajouter un parking" : "Aucun résultat ne correspond à votre recherche" }}
-      </p>
-      <button 
-        *ngIf="parkings.length === 0"
-        (click)="openAddParkingModal()" 
-        class="mt-4 inline-flex items-center px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
+
+    <!-- Toast Notifications -->
+    <div class="fixed bottom-4 right-4 z-50 flex flex-col gap-2">
+      <div
+        *ngFor="let toast of toasts"
+        class="flex items-center p-4 rounded-lg shadow-lg transition-all duration-300 transform translate-y-0 opacity-100"
+        [ngClass]="{
+          'bg-green-100 text-green-600 dark:bg-green-700 dark:text-green-100':
+            toast.type === 'success',
+          'bg-red-100 text-red-600 dark:bg-red-700 dark:text-red-100':
+            toast.type === 'error',
+          'bg-blue-100 text-blue-600 dark:bg-blue-700 dark:text-blue-100':
+            toast.type === 'info'
+        }"
       >
-        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-          <path d="M12 5v14M5 12h14" />
-        </svg>
-        Ajouter un Parking
-      </button>
-    </div>
-  </div>
-  
-  <!-- Modal for Adding/Editing a Parking -->
-  <div
-    *ngIf="isModalOpen"
-    class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50"
-  >
-    <div class="bg-white dark:bg-gray-800 rounded-lg shadow-xl p-6 w-full max-w-md mx-4 relative">
-      <button 
-        (click)="closeModal()" 
-        class="absolute top-4 right-4 text-gray-400 hover:text-gray-500 dark:hover:text-gray-300"
-      >
-        <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-          <path d="M18 6L6 18M6 6l12 12" />
-        </svg>
-        <span class="sr-only">Fermer</span>
-      </button>
-      
-      <h2 class="text-xl font-bold text-gray-800 dark:text-white mb-6">
-        {{ isEditMode ? 'Modifier le Parking' : 'Ajouter un Parking' }}
-      </h2>
-      
-      <form [formGroup]="parkingForm" (ngSubmit)="submitParkingForm()">
-        <div class="space-y-4">
-          <div>
-            <label for="name" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Nom du Parking</label>
-            <input 
-              type="text" 
-              id="name"
-              formControlName="name" 
-              class="w-full px-3 py-2 border rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white"
-              [class.border-red-500]="isFieldInvalid('name')"
-            >
-            <p 
-              *ngIf="isFieldInvalid('name')" 
-              class="mt-1 text-sm text-red-500"
-            >
-              {{ getErrorMessage('name') }}
-            </p>
-          </div>
-          
-          <div>
-            <label for="address" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Adresse</label>
-            <input 
-              type="text" 
-              id="address"
-              formControlName="address" 
-              class="w-full px-3 py-2 border rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white"
-              [class.border-red-500]="isFieldInvalid('address')"
-            >
-            <p 
-              *ngIf="isFieldInvalid('address')" 
-              class="mt-1 text-sm text-red-500"
-            >
-              {{ getErrorMessage('address') }}
-            </p>
-          </div>
-          
-          <div class="grid grid-cols-2 gap-4">
-            <div>
-              <label for="capacity" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Capacité Totale</label>
-              <input 
-                type="number" 
-                id="capacity"
-                formControlName="capacity" 
-                class="w-full px-3 py-2 border rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white"
-                [class.border-red-500]="isFieldInvalid('capacity')"
-              >
-              <p 
-                *ngIf="isFieldInvalid('capacity')" 
-                class="mt-1 text-sm text-red-500"
-              >
-                {{ getErrorMessage('capacity') }}
-              </p>
-            </div>
-            
-            <div>
-              <label for="availablePlaces" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Places Disponibles</label>
-              <input 
-                type="number" 
-                id="availablePlaces"
-                formControlName="availablePlaces" 
-                class="w-full px-3 py-2 border rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white"
-                [class.border-red-500]="isFieldInvalid('availablePlaces')"
-              >
-              <p 
-                *ngIf="isFieldInvalid('availablePlaces')" 
-                class="mt-1 text-sm text-red-500"
-              >
-                {{ getErrorMessage('availablePlaces') }}
-              </p>
-            </div>
-          </div>
-          
-          <div>
-            <label for="status" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Statut</label>
-            <select 
-              id="status"
-              formControlName="status" 
-              class="w-full px-3 py-2 border rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white"
-              [class.border-red-500]="isFieldInvalid('status')"
-            >
-              <option value="OPEN">Ouvert</option>
-              <option value="CLOSED">Fermé</option>
-              <option value="MAINTENANCE">Maintenance</option>
-            </select>
-            <p 
-              *ngIf="isFieldInvalid('status')" 
-              class="mt-1 text-sm text-red-500"
-            >
-              {{ getErrorMessage('status') }}
-            </p>
-          </div>
-          
-          <div class="grid grid-cols-2 gap-4">
-            <div>
-              <label for="latitude" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Latitude (optionnel)</label>
-              <input 
-                type="number" 
-                id="latitude"
-                formControlName="latitude" 
-                class="w-full px-3 py-2 border rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white"
-                [class.border-red-500]="isFieldInvalid('latitude')"
-                step="0.000001"
-              >
-              <p 
-                *ngIf="isFieldInvalid('latitude')" 
-                class="mt-1 text-sm text-red-500"
-              >
-                {{ getErrorMessage('latitude') }}
-              </p>
-            </div>
-            
-            <div>
-              <label for="longitude" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Longitude (optionnel)</label>
-              <input 
-                type="number" 
-                id="longitude"
-                formControlName="longitude" 
-                class="w-full px-3 py-2 border rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white"
-                [class.border-red-500]="isFieldInvalid('longitude')"
-                step="0.000001"
-              >
-              <p 
-                *ngIf="isFieldInvalid('longitude')" 
-                class="mt-1 text-sm text-red-500"
-              >
-                {{ getErrorMessage('longitude') }}
-              </p>
-            </div>
-          </div>
-        </div>
-        
-        <div class="mt-6 flex justify-end space-x-3">
-          <button 
-            type="button" 
-            class="px-4 py-2 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 dark:bg-gray-700 dark:text-gray-300 dark:border-gray-600 dark:hover:bg-gray-600"
-            (click)="closeModal()"
+        <div class="mr-3">
+          <svg
+            *ngIf="toast.type === 'success'"
+            xmlns="http://www.w3.org/2000/svg"
+            class="h-5 w-5"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2"
           >
-            Annuler
-          </button>
-          <button 
-            type="submit" 
-            class="px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
-            [disabled]="parkingForm.invalid"
+            <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14" />
+            <path d="M22 4L12 14.01l-3-3" />
+          </svg>
+          <svg
+            *ngIf="toast.type === 'error'"
+            xmlns="http://www.w3.org/2000/svg"
+            class="h-5 w-5"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2"
           >
-            {{ isEditMode ? 'Mettre à jour' : 'Ajouter' }}
-          </button>
+            <circle cx="12" cy="12" r="10" />
+            <path d="M15 9l-6 6" />
+            <path d="M9 9l6 6" />
+          </svg>
+          <svg
+            *ngIf="toast.type === 'info'"
+            xmlns="http://www.w3.org/2000/svg"
+            class="h-5 w-5"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2"
+          >
+            <circle cx="12" cy="12" r="10" />
+            <path d="M12 16v-4" />
+            <path d="M12 8h.01" />
+          </svg>
         </div>
-      </form>
-    </div>
-  </div>
-  
-  <!-- Toast Notifications -->
-  <div class="fixed bottom-4 right-4 z-50 flex flex-col gap-2">
-    <div *ngFor="let toast of toasts" 
-      class="flex items-center p-4 rounded-lg shadow-lg transition-all duration-300 transform translate-y-0 opacity-100"
-      [ngClass]="{
-        'bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-100': toast.type === 'success',
-        'bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-100': toast.type === 'error',
-        'bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-100': toast.type === 'info',
-        'bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-100': toast.type === 'warning'
-      }"
-    >
-      <div class="mr-3">
-        <svg *ngIf="toast.type === 'success'" xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-          <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14" />
-          <path d="M22 4L12 14.01l-3-3" />
-        </svg>
-        <svg *ngIf="toast.type === 'error'" xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-          <circle cx="12" cy="12" r="10" />
-          <path d="M15 9l-6 6" />
-          <path d="M9 9l6 6" />
-        </svg>
-        <svg *ngIf="toast.type === 'info'" xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-          <circle cx="12" cy="12" r="10" />
-          <path d="M12 16v-4" />
-          <path d="M12 8h.01" />
-        </svg>
-        <svg *ngIf="toast.type === 'warning'" xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-          <path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z" />
-          <path d="M12 9v4" />
-          <path d="M12 17h.01" />
-        </svg>
+        <div>{{ toast.message }}</div>
+        <button
+          class="ml-auto pl-3 text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-300"
+          (click)="removeToast(toast.id)"
+        >
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            class="h-4 w-4"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2"
+          >
+            <path d="M18 6L6 18M6 6l12 12" />
+          </svg>
+        </button>
       </div>
-      <div>{{ toast.message }}</div>
-      <button 
-        class="ml-auto pl-3 text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-300"
-        (click)="removeToast(toast.id)"
-      >
-        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-          <path d="M18 6L6 18M6 6l12 12" />
-        </svg>
-      </button>
     </div>
   </div>
 </div>

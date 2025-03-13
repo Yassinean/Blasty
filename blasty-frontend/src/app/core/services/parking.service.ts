@@ -1,56 +1,54 @@
 import { Injectable } from '@angular/core';
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpParams } from '@angular/common/http';
 import { Observable } from 'rxjs';
-import { Parking } from '../models/parking.model';
-import { ParkingOccupancyResponse } from '../models/ParkingOccupancyResponse';
-import { ParkingRevenueResponse } from '../models/ParkingRevenueResponse';
+import { 
+  Parking, 
+  ParkingRequest, 
+  ParkingResponse, 
+  ParkingOccupancyResponse, 
+  ParkingRevenueResponse 
+} from '../models/parking.model';
 
 @Injectable({
-  providedIn: 'root',
+  providedIn: 'root'
 })
 export class ParkingService {
   private baseUrl = 'http://localhost:8080/api/parkings';
 
-  constructor(private http: HttpClient) {}
+  constructor(private http: HttpClient) { }
 
-  getAllParkings(): Observable<Parking[]> {
-    return this.http.get<Parking[]>(this.baseUrl);
+  // Admin endpoints
+  createParking(request: ParkingRequest): Observable<ParkingResponse> {
+    return this.http.post<ParkingResponse>(this.baseUrl, request);
   }
 
-  getParkingById(id: number): Observable<Parking> {
-    return this.http.get<Parking>(`${this.baseUrl}/${id}`);
-  }
-
-  createParking(parking: Parking): Observable<Parking> {
-    return this.http.post<Parking>(this.baseUrl, parking);
-  }
-
-  updateParking(id: number, parking: Parking): Observable<Parking> {
-    return this.http.put<Parking>(`${this.baseUrl}/${id}`, parking);
+  updateParking(id: number, request: ParkingRequest): Observable<ParkingResponse> {
+    return this.http.put<ParkingResponse>(`${this.baseUrl}/${id}`, request);
   }
 
   deleteParking(id: number): Observable<void> {
     return this.http.delete<void>(`${this.baseUrl}/${id}`);
   }
 
-  // Récupérer les places disponibles pour un parking
+  getParkingOccupancy(): Observable<ParkingOccupancyResponse[]> {
+    return this.http.get<ParkingOccupancyResponse[]>(`${this.baseUrl}/occupancy`);
+  }
+
+  getParkingRevenue(period: string = 'month'): Observable<ParkingRevenueResponse[]> {
+    const params = new HttpParams().set('period', period);
+    return this.http.get<ParkingRevenueResponse[]>(`${this.baseUrl}/revenue`, { params });
+  }
+
+  // Client accessible endpoints
+  getParkingById(id: number): Observable<ParkingResponse> {
+    return this.http.get<ParkingResponse>(`${this.baseUrl}/${id}`);
+  }
+
+  getAllParkings(): Observable<ParkingResponse[]> {
+    return this.http.get<ParkingResponse[]>(this.baseUrl);
+  }
+
   getAvailablePlaces(id: number): Observable<number> {
     return this.http.get<number>(`${this.baseUrl}/${id}/available-places`);
-  }
-
-  // Récupérer l'occupation des parkings
-  getParkingOccupancy(): Observable<ParkingOccupancyResponse[]> {
-    return this.http.get<ParkingOccupancyResponse[]>(
-      `${this.baseUrl}/occupancy`
-    );
-  }
-
-  // Récupérer les revenus des parkings
-  getParkingRevenue(
-    period: string = 'month'
-  ): Observable<ParkingRevenueResponse[]> {
-    return this.http.get<ParkingRevenueResponse[]>(
-      `${this.baseUrl}/revenue?period=${period}`
-    );
   }
 }

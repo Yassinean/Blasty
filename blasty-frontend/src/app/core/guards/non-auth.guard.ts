@@ -13,7 +13,7 @@ export class NonAuthGuard implements CanActivate {
       if(this.authService.getUser().role === 'ADMIN') {
         this.router.navigate(['/admin/dashboard']);
       } else if(this.authService.getUser().role === 'CLIENT') {
-        this.router.navigate(['/client/dashboard']);
+        this.router.navigate(['/client/places']);
       }
       return false;
     }

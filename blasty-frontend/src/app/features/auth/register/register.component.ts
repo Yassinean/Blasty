@@ -26,7 +26,7 @@ export class RegisterComponent {
   onSubmit() {
       if (this.registerForm.valid) {
         this.authService.register(this.registerForm.value).subscribe({
-          next: () => this.router.navigate(['/login']),
+          next: () => this.router.navigate(['/auth/login']),
           error: () => alert('Échec de l’inscription'),
         });
       }
