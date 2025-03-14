@@ -16,7 +16,7 @@ public interface ReservationMapper {
     ReservationMapper INSTANCE = Mappers.getMapper(ReservationMapper.class);
 
     @Mapping(target = "id", ignore = true)
-    @Mapping(target = "reservationDate", expression = "java(java.time.LocalDateTime.now())")
+    @Mapping(target = "startDate", expression = "java(java.time.LocalDateTime.now())")
     @Mapping(target = "status", expression = "java(com.blasty.model.enums.ReservationStatus.PENDING)")
     @Mapping(target = "client", source = "clientId")
     @Mapping(target = "place", source = "placeId")

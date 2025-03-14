@@ -17,7 +17,4 @@ public class PlaceRequest {
 
     @NotNull(message = "Le type de place est obligatoire")
     private TypePlace type;
-
-    @NotNull(message = "Le tarif horaire est obligatoire")
-    private Double tarifHoraire;
 }

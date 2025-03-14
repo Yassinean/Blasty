@@ -6,7 +6,7 @@ export interface ParkingRevenueResponse {
 }
 
 enum Period {
-  DAY = 'DAY',
-  WEEK = 'WEEK',
-  MONTH = 'MONTH',
+  DAY = 'day',
+  WEEK = 'week',
+  MONTH = 'month',
 }

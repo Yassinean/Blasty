@@ -1,38 +1,38 @@
-import { Component, type OnInit } from "@angular/core"
-import { CommonModule } from "@angular/common"
-import { ActivatedRoute, Router, RouterModule } from "@angular/router"
-import { FormsModule, ReactiveFormsModule, FormBuilder, FormGroup, Validators } from "@angular/forms"
-import { PlaceService } from "../../../../core/services/place.service"
-import { PlaceResponse, PlaceRequest, PlaceStatus, PlaceType } from "../../../../core/models/place.model"
-import { switchMap, tap, catchError } from "rxjs/operators"
-import { of } from "rxjs"
-import { ParkingService } from "../../../../core/services/parking.service"
-import { ToastService } from "../../../../core/services/toast.service"
+import { Component, type OnInit } from '@angular/core';
+import { CommonModule } from '@angular/common';
+import { ActivatedRoute, Router, RouterModule } from '@angular/router';
+import { FormsModule, ReactiveFormsModule, FormBuilder, FormGroup, Validators } from '@angular/forms';
+import { PlaceService } from '../../../../core/services/place.service';
+import { PlaceResponse, PlaceRequest, PlaceStatus, PlaceType } from '../../../../core/models/place.model';
+import { switchMap, tap, catchError } from 'rxjs/operators';
+import { of } from 'rxjs';
+import { ParkingService } from '../../../../core/services/parking.service';
+import { ToastService } from '../../../../core/services/toast.service'; // Import ToastService
 
 @Component({
-  selector: "app-place-management",
+  selector: 'app-place-management',
   standalone: true,
   imports: [CommonModule, RouterModule, FormsModule, ReactiveFormsModule],
-  templateUrl: "./place-management.component.html",
-  styleUrls: ["./place-management.component.css"],
+  templateUrl: './place-management.component.html',
+  styleUrls: ['./place-management.component.css'],
 })
 export class PlaceManagementComponent implements OnInit {
-  parkingId!: number
-  parkingName = ""
-  places: PlaceResponse[] = []
-  filteredPlaces: PlaceResponse[] = []
-  placeForm!: FormGroup
-  isLoading = false
+  parkingId!: number;
+  parkingName = '';
+  places: PlaceResponse[] = [];
+  filteredPlaces: PlaceResponse[] = [];
+  placeForm!: FormGroup;
+  isLoading = false;
 
-  selectedPlace: PlaceResponse | null = null
-  isEditMode = false
-  showForm = false
-  filterStatus = "ALL"
-  filterType = "ALL"
+  selectedPlace: PlaceResponse | null = null;
+  isEditMode = false;
+  showForm = false;
+  filterStatus = 'ALL';
+  filterType = 'ALL';
 
-  placeTypes = Object.values(PlaceType)
-  placeStatuses = Object.values(PlaceStatus)
-  placeStatus = PlaceStatus
+  placeTypes = Object.values(PlaceType);
+  placeStatuses = Object.values(PlaceStatus);
+  placeStatus = PlaceStatus;
 
   constructor(
     private placeService: PlaceService,
@@ -40,159 +40,212 @@ export class PlaceManagementComponent implements OnInit {
     private router: Router,
     private fb: FormBuilder,
     private parkingService: ParkingService,
-    private toastService: ToastService,
+    private toastService: ToastService // Inject ToastService
   ) {}
 
   ngOnInit(): void {
-    this.initForm()
-    this.loadParkingAndPlaces()
+    this.initForm();
+    this.loadParkingAndPlaces();
   }
 
   loadParkingAndPlaces(): void {
-    this.isLoading = true
-    console.log(this.parkingId); // here the id undefind
-    
+    this.isLoading = true;
+    console.log(this.parkingId); // here the id undefined
+
     this.route.params
       .pipe(
         switchMap((params) => {
-          this.parkingId = +params['id']
-          console.log("Parking ID from route:", this.parkingId) // here Nan
+          this.parkingId = +params['id'];
+          console.log('Parking ID from route:', this.parkingId); // here NaN
           if (isNaN(this.parkingId)) {
-            throw new Error("Invalid parking ID")
+            throw new Error('Invalid parking ID');
           }
           // First get the parking details to get the name
-          return this.parkingService.getParkingById(this.parkingId)
+          return this.parkingService.getParkingById(this.parkingId);
         }),
         tap((parking) => {
-          console.log("Parking Details:", parking)
+          console.log('Parking Details:', parking);
           if (parking) {
-            this.parkingName = parking.name || `Parking #${this.parkingId}`
+            this.parkingName = parking.name || `Parking #${this.parkingId}`;
           }
         }),
         catchError((error) => {
-          console.error("Error loading parking details:", error)
-          this.toastService.showError("Error", "Failed to load parking details")
-          return of(null)
+          console.error('Error loading parking details:', error);
+          this.toastService.showError('Failed to load parking details', 'Please try again later.');
+          return of(null);
         }),
         // Only proceed to fetch places if we got a valid parking
         switchMap((parking) => {
-          if (!parking) return of([])
-          console.log("Fetching places for parking ID:", this.parkingId)
+          if (!parking) return of([]);
+          console.log('Fetching places for parking ID:', this.parkingId);
           // Get places specifically for this parking ID
-          return this.placeService.getAllPlaces()
+          return this.placeService.getAllPlaces();
         }),
         tap((places) => {
-          console.log("All Places fetched:", places)
+          console.log('All Places fetched:', places);
           // Filter places by parking ID
-          this.places = places.filter((place) => {
-            const match = place.parkingId === this.parkingId
-            console.log(`Place ${place.id} parkingId: ${place.parkingId}, match: ${match}`)
-            return match
-          })
-          console.log("Filtered Places for this parking:", this.places)
-          this.applyFilters()
+          this.places = places.filter((place) => place.parkingId === this.parkingId);
+          console.log('Filtered Places for this parking:', this.places);
+          this.applyFilters();
         }),
         catchError((error) => {
-          console.error("Error loading places:", error)
-          this.toastService.showError("Error", "Failed to load places")
-          return of([])
-        }),
+          console.error('Error loading places:', error);
+          this.toastService.showError('Failed to load places', 'Please try again later.');
+          return of([]);
+        })
       )
       .subscribe({
         next: () => {
-          this.isLoading = false
-          console.log("Final places array:", this.places)
-          console.log("Final filtered places array:", this.filteredPlaces)
+          this.isLoading = false;
+          console.log('Final places array:', this.places);
+          console.log('Final filtered places array:', this.filteredPlaces);
         },
         error: (err) => {
-          console.error("Subscription error:", err)
-          this.isLoading = false
-          this.toastService.showError("Error", "An unexpected error occurred")
+          console.error('Subscription error:', err);
+          this.isLoading = false;
+          this.toastService.showError('An unexpected error occurred', 'Please try again later.');
         },
-      })
+      });
   }
 
   initForm(place?: PlaceResponse): void {
     this.placeForm = this.fb.group({
-      numero: [place?.numero || "", [Validators.required]],
+      numero: [place?.numero || '', [Validators.required]],
       type: [place?.type || PlaceType.STANDARD, [Validators.required]],
-      tarifHoraire: [place?.tarifHoraire || 0, [Validators.required, Validators.min(0)]],
-    })
+      tarifHoraire: [
+        place?.tarifHoraire || 0,
+        [Validators.required, Validators.min(0)],
+      ],
+    });
   }
 
   applyFilters(): void {
-    console.log("Applying filters. Current places:", this.places)
+    console.log('Applying filters. Current places:', this.places);
     this.filteredPlaces = this.places.filter((place) => {
-      const matchesStatus = this.filterStatus === "ALL" ? true : place.etat === this.filterStatus
+      const matchesStatus =
+        this.filterStatus === 'ALL' ? true : place.etat === this.filterStatus;
 
-      const matchesType = this.filterType === "ALL" ? true : place.type === this.filterType
+      const matchesType =
+        this.filterType === 'ALL' ? true : place.type === this.filterType;
 
-      return matchesStatus && matchesType
-    })
-    console.log("Filtered places after applying filters:", this.filteredPlaces)
+      return matchesStatus && matchesType;
+    });
+    console.log('Filtered places after applying filters:', this.filteredPlaces);
   }
 
   openAddForm(): void {
-    this.isEditMode = false
-    this.selectedPlace = null
-    this.initForm()
-    this.showForm = true
+    this.isEditMode = false;
+    this.selectedPlace = null;
+    this.initForm();
+    this.showForm = true;
   }
 
   openEditForm(place: PlaceResponse): void {
-    this.isEditMode = true
-    this.selectedPlace = place
-    this.initForm(place)
-    this.showForm = true
+    this.isEditMode = true;
+    this.selectedPlace = place;
+    this.initForm(place);
+    this.showForm = true;
   }
 
   closeForm(): void {
-    this.showForm = false
-    this.selectedPlace = null
+    this.showForm = false;
+    this.selectedPlace = null;
   }
 
   submitForm(): void {
-    if (this.placeForm.invalid) return
+    if (this.placeForm.invalid) {
+      this.toastService.showError('Please fill all required fields correctly.', 'Check the form and try again.');
+      return;
+    }
 
     const placeRequest: PlaceRequest = {
       numero: this.placeForm.value.numero,
       type: this.placeForm.value.type,
-      tarifHoraire: this.placeForm.value.tarifHoraire,
-    }
+    };
 
+    // Check parking capacity before submitting the form
     if (this.isEditMode && this.selectedPlace) {
-      this.placeService.updatePlace(this.selectedPlace.id, placeRequest).subscribe({
-        next: (updatedPlace) => {
-          const index = this.places.findIndex((p) => p.id === updatedPlace.id)
-          if (index !== -1) {
-            this.places[index] = updatedPlace
-            this.applyFilters()
-          }
-          this.closeForm()
-        },
-        error: (error) => console.error("Error updating place:", error),
-      })
+      this.placeService
+        .updatePlace(this.selectedPlace.id, placeRequest)
+        .subscribe({
+          next: (updatedPlace) => {
+            const index = this.places.findIndex(
+              (p) => p.id === updatedPlace.id
+            );
+            if (index !== -1) {
+              this.places[index] = updatedPlace;
+              this.applyFilters();
+            }
+            this.closeForm();
+          },
+          error: (error) => {
+            if (
+              error.status === 400 &&
+              error.error.message.includes('maximum capacity')
+            ) {
+              this.toastService.showError(
+                'Parking has reached its maximum capacity. Cannot add more places.',
+                'Please consider removing some places to add new ones.'
+              );
+            } else {
+              this.toastService.showError(
+                'Error updating place: ' + (error.message || error),
+                'Please try again later.'
+              );
+            }
+            console.error('Error updating place:', error);
+          },
+        });
     } else {
-      this.placeService.createPlace(this.parkingId, placeRequest).subscribe({
+      this.placeService.createPlace(this.parkingId, placeRequest).subscribe({        
         next: (newPlace) => {
-          this.places.push(newPlace)
-          this.applyFilters()
-          this.closeForm()
+          this.places.push(newPlace);
+          this.toastService.showSuccess('Place created successfully.', 'The new place has been added.');
+          this.applyFilters();
+          this.closeForm();
         },
-        error: (error) => console.error("Error creating place:", error),
-      })
+        error: (error) => {
+          if (
+            error.status === 400 &&
+            error.error.message.includes('maximum capacity')
+          ) {
+            this.toastService.showError(
+              'Parking has reached its maximum capacity. Cannot add more places.',
+              'Consider removing some places to add new ones.'
+            );
+          } else {
+            this.toastService.showError(
+              'Error creating place: ' + (error.message || error),
+              'Please try again later.'
+            );
+          }
+          console.error('Error creating place:', error);
+        },
+      });
     }
   }
 
+  // Function to check if parking is full
+  isParkingFull(): boolean {
+    const currentPlaceCount = this.places.length; // Assuming you have the places array populated
+    const parkingCapacity = this.getParkingCapacity(); // Assume this method gives the parking capacity
+    return currentPlaceCount >= parkingCapacity;
+  }
+
+  // Dummy function for parking capacity (replace with real data)
+  getParkingCapacity(): number {
+    return this.parkingService.getAvailablePlaces.length; // Example capacity, replace with actual capacity from your service
+  }
+
   deletePlace(id: number): void {
-    if (confirm("Êtes-vous sûr de vouloir supprimer cette place ?")) {
+    if (confirm('Êtes-vous sûr de vouloir supprimer cette place ?')) {
       this.placeService.deletePlace(id).subscribe({
         next: () => {
-          this.places = this.places.filter((place) => place.id !== id)
-          this.applyFilters()
+          this.places = this.places.filter((place) => place.id !== id);
+          this.applyFilters();
         },
-        error: (error) => console.error("Error deleting place:", error),
-      })
+        error: (error) => console.error('Error deleting place:', error),
+      });
     }
   }
 
@@ -200,71 +253,74 @@ export class PlaceManagementComponent implements OnInit {
     if (newStatus === PlaceStatus.DISPONIBLE) {
       this.placeService.freePlace(place.id).subscribe({
         next: (updatedPlace) => {
-          const index = this.places.findIndex((p) => p.id === updatedPlace.id)
+          const index = this.places.findIndex((p) => p.id === updatedPlace.id);
           if (index !== -1) {
-            this.places[index] = updatedPlace
-            this.applyFilters()
+            this.places[index] = updatedPlace;
+            this.applyFilters();
           }
         },
-        error: (error) => console.error("Error changing status:", error),
-      })
+        error: (error) => console.error('Error changing status:', error),
+      });
     } else if (newStatus === PlaceStatus.OCCUPEE) {
       this.placeService.occupyPlace(place.id).subscribe({
         next: (updatedPlace) => {
-          const index = this.places.findIndex((p) => p.id === updatedPlace.id)
+          const index = this.places.findIndex((p) => p.id === updatedPlace.id);
           if (index !== -1) {
-            this.places[index] = updatedPlace
-            this.applyFilters()
+            this.places[index] = updatedPlace;
+            this.applyFilters();
           }
         },
-        error: (error) => console.error("Error changing status:", error),
-      })
+        error: (error) => console.error('Error changing status:', error),
+      });
     } else if (newStatus === PlaceStatus.RESERVEE) {
       // For simplicity, reserve for 1 hour from now
-      const reservedUntil = new Date()
-      reservedUntil.setHours(reservedUntil.getHours() + 1)
+      const reservedUntil = new Date();
+      reservedUntil.setHours(reservedUntil.getHours() + 1);
 
-      this.placeService.reservePlace(place.id, reservedUntil.toISOString()).subscribe({
-        next: (updatedPlace) => {
-          const index = this.places.findIndex((p) => p.id === updatedPlace.id)
-          if (index !== -1) {
-            this.places[index] = updatedPlace
-            this.applyFilters()
-          }
-        },
-        error: (error) => console.error("Error changing status:", error),
-      })
+      this.placeService
+        .reservePlace(place.id, reservedUntil.toISOString())
+        .subscribe({
+          next: (updatedPlace) => {
+            const index = this.places.findIndex(
+              (p) => p.id === updatedPlace.id
+            );
+            if (index !== -1) {
+              this.places[index] = updatedPlace;
+              this.applyFilters();
+            }
+          },
+          error: (error) => console.error('Error changing status:', error),
+        });
     }
   }
 
   getStatusClass(status: PlaceStatus): string {
     switch (status) {
       case PlaceStatus.DISPONIBLE:
-        return "bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200"
+        return 'bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200';
       case PlaceStatus.RESERVEE:
-        return "bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-200"
+        return 'bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-200';
       case PlaceStatus.OCCUPEE:
-        return "bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-200"
+        return 'bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-200';
       default:
-        return "bg-gray-100 text-gray-800 dark:bg-gray-700 dark:text-gray-200"
+        return 'bg-gray-100 text-gray-800 dark:bg-gray-700 dark:text-gray-200';
     }
   }
 
   getTypeClass(type: PlaceType): string {
     switch (type) {
       case PlaceType.STANDARD:
-        return "bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-200"
+        return 'bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-200';
       case PlaceType.HANDICAP:
-        return "bg-purple-100 text-purple-800 dark:bg-purple-900 dark:text-purple-200"
+        return 'bg-purple-100 text-purple-800 dark:bg-purple-900 dark:text-purple-200';
       case PlaceType.VIP:
-        return "bg-amber-100 text-amber-800 dark:bg-amber-900 dark:text-amber-200"
+        return 'bg-amber-100 text-amber-800 dark:bg-amber-900 dark:text-amber-200';
       default:
-        return "bg-gray-100 text-gray-800 dark:bg-gray-700 dark:text-gray-200"
+        return 'bg-gray-100 text-gray-800 dark:bg-gray-700 dark:text-gray-200';
     }
   }
 
   goBack(): void {
-    this.router.navigate(["/admin/dashboard/parkings"])
+    this.router.navigate(['/admin/dashboard/parkings']);
   }
 }
-

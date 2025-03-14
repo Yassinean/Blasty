@@ -2,7 +2,6 @@ export interface Place {
   id?: number
   numero: string
   type: PlaceType
-  tarifHoraire: number
   etat: PlaceStatus
   reservedUntil?: string
   parkingId?: number
@@ -11,7 +10,6 @@ export interface Place {
 export interface PlaceRequest {
   numero: string
   type: string
-  tarifHoraire: number
 }
 
 export interface PlaceResponse {

@@ -44,13 +44,13 @@ public class ParkingController {
 
     @GetMapping("/{id}/occupancy")
     @PreAuthorize("hasRole('ADMIN')")
-    public ResponseEntity<List<ParkingOccupancyResponse>> getParkingOccupancy(@PathVariable Long id) {
+    public ResponseEntity<ParkingOccupancyResponse> getParkingOccupancy(@PathVariable Long id) {
         return ResponseEntity.ok(parkingService.getParkingOccupancy(id));
     }
 
     @GetMapping("/{id}/revenue")
     @PreAuthorize("hasRole('ADMIN')")
-    public ResponseEntity<List<ParkingRevenueResponse>> getParkingRevenue(
+    public ResponseEntity<ParkingRevenueResponse> getParkingRevenue(
             @PathVariable Long id ,@RequestParam(defaultValue = "month") String period) {
         return ResponseEntity.ok(parkingService.getParkingRevenue(id, period));
     }

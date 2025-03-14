@@ -136,21 +136,6 @@
                     </option>
                   </select>
                 </div>
-  
-                <div>
-                  <label for="tarifHoraire" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Tarif horaire (DH)</label>
-                  <input
-                    type="number"
-                    id="tarifHoraire"
-                    formControlName="tarifHoraire"
-                    min="0"
-                    step="0.5"
-                    class="block w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:text-white"
-                  />
-                  <div *ngIf="placeForm.get('tarifHoraire')?.invalid && placeForm.get('tarifHoraire')?.touched" class="text-red-500 text-sm mt-1">
-                    Le tarif horaire doit être un nombre positif
-                  </div>
-                </div>
               </div>
   
               <div class="mt-6 flex justify-end space-x-3">

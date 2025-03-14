@@ -19,9 +19,9 @@ public interface ParkingService {
 
     void deleteParking(Long id);
 
-    List<ParkingOccupancyResponse> getParkingOccupancy(Long id);
+    ParkingOccupancyResponse getParkingOccupancy(Long id);
 
-    List<ParkingRevenueResponse> getParkingRevenue(Long id , String period);
+    ParkingRevenueResponse getParkingRevenue(Long id , String period);
 
     public void incrementOccupiedSpaces(Long parkingId);
 

@@ -8,6 +8,7 @@ import com.blasty.mapper.PlaceMapper;
 import com.blasty.model.Parking;
 import com.blasty.model.Place;
 import com.blasty.model.enums.PlaceStatus;
+import com.blasty.model.enums.TypePlace;
 import com.blasty.repository.ParkingRepository;
 import com.blasty.repository.PlaceRepository;
 import com.blasty.service.Interface.ParkingService;
@@ -36,13 +37,31 @@ public class PlaceServiceImpl implements PlaceService {
         Parking parking = parkingRepository.findById(parkingId)
                 .orElseThrow(() -> new ResourceNotFoundException("Parking not found with id: " + parkingId));
 
+            validateParkingCount(parking);
+
         Place place = placeMapper.toEntity(request);
         place.setParking(parking);
         place.setEtat(PlaceStatus.DISPONIBLE); // Initialize as available
+        place.setType(request.getType());
+        if (request.getType() == TypePlace.HANDICAPE){
+            place.setTarifHoraire(1.5);
+        }else if (request.getType() == TypePlace.STANDARD){
+            place.setTarifHoraire(5);
+        }else place.setTarifHoraire(10);
+
         place = placeRepository.save(place);
 
         log.info("Created new place with id: {} in parking: {}", place.getId(), parkingId);
         return placeMapper.toResponse(place);
+    }
+
+    private void validateParkingCount(Parking parking) {
+        long currentPlaceCount = placeRepository.countByParking(parking);
+        log.info("Parking count: {}", currentPlaceCount);
+        double capacity = parking.getCapacity();
+        if (currentPlaceCount >= capacity) {
+            throw new IllegalArgumentException("Parking has reached its maximum capacity of " + capacity + " places.");
+        }
     }
 
     @Override
@@ -64,9 +83,13 @@ public class PlaceServiceImpl implements PlaceService {
         Place place = findPlaceById(id);
 
         // Only update fields that can be modified
-        place.setType(request.getType());
-        place.setTarifHoraire(request.getTarifHoraire());
         place.setNumero(request.getNumero());
+        place.setType(request.getType());
+        if (request.getType() == TypePlace.HANDICAPE){
+            place.setTarifHoraire(1.5);
+        }else if (request.getType() == TypePlace.STANDARD){
+            place.setTarifHoraire(5);
+        }else place.setTarifHoraire(10);
 
         Place savedPlace = placeRepository.save(place);
         log.info("Updated place with id: {}", id);

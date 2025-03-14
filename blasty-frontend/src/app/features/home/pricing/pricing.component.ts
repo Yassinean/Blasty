@@ -11,20 +11,20 @@ import { RouterLink } from '@angular/router';
 export class PricingComponent {
   plans = [
     {
-      name: 'Standard',
-      price: '2€',
+      name: 'Handicap',
+      price: '1.5DH',
       features: [
-        'Place standard',
+        'Place Handicap',
         'Réservation simple',
         'Paiement sécurisé'
       ],
       recommended: false
     },
     {
-      name: 'Premium',
-      price: '3€',
+      name: 'Standard',
+      price: '5DH',
       features: [
-        'Place premium',
+        'Place Standard',
         'Proche des entrées',
         'Borne de recharge',
         'Service voiturier'
@@ -32,8 +32,8 @@ export class PricingComponent {
       recommended: true
     },
     {
-      name: 'Business',
-      price: '4€',
+      name: 'VIP',
+      price: '10DH',
       features: [
         'Place réservée',
         'Accès prioritaire',

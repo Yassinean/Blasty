@@ -7,11 +7,15 @@ import com.blasty.dto.response.ParkingRevenueResponse;
 import com.blasty.exception.ResourceNotFoundException;
 import com.blasty.mapper.ParkingMapper;
 import com.blasty.model.Parking;
+import com.blasty.model.Reservation;
 import com.blasty.repository.ParkingRepository;
+import com.blasty.repository.ReservationRepository;
 import com.blasty.service.Interface.ParkingService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDate;
+import java.time.LocalTime;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -20,6 +24,7 @@ import java.util.stream.Collectors;
 public class ParkingServiceImpl implements ParkingService {
     private final ParkingRepository parkingRepository;
     private final ParkingMapper parkingMapper;
+    private final ReservationRepository reservationRepository;
 
     @Override
     public ParkingResponse createParking(ParkingRequest request) {
@@ -96,34 +101,62 @@ public class ParkingServiceImpl implements ParkingService {
     }
 
     @Override
-    public List<ParkingOccupancyResponse> getParkingOccupancy(Long id) {
-        return parkingRepository.findAll().stream()
-                .map(parking -> ParkingOccupancyResponse.builder()
+    public ParkingOccupancyResponse getParkingOccupancy(Long id) {
+        Parking parking = parkingRepository.findById(id).orElseThrow(()-> new ResourceNotFoundException("Parking not found with id :"+id));
+                return ParkingOccupancyResponse.builder()
                         .parkingId(id)
                         .parkingName(parking.getName())
                         .totalCapacity(parking.getCapacity())
                         .occupiedSpaces(parking.getOccupiedSpaces())
                         .occupancyRate(parking.getCapacity() > 0 ?
                                 (double) parking.getOccupiedSpaces() / parking.getCapacity() * 100 : 0)
-                        .build())
-                .collect(Collectors.toList());
+                        .build();
     }
 
     @Override
-    public List<ParkingRevenueResponse> getParkingRevenue(Long id ,String period) {
-        return parkingRepository.findAll().stream()
-                .map(parking -> ParkingRevenueResponse.builder()
-                        .parkingId(id)
-                        .parkingName(parking.getName())
-                        .totalRevenue(calculateRevenueForParking(parking, period))
-                        .period(period)
-                        .build())
-                .collect(Collectors.toList());
+    public ParkingRevenueResponse getParkingRevenue(Long id ,String period) {
+        Parking parking = parkingRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Parking non trouvé avec ID: " + id));
+
+        // Calculate revenue
+        double revenue = calculateRevenueForParkingById(id, period);
+
+        // Create and return a single response object
+        return ParkingRevenueResponse.builder()
+                .parkingId(id)
+                .parkingName(parking.getName())
+                .totalRevenue(revenue)
+                .period(period)
+                .build();
     }
 
-    private double calculateRevenueForParking(Parking parking, String period) {
-        // Implementation remains the same as in your original code
-        return 1000;
+    private double calculateRevenueForParkingById(Long parkingId, String period) {
+        LocalDate endDate = LocalDate.now();
+        LocalDate startDate;
+
+        // Determine the start date based on the period
+
+        switch (period.toLowerCase()) {
+            case "week":
+                startDate = endDate.minusWeeks(1);
+                break;
+            case "month":
+                startDate = endDate.minusMonths(1);
+                break;
+            case "year":
+                startDate = endDate.minusYears(1);
+                break;
+            default:
+                throw new IllegalArgumentException("Invalid period: " + period);
+        }
+        // Get all reservations for this parking within the date range
+        List<Reservation> reservations = reservationRepository.findByParkingAndStartDateBetween(
+                parkingId, startDate.atStartOfDay(), endDate.atTime(LocalTime.MAX));
+
+        // Calculate total revenue
+        return reservations.stream()
+                .mapToDouble(Reservation::getAmount)
+                .sum();
     }
 
     // New methods for managing occupied spaces

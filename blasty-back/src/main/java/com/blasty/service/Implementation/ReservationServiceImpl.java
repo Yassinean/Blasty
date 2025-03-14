@@ -65,8 +65,8 @@ public class ReservationServiceImpl implements ReservationService {
         reservation.setClient(client);
         reservation.setPlace(place);
         reservation.setStatus(ReservationStatus.PENDING);
-        reservation.setReservationDate(request.getReservationDate());
-        reservation.setEndTime(endTime);
+        reservation.setStartDate(request.getReservationDate());
+        reservation.setEndDate(endTime);
 
         // Save and return the reservation
         Reservation savedReservation = reservationRepository.save(reservation);

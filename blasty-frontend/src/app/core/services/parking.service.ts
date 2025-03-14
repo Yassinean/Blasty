@@ -34,7 +34,7 @@ export class ParkingService {
     return this.http.get<ParkingOccupancyResponse[]>(`${this.baseUrl}/occupancy`);
   }
 
-  getParkingRevenue(period: string = 'month'): Observable<ParkingRevenueResponse[]> {
+  getParkingRevenue(id:number ,period: string = 'month'): Observable<ParkingRevenueResponse[]> {
     const params = new HttpParams().set('period', period);
     return this.http.get<ParkingRevenueResponse[]>(`${this.baseUrl}/revenue`, { params });
   }
