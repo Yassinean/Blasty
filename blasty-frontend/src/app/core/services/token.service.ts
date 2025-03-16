@@ -36,9 +36,30 @@ export class TokenService {
   }
 
   getUserRole(): string | null {
-    const user = this.getUser();
-    console.log('getUserRole method in token service:', user ? user.role : null);
-    return user ? user.role : null;
+    // Get role directly from token instead of user object
+    const token = this.getToken();
+    if (token) {
+      try {
+        const payload = this.decodeToken(token);
+        const role = payload.role;
+        console.log('getUserRole method in token service (from token):', role);
+        return role;
+      } catch (error) {
+        console.error('Error decoding token for role:', error);
+        return null;
+      }
+    }
+    return null;
+  }
+
+  decodeToken(token: string): any {
+    try {
+      const payload = JSON.parse(atob(token.split('.')[1]));
+      return payload;
+    } catch (error) {
+      console.error('Error decoding token:', error);
+      throw error;
+    }
   }
 
   clear(): void {
@@ -56,7 +77,7 @@ export class TokenService {
     if (token) {
       try {
         // Simple check for JWT expiration
-        const payload = JSON.parse(atob(token.split('.')[1]));
+        const payload = this.decodeToken(token);
         const expiry = payload.exp * 1000; // Convert to milliseconds
         const now = Date.now();
         
@@ -67,9 +88,10 @@ export class TokenService {
         }
       } catch (e) {
         console.error('TokenService: Error parsing token', e);
+        return false;
       }
     }
     
     return isAuth;
   }
-}  
+}

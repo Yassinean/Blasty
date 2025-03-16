@@ -26,6 +26,9 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.HashMap;
+import java.util.Map;
+
 @RestController
 @RequestMapping("/api/auth")
 @RequiredArgsConstructor
@@ -69,6 +72,20 @@ public class AuthController {
             SecurityContextHolder.getContext().setAuthentication(authentication);
             String token = jwtUtil.generateToken(user);
             String refreshToken = jwtUtil.refreshToken(user);
+            String userId;
+            Map<String, Object> userData = new HashMap<>();
+
+            if (user instanceof Admin) {
+                Admin admin = (Admin) user;
+                userId = String.valueOf(admin.getId());
+                userData.put("email", admin.getEmail());
+            } else {
+                Client client = (Client) user;
+                userId = String.valueOf(client.getId());
+//                userData.put("phone", client.getPhone());
+                userData.put("name", client.getName());
+            }
+            userData.put("id", userId);
 
             return ResponseEntity.ok(new JwtResponse(token, refreshToken, "Connexion réussie"));
         } catch (BadCredentialsException e) {

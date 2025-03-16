@@ -10,9 +10,10 @@ export class NonAuthGuard implements CanActivate {
 
   canActivate(): boolean {
     if (this.authService.isLoggedIn()) {
-      if(this.authService.getUser().role === 'ADMIN') {
+      const user = this.authService.getUser();
+      if(user?.role === 'ADMIN') {
         this.router.navigate(['/admin/dashboard']);
-      } else if(this.authService.getUser().role === 'CLIENT') {
+      } else if(user?.role === 'CLIENT') {
         this.router.navigate(['/client/dashboard']);
       }
       return false;

@@ -11,6 +11,8 @@ import com.blasty.model.User;
 
 import java.security.Key;
 import java.util.Date;
+import java.util.HashMap;
+import java.util.Map;
 
 @Component
 public class JwtUtil {
@@ -28,20 +30,30 @@ public class JwtUtil {
     public String generateToken(User user) {
         String username;
         String role;
+        String userId;
 
         if (user instanceof Admin) {
+            Admin admin = (Admin) user;
             username = ((Admin) user).getEmail();
             role = "ADMIN";
+            userId = String.valueOf(admin.getId());
         } else {
+            Client client = (Client) user;
             username = ((Client) user).getPhone();
             role = "CLIENT";
+            userId = String.valueOf(client.getId());
         }
+
+        Map<String, Object> claims = new HashMap<>();
+        claims.put("role", role);
+        claims.put("userId", userId);
+
         return Jwts.builder()
+                .setClaims(claims)
                 .setSubject(username)
-                .claim("role", role) // Ajouter le rôle dans le token
                 .setIssuedAt(new Date())
                 .setExpiration(new Date(System.currentTimeMillis() + expirationTime))
-                .signWith(getSigningKey(), SignatureAlgorithm.HS256)
+                .signWith(getSigningKey(), SignatureAlgorithm.HS512)
                 .compact();
     }
 
@@ -63,23 +75,51 @@ public class JwtUtil {
         try {
             Jwts.parserBuilder().setSigningKey(getSigningKey()).build().parseClaimsJws(token);
             return true;
-        } catch (Exception e) {
+        } catch (SignatureException e) {
+            // Invalid signature
+            return false;
+        } catch (MalformedJwtException e) {
+            // Invalid token format
+            return false;
+        } catch (ExpiredJwtException e) {
+            // Token expired
+            return false;
+        } catch (UnsupportedJwtException e) {
+            // Unsupported token
+            return false;
+        } catch (IllegalArgumentException e) {
+            // Token is empty or null
             return false;
         }
     }
 
     public String refreshToken(User user) {
         String username;
+        String role;
+        String userId;
+
         if (user instanceof Admin) {
-            username = ((Admin) user).getEmail();
+            Admin admin = (Admin) user;
+            username = admin.getEmail();
+            role = "ADMIN";
+            userId = String.valueOf(admin.getId());
         } else {
-            username = ((Client) user).getPhone();
+            Client client = (Client) user;
+            username = client.getPhone();
+            role = "CLIENT";
+            userId = String.valueOf(client.getId());
         }
+
+        Map<String, Object> claims = new HashMap<>();
+        claims.put("role", role);
+        claims.put("userId", userId);
+
         return Jwts.builder()
+                .setClaims(claims)
                 .setSubject(username)
                 .setIssuedAt(new Date())
-                .setExpiration(new Date(System.currentTimeMillis() + expirationTime * 2)) // Durée plus longue
-                .signWith(getSigningKey(), SignatureAlgorithm.HS256)
+                .setExpiration(new Date(System.currentTimeMillis() + expirationTime * 2))
+                .signWith(getSigningKey(), SignatureAlgorithm.HS512)
                 .compact();
     }
 }

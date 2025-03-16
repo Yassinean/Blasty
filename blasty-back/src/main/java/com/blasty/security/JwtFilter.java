@@ -19,7 +19,9 @@ import org.springframework.web.filter.OncePerRequestFilter;
 
 import java.io.IOException;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 @Slf4j
 @Component
@@ -34,9 +36,14 @@ public class JwtFilter extends OncePerRequestFilter {
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain chain)
             throws ServletException, IOException {
         try {
+            response.setHeader("X-Content-Type-Options", "nosniff");
+            response.setHeader("X-Frame-Options", "DENY");
+            response.setHeader("X-XSS-Protection", "1; mode=block");
+
             String authHeader = request.getHeader("Authorization");
             String token = null;
             String username = null;
+            String userId = null;
 
             if (authHeader != null && authHeader.startsWith("Bearer ")) {
                 token = authHeader.substring(7);
@@ -58,10 +65,16 @@ public class JwtFilter extends OncePerRequestFilter {
                     List<SimpleGrantedAuthority> authorities = Collections.singletonList(
                             new SimpleGrantedAuthority("ROLE_" + role));
                     log.info("Granted authorities: {}", authorities);
+                    // Create custom authentication details with userId
+                    Map<String, String> userInfo = new HashMap<>();
+                    userInfo.put("userId", userId);
 
                     UsernamePasswordAuthenticationToken authentication = new UsernamePasswordAuthenticationToken(
                             userDetails, null, authorities);
-                    authentication.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
+                    // Set authentication details with userId
+                    WebAuthenticationDetailsSource detailsSource = new WebAuthenticationDetailsSource();
+                    authentication.setDetails(userInfo);
+
                     SecurityContextHolder.getContext().setAuthentication(authentication);
                 }
             }

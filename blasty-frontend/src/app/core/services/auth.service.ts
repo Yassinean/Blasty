@@ -19,16 +19,39 @@ export class AuthService {
   private currentUserSubject = new BehaviorSubject<User | null>(null);
   public currentUser$ = this.currentUserSubject.asObservable();
   private readonly USER_KEY = 'user';
-  private readonly TOKEN_KEY = 'auth_token';
 
   constructor(
     private http: HttpClient,
     private tokenService: TokenService,
     private router: Router
   ) {
+    // Initialize current user from token on service creation
+    this.initCurrentUser();
+  }
+
+  private initCurrentUser(): void {
+    const token = this.tokenService.getToken();
     const user = this.tokenService.getUser();
-    if (user) {
-      this.currentUserSubject.next(user);
+    
+    if (token && user) {
+      // Merge user data with role from token
+      const userWithRole = this.enhanceUserWithRoleFromToken(user, token);
+      // Update the BehaviorSubject, but don't save role to localStorage
+      this.currentUserSubject.next(userWithRole);
+    }
+  }
+
+  private enhanceUserWithRoleFromToken(user: any, token: string): User {
+    try {
+      const decodedToken = this.decodeToken(token);
+      // Create a new object with user data and role from token
+      return {
+        ...user,
+        role: decodedToken.role
+      };
+    } catch (error) {
+      console.error('Error enhancing user with role:', error);
+      return user;
     }
   }
 
@@ -66,13 +89,29 @@ export class AuthService {
   }
 
   redirectUser(): void {
-    const user = this.tokenService.getUser();
-    if (user) {
-      if (user.role === 'ADMIN') {
+    const token = this.tokenService.getToken();
+    if (!token) {
+      console.log('No token found, redirecting to login');
+      this.router.navigate(['/auth/auth']);
+      return;
+    }
+  
+    try {
+      const decodedToken = this.decodeToken(token);
+      const role = decodedToken.role;
+      console.log('Redirecting user with role:', role);
+      
+      if (role === 'ADMIN') {
         this.router.navigate(['/admin/dashboard']);
-      } else if (user.role === 'CLIENT') {
+      } else if (role === 'CLIENT') {
         this.router.navigate(['/client/dashboard']);
+      } else {
+        console.error('Unknown role:', role);
+        this.router.navigate(['/']);
       }
+    } catch (error) {
+      console.error('Error during redirect:', error);
+      this.router.navigate(['/auth/auth']);
     }
   }
 
@@ -88,6 +127,8 @@ export class AuthService {
         tap((response) => {
           if (!response.error) {
             this.tokenService.setTokens(response.token, response.refreshToken);
+            // Update current user with new token info
+            this.initCurrentUser();
           }
         }),
         catchError(this.handleError)
@@ -97,30 +138,45 @@ export class AuthService {
   private handleAuthResponse(response: JwtResponse): void {
     if (!response.error) {
       this.tokenService.setTokens(response.token, response.refreshToken);
-      const user = this.decodeToken(response.token);
-      this.tokenService.setUser(user);
-      this.currentUserSubject.next(user);
+      const decodedToken = this.decodeToken(response.token);
+      
+      // Create a user object without the role
+      const user: Partial<User> = {
+        id: decodedToken.userId
+      };
+      
+      // Add additional fields as needed but not the role
+      if (decodedToken.role === 'ADMIN') {
+        user.email = decodedToken.sub;
+      } else {
+        user.phone = decodedToken.sub;
+        // If name is available in the token
+        if (decodedToken.name) {
+          user.name = decodedToken.name;
+        }
+      }
+      
+      // Save user without role to local storage
+      this.tokenService.setUser(user as User);
+      
+      // For in-memory operations, we can use the full user object with role
+      const userWithRole = {
+        ...user,
+        role: decodedToken.role
+      };
+      
+      // Update the BehaviorSubject with the full user (including role)
+      this.currentUserSubject.next(userWithRole as User);
+      
+      // Redirect after successful authentication
       this.redirectUser();
     }
   }
 
-  private decodeToken(token: string): User {
+  decodeToken(token: string): any {
     try {
       const payload = JSON.parse(atob(token.split('.')[1]));
-      if (payload.role === 'ADMIN') {
-        return {
-          id: payload.sub,
-          role: payload.role,
-          email: payload.sub,
-        };
-      } else {
-        return {
-          id: payload.sub,
-          role: payload.role,
-          phone: payload.phone,
-          name: payload.name,
-        };
-      }
+      return payload;
     } catch (error) {
       console.error('Error decoding token:', error);
       throw error;
@@ -152,9 +208,16 @@ export class AuthService {
     return token ? !this.isTokenExpired(token) : false;
   }
 
-  getUser(): any {
-    const user = localStorage.getItem(this.USER_KEY);
-    return user ? JSON.parse(user) : null;
+  getUser(): User | null {
+    const user = this.tokenService.getUser();
+    const token = this.tokenService.getToken();
+    
+    if (user && token) {
+      // Only for in-memory operations, enhance user with role from token
+      return this.enhanceUserWithRoleFromToken(user, token);
+    }
+    
+    return user;
   }
 
   getCurrentUser(): User | null {
@@ -172,7 +235,42 @@ export class AuthService {
   }
 
   isAdmin(): boolean {
-    const user = this.tokenService.getUser();
-    return user && user.role === 'ADMIN';
+    const token = this.tokenService.getToken();
+    if (token) {
+      try {
+        const payload = this.decodeToken(token);
+        return payload.role === 'ADMIN';
+      } catch (error) {
+        console.error('Error checking admin role:', error);
+      }
+    }
+    return false;
+  }
+  
+  isClient(): boolean {
+    const token = this.tokenService.getToken();
+    if (token) {
+      try {
+        const payload = this.decodeToken(token);
+        return payload.role === 'CLIENT';
+      } catch (error) {
+        console.error('Error checking client role:', error);
+      }
+    }
+    return false;
+  }
+
+  // Get user role directly from token
+  getUserRole(): string | null {
+    const token = this.tokenService.getToken();
+    if (token) {
+      try {
+        const payload = this.decodeToken(token);
+        return payload.role;
+      } catch (error) {
+        console.error('Error getting user role:', error);
+      }
+    }
+    return null;
   }
 }
