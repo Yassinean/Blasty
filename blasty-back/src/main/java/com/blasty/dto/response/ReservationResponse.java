@@ -12,8 +12,8 @@ public class ReservationResponse {
     private Long id;
     private Long clientId;
     private Long placeId;
-    private double amount;
+    private Long vehicleId;
     private LocalDateTime reservationDate;
-    private LocalDateTime endTime;
+    private LocalDateTime endDate;
     private ReservationStatus status;
 }

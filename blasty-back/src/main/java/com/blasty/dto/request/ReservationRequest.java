@@ -14,9 +14,10 @@ public class ReservationRequest {
     @NotNull(message = "L'ID de la place est obligatoire")
     private Long placeId;
 
-    @NotNull(message = "Le montant est obligatoire")
-    private Double amount;
+    @NotNull(message = "L'ID de la vehicule est obligatoire")
+    private Long vehicleId;
 
     @NotNull(message="Veuillez entrer la date de reservation")
     private LocalDateTime reservationDate;
+
 }

@@ -6,6 +6,7 @@ import com.blasty.dto.response.ReservationResponse;
 import com.blasty.model.Client;
 import com.blasty.model.Place;
 import com.blasty.model.Reservation;
+import com.blasty.model.Vehicle;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.mapstruct.factory.Mappers;
@@ -20,10 +21,12 @@ public interface ReservationMapper {
     @Mapping(target = "status", expression = "java(com.blasty.model.enums.ReservationStatus.PENDING)")
     @Mapping(target = "client", source = "clientId")
     @Mapping(target = "place", source = "placeId")
-      Reservation toEntity(ReservationRequest request);
+    @Mapping(target = "vehicle", source = "vehicleId")
+    Reservation toEntity(ReservationRequest request);
 
     @Mapping(target = "clientId", source = "client.id")
     @Mapping(target = "placeId", source = "place.id")
+    @Mapping(target = "vehicleId", source = "vehicle.id")
     ReservationResponse toResponse(Reservation reservation);
 
     @Mapping(target = "id", source = "clientId")
@@ -31,4 +34,7 @@ public interface ReservationMapper {
 
     @Mapping(target = "id", source = "placeId")
     Place toPlace(Long placeId);
+
+    @Mapping(target = "id" , source = "vehicleId")
+    Vehicle toVehicle(Long vehicleId);
 }

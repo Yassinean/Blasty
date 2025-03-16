@@ -145,11 +145,7 @@ public class PlaceServiceImpl implements PlaceService {
         Place place = findPlaceById(placeId);
 
         if (place.getEtat() != PlaceStatus.DISPONIBLE) {
-            if (place.getEtat() == PlaceStatus.OCCUPEE) {
-                throw new PlaceNotAvailableException("Place is already occupied");
-            } else {
-                throw new PlaceNotAvailableException("Place is already reserved");
-            }
+            throw new PlaceNotAvailableException("Place is already occupied");
         }
 
         place.setEtat(PlaceStatus.RESERVEE);

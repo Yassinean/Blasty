@@ -1,0 +1,176 @@
+<div class="space-y-6">
+    <div class="flex justify-between items-center">
+      <div>
+        <h1 class="text-2xl font-bold text-gray-900 dark:text-white">Parkings Disponibles</h1>
+        <p class="text-gray-600 dark:text-gray-400">Trouvez et réservez une place de parking</p>
+      </div>
+      <button
+        (click)="refreshData()"
+        class="inline-flex items-center px-3 py-2 border border-transparent text-sm font-medium rounded-md text-blue-700 bg-blue-100 hover:bg-blue-200 dark:bg-blue-900 dark:text-blue-100 dark:hover:bg-blue-800 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
+      >
+        <svg
+          xmlns="http://www.w3.org/2000/svg"
+          class="h-4 w-4 mr-2"
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          stroke-width="2"
+        >
+          <path d="M21 12a9 9 0 0 0-9-9 9.75 9.75 0 0 0-6.74 2.74L3 8" />
+          <path d="M3 3v5h5" />
+          <path d="M3 12a9 9 0 0 1 9 9 9.75 9.75 0 0 1-6.74 2.74L8 21" />
+          <path d="M21 21v-5h-5" />
+        </svg>
+        Actualiser
+      </button>
+    </div>
+  
+    <!-- Loading Indicator -->
+    <div *ngIf="isLoading" class="flex justify-center items-center py-10">
+      <div class="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-blue-500"></div>
+    </div>
+  
+    <!-- Search and Filter -->
+    <div *ngIf="!isLoading" class="flex flex-col md:flex-row gap-4 mb-6">
+      <div class="flex-1">
+        <input
+          type="text"
+          placeholder="Rechercher un parking..."
+          [(ngModel)]="searchTerm"
+          (input)="filterParkings()"
+          class="w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-800 dark:border-gray-600 dark:text-white"
+        />
+      </div>
+      <div>
+        <select
+          [(ngModel)]="filterStatus"
+          (change)="filterParkings()"
+          class="w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-800 dark:border-gray-600 dark:text-white"
+        >
+          <option value="">Tous les statuts</option>
+          <option value="OPEN">Ouvert</option>
+          <option value="MAINTENANCE">Maintenance</option>
+          <option value="CLOSED">Fermé</option>
+        </select>
+      </div>
+    </div>
+  
+    <!-- Parkings Grid -->
+    <div *ngIf="!isLoading" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+      <div *ngFor="let parking of filteredParkings" class="bg-white dark:bg-gray-800 rounded-lg shadow-md overflow-hidden">
+        <div class="relative h-40 bg-gray-200 dark:bg-gray-700">
+          <!-- Parking Image or Map -->
+          <div class="absolute inset-0 flex items-center justify-center">
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              class="h-16 w-16 text-gray-400 dark:text-gray-500"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="1"
+            >
+              <path d="M5 4h14a2 2 0 0 1 2 2v12a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2z" />
+              <path d="M12 4v16" />
+            </svg>
+          </div>
+          
+          <!-- Status Badge -->
+          <div class="absolute top-2 right-2">
+            <span
+              class="px-2 py-1 inline-flex text-xs leading-5 font-semibold rounded-full"
+              [ngClass]="getStatusClass(parking.status)"
+            >
+              {{ getStatusLabel(parking.status) }}
+            </span>
+          </div>
+        </div>
+        
+        <div class="p-4">
+          <h3 class="text-lg font-semibold text-gray-900 dark:text-white">{{ parking.name }}</h3>
+          <p class="text-sm text-gray-600 dark:text-gray-400">{{ parking.address }}</p>
+          
+          <!-- Capacity and Occupancy -->
+          <div class="mt-4">
+            <div class="flex justify-between items-center mb-1">
+              <span class="text-sm font-medium text-gray-700 dark:text-gray-300">Occupation</span>
+              <span class="text-sm text-gray-600 dark:text-gray-400">
+                {{ parking.occupiedSpaces }} / {{ parking.capacity }}
+              </span>
+            </div>
+            <div class="w-full bg-gray-200 dark:bg-gray-700 rounded-full h-2.5">
+              <div
+                class="h-2.5 rounded-full"
+                [style.width.%]="getOccupancyPercentage(parking)"
+                [ngClass]="getOccupancyClass(getOccupancyPercentage(parking))"
+              ></div>
+            </div>
+          </div>
+          
+          <!-- Available Places -->
+          <div class="mt-4 flex items-center">
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              class="h-5 w-5 text-green-500 mr-2"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2"
+            >
+              <circle cx="12" cy="12" r="10" />
+              <path d="M8 12h8" />
+              <path d="M12 8v8" />
+            </svg>
+            <span class="text-sm text-gray-700 dark:text-gray-300">
+              {{ parking.capacity - parking.occupiedSpaces }} places disponibles
+            </span>
+          </div>
+          
+          <!-- Action Button -->
+          <div class="mt-6">
+            <a
+              [routerLink]="['/client/dashboard/parking', parking.id]"
+              class="w-full inline-flex justify-center items-center px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
+              [class.opacity-50]="parking.status !== 'OPEN'"
+              [class.cursor-not-allowed]="parking.status !== 'OPEN'"
+              [attr.disabled]="parking.status !== 'OPEN' ? true : null"
+            >
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                class="h-5 w-5 mr-2"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="2"
+              >
+                <path d="M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4" />
+                <polyline points="10 17 15 12 10 7" />
+                <line x1="15" y1="12" x2="3" y2="12" />
+              </svg>
+              Voir les places
+            </a>
+          </div>
+        </div>
+      </div>
+      
+      <!-- Empty State -->
+      <div *ngIf="filteredParkings.length === 0" class="col-span-full flex flex-col items-center justify-center py-12 px-4">
+        <svg
+          xmlns="http://www.w3.org/2000/svg"
+          class="h-12 w-12 text-gray-400 dark:text-gray-500 mb-4"
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          stroke-width="1"
+        >
+          <path d="M5 4h14a2 2 0 0 1 2 2v12a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2z" />
+          <path d="M12 4v16" />
+        </svg>
+        <h3 class="text-lg font-medium text-gray-900 dark:text-white">Aucun parking trouvé</h3>
+        <p class="text-sm text-gray-500 dark:text-gray-400 mt-2 text-center">
+          Aucun parking ne correspond à vos critères de recherche. Veuillez modifier vos filtres ou réessayer plus tard.
+        </p>
+      </div>
+    </div>
+  </div>
+  
+  

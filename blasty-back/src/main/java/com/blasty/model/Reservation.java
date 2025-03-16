@@ -26,8 +26,9 @@ public class Reservation{
     @JoinColumn(name = "place_id", nullable = false)
     private Place place;
 
-    @Column(nullable = false)
-    private double amount;
+    @OneToOne
+    @JoinColumn(name = "vehicle_id", nullable = false)
+    private Vehicle vehicle;
 
     @Column(nullable = false)
     private LocalDateTime startDate;
@@ -40,4 +41,6 @@ public class Reservation{
     private ReservationStatus status;
 
     private Long parking;
+
+    private Long amount;
 }

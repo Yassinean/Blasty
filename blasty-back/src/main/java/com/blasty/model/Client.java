@@ -5,12 +5,11 @@ import jakarta.persistence.*;
 import lombok.*;
 import lombok.experimental.SuperBuilder;
 
-import java.util.List;
 
 @Data
 @EqualsAndHashCode(callSuper = true)
 @Entity
-@SuperBuilder
+    @SuperBuilder
 @AllArgsConstructor
 @NoArgsConstructor
 //@Table(name = "clients")
@@ -23,7 +22,7 @@ public class Client extends User {
     @Column(unique = true, nullable = false)
     private String phone;
 
-    @OneToMany(mappedBy = "client", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<Vehicle> vehicules;
+    @OneToOne(mappedBy = "client", cascade = CascadeType.ALL, orphanRemoval = true)
+    private Vehicle vehicule;
 
 }

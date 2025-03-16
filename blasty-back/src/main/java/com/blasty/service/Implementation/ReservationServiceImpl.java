@@ -10,10 +10,14 @@ import com.blasty.mapper.ReservationMapper;
 import com.blasty.model.Client;
 import com.blasty.model.Place;
 import com.blasty.model.Reservation;
+import com.blasty.model.Vehicle;
 import com.blasty.model.enums.ReservationStatus;
+import com.blasty.model.enums.TypePlace;
+import com.blasty.model.enums.VehiculeType;
 import com.blasty.repository.ClientRepository;
 import com.blasty.repository.PlaceRepository;
 import com.blasty.repository.ReservationRepository;
+import com.blasty.repository.VehicleRepository;
 import com.blasty.service.Interface.PlaceService;
 import com.blasty.service.Interface.ReservationService;
 import jakarta.transaction.Transactional;
@@ -34,10 +38,13 @@ public class ReservationServiceImpl implements ReservationService {
     private final ReservationMapper reservationMapper;
     private final PlaceRepository placeRepository;
     private final PlaceService placeService;
+    private final VehicleRepository vehicleRepository;
 
     @Override
     @Transactional
     public ReservationResponse createReservation(ReservationRequest request) {
+
+        log.info("1. Create reservation request: {}", request);
         // Validate client exists
         Client client = clientRepository.findById(request.getClientId())
                 .orElseThrow(() -> new ResourceNotFoundException("Client not found with id: " + request.getClientId()));
@@ -45,6 +52,18 @@ public class ReservationServiceImpl implements ReservationService {
         // Validate place exists
         Place place = placeRepository.findById(request.getPlaceId())
                 .orElseThrow(() -> new ResourceNotFoundException("Place not found with id: " + request.getPlaceId()));
+
+        // Validate vehicle exists and belongs to the client
+        Vehicle vehicle = vehicleRepository.findById(request.getVehicleId())
+                .orElseThrow(() -> new ResourceNotFoundException("Vehicle not found with id: " + request.getVehicleId()));
+
+        // Ensure vehicle belongs to the requesting client
+        if (!vehicle.getClient().getId().equals(request.getClientId())) {
+            throw new IllegalArgumentException("Vehicle does not belong to the requesting client");
+        }
+
+        // Validate vehicle type is compatible with place type
+        validateVehiclePlaceCompatibility(vehicle, place);
 
         // Validate reservation date
         validateReservationDate(request.getReservationDate());
@@ -56,22 +75,47 @@ public class ReservationServiceImpl implements ReservationService {
 
         // Calculate end time (reservation duration)
         LocalDateTime endTime = request.getReservationDate().plusHours(1);
-
         // Reserve the place
         placeService.reservePlace(request.getPlaceId(), endTime);
-
         // Create a reservation entity
         Reservation reservation = reservationMapper.toEntity(request);
         reservation.setClient(client);
         reservation.setPlace(place);
+        reservation.setVehicle(vehicle);
         reservation.setStatus(ReservationStatus.PENDING);
         reservation.setStartDate(request.getReservationDate());
         reservation.setEndDate(endTime);
 
+        log.info("Reservation created successfully {} ", reservation);
         // Save and return the reservation
         Reservation savedReservation = reservationRepository.save(reservation);
-        log.info("Created reservation with id: {} for place: {}", savedReservation.getId(), request.getPlaceId());
         return reservationMapper.toResponse(savedReservation);
+
+    }
+
+    private void validateVehiclePlaceCompatibility(Vehicle vehicle, Place place) {
+        TypePlace placeType = place.getType();
+        VehiculeType vehicleType = vehicle.getType();
+
+        switch (placeType) {
+            case STANDARD:
+                // Standard places can only accommodate cars
+                if (vehicleType != VehiculeType.VOITURE) {
+                    throw new InvalidReservationException("Standard places can only accommodate cars");
+                }
+                break;
+            case HANDICAPE:
+                // Handicap places can only accommodate cars
+                if (vehicleType != VehiculeType.VOITURE) {
+                    throw new InvalidReservationException("Handicap places can only accommodate cars");
+                }
+                break;
+            case VIP:
+                // Large places can accommodate all vehicle types
+                break;
+            default:
+                throw new InvalidReservationException("Unknown place type");
+        }
     }
 
     @Override

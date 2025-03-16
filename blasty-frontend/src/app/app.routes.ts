@@ -104,19 +104,21 @@ export const routes: Routes = [
     ],
   },
   {
-    path: 'client/dashboard',
+    path: "client/dashboard",
     canActivate: [ClientGuard],
-    loadComponent: () =>
-      import('./features/dashboard/dashboard.component').then(
-        (m) => m.DashboardComponentClient
-      ),
+    loadComponent: () => import("./features/dashboard/dashboard.component").then((m) => m.DashboardComponentClient),
     children: [
       {
-        path: 'places',
+        path: "",
         loadComponent: () =>
-          import(
-            './features/client/client-places/client-places.component'
-          ).then((m) => m.ClientPlacesComponent),
+          import("./features/client/client-dashboard/client-dashboard.component").then(
+            (m) => m.ClientDashboardComponent,
+          ),
+      },
+      {
+        path: "parking/:id",
+        loadComponent: () =>
+          import("./features/client/parking-detail/parking-detail.component").then((m) => m.ParkingDetailComponent),
       },
     ],
   },

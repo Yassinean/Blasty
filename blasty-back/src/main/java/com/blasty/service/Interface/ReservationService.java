@@ -2,9 +2,6 @@ package com.blasty.service.Interface;
 
 import com.blasty.dto.request.ReservationRequest;
 import com.blasty.dto.response.ReservationResponse;
-import com.blasty.model.Reservation;
-
-import java.time.LocalDateTime;
 import java.util.List;
 
 public interface ReservationService {

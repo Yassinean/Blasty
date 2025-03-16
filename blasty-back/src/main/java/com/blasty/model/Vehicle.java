@@ -21,9 +21,10 @@ public class Vehicle {
     private String immatriculation;
 
     @Column(nullable = false)
+    @Enumerated(EnumType.STRING)
     private VehiculeType type;
 
-    @ManyToOne
+    @OneToOne
     @JoinColumn(name = "client_id", nullable = false)
     private Client client;
 }

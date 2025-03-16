@@ -31,10 +31,16 @@ export class PlaceService {
       .pipe(catchError(this.handleError<void>("deletePlace")));
   }
 
+  getPlacesByParkingId(parkingId: number): Observable<PlaceResponse[]> {
+    console.log(`Fetching places for parking ID: ${parkingId}`)
+    return this.http.get<PlaceResponse[]>(`${this.apiUrl}/parkings/${parkingId}/places`)
+  }
+
   getPlacesByParking(parking: Parking): Observable<PlaceResponse[]> {
-    return this.http
-      .get<PlaceResponse[]>(`${this.apiUrl}/parkings/${parking.id}/places`)
-      .pipe(catchError(this.handleError<PlaceResponse[]>("getPlacesByParking")));
+    if (!parking || !parking.id) {
+      throw new Error("Invalid parking object")
+    }
+    return this.getPlacesByParkingId(parking.id)
   }
 
   // Client accessible endpoints

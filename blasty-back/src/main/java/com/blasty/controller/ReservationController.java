@@ -1,17 +1,12 @@
 package com.blasty.controller;
 
 import com.blasty.dto.request.ReservationRequest;
-import com.blasty.dto.response.PlaceResponse;
 import com.blasty.dto.response.ReservationResponse;
-import com.blasty.model.Client;
 import com.blasty.security.CustomUserDetails;
-import com.blasty.service.Implementation.ReservationServiceImpl;
 import com.blasty.service.Interface.ReservationService;
-import com.sun.security.auth.UserPrincipal;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.AccessDeniedException;
@@ -19,10 +14,7 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
-import java.time.LocalDateTime;
 import java.util.List;
-
-import static org.hibernate.query.sqm.tree.SqmNode.log;
 
 @RestController
 @RequestMapping("/api/reservations")
