@@ -124,6 +124,13 @@
         >
           Sign up
         </a>
+        <a
+          *ngIf="isAuthenticated"
+          routerLink="/auth/register"
+          class="px-4 py-2 text-sm font-medium text-white transition-colors duration-200 bg-red-600 rounded-lg hover:bg-red-700"
+        >
+          Logout
+        </a>
         
         <!-- Admin Dashboard Link (only for authenticated users) -->
         <a

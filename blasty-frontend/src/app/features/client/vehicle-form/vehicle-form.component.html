@@ -1,0 +1,139 @@
+<div class="space-y-6">
+    <div class="flex justify-between items-center">
+      <div>
+        <h1 class="text-2xl font-bold text-gray-900 dark:text-white">
+          {{ isEditMode ? 'Modifier mon véhicule' : 'Enregistrer mon véhicule' }}
+        </h1>
+        <p class="text-gray-600 dark:text-gray-400">
+          {{ isEditMode ? 'Mettez à jour les informations de votre véhicule' : 'Enregistrez un véhicule pour pouvoir réserver des places de parking' }}
+        </p>
+      </div>
+      <button
+        routerLink="/client/dashboard"
+        class="inline-flex items-center px-4 py-2 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 dark:bg-gray-700 dark:text-white dark:border-gray-600 dark:hover:bg-gray-600"
+      >
+        <svg
+          xmlns="http://www.w3.org/2000/svg"
+          class="h-5 w-5 mr-2"
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          stroke-width="2"
+        >
+          <path d="M19 12H5M12 19l-7-7 7-7" />
+        </svg>
+        Retour
+      </button>
+    </div>
+  
+    <!-- Loading Indicator -->
+    <div *ngIf="isLoading" class="flex justify-center items-center py-10">
+      <div class="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-blue-500"></div>
+    </div>
+  
+    <!-- Vehicle Form -->
+    <div *ngIf="!isLoading" class="bg-white dark:bg-gray-800 rounded-lg shadow-md p-6">
+      <form [formGroup]="vehicleForm" (ngSubmit)="onSubmit()" class="space-y-6">
+        <div>
+          <label for="immatriculation" class="block text-sm font-medium text-gray-700 dark:text-gray-300">
+            Immatriculation
+          </label>
+          <input
+            type="text"
+            id="immatriculation"
+            formControlName="immatriculation"
+            class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white"
+            placeholder="AB-123-CD"
+          />
+          <div *ngIf="vehicleForm.get('immatriculation')?.invalid && vehicleForm.get('immatriculation')?.touched" class="text-red-500 text-sm mt-1">
+            L'immatriculation est requise et doit être au format valide (ex: AB-123-CD)
+          </div>
+        </div>
+  
+        <!-- <div>
+          <label for="marque" class="block text-sm font-medium text-gray-700 dark:text-gray-300">
+            Marque
+          </label>
+          <input
+            type="text"
+            id="marque"
+            formControlName="marque"
+            class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white"
+            placeholder="Renault, Peugeot, etc."
+          />
+          <div *ngIf="vehicleForm.get('marque')?.invalid && vehicleForm.get('marque')?.touched" class="text-red-500 text-sm mt-1">
+            La marque est requise
+          </div>
+        </div> -->
+  
+        <!-- <div>
+          <label for="modele" class="block text-sm font-medium text-gray-700 dark:text-gray-300">
+            Modèle
+          </label>
+          <input
+            type="text"
+            id="modele"
+            formControlName="modele"
+            class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white"
+            placeholder="Clio, 208, etc."
+          />
+          <div *ngIf="vehicleForm.get('modele')?.invalid && vehicleForm.get('modele')?.touched" class="text-red-500 text-sm mt-1">
+            Le modèle est requis
+          </div>
+        </div> -->
+  
+        <div>
+          <label for="type" class="block text-sm font-medium text-gray-700 dark:text-gray-300">
+            Type de véhicule
+          </label>
+          <select
+            id="type"
+            formControlName="type"
+            class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white"
+          >
+            <option *ngFor="let type of vehicleTypes" [value]="type.value">{{ type.label }}</option>
+          </select>
+        </div>
+  
+        <div class="flex justify-between pt-4">
+          <button
+            *ngIf="isEditMode"
+            type="button"
+            (click)="deleteVehicle()"
+            [disabled]="isSubmitting"
+            class="inline-flex items-center px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-red-600 hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500 disabled:opacity-50 disabled:cursor-not-allowed"
+          >
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              class="h-5 w-5 mr-2"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2"
+            >
+              <path d="M3 6h18" />
+              <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2" />
+              <path d="M10 11v6" />
+              <path d="M14 11v6" />
+            </svg>
+            Supprimer
+          </button>
+          <div class="ml-auto">
+            <button
+              type="submit"
+              [disabled]="vehicleForm.invalid || isSubmitting"
+              class="inline-flex items-center px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 disabled:opacity-50 disabled:cursor-not-allowed"
+            >
+              <div *ngIf="isSubmitting" class="flex items-center">
+                <div class="animate-spin h-4 w-4 border-t-2 border-b-2 border-white mr-2"></div>
+                {{ isEditMode ? 'Mise à jour...' : 'Enregistrement...' }}
+              </div>
+              <span *ngIf="!isSubmitting">{{ isEditMode ? 'Mettre à jour' : 'Enregistrer' }}</span>
+            </button>
+          </div>
+        </div>
+      </form>
+    </div>
+  </div>
+  
+  

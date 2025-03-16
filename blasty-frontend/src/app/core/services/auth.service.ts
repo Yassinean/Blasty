@@ -71,7 +71,7 @@ export class AuthService {
       if (user.role === 'ADMIN') {
         this.router.navigate(['/admin/dashboard']);
       } else if (user.role === 'CLIENT') {
-        this.router.navigate(['/client/dashboard/places']);
+        this.router.navigate(['/client/dashboard']);
       }
     }
   }
@@ -155,6 +155,10 @@ export class AuthService {
   getUser(): any {
     const user = localStorage.getItem(this.USER_KEY);
     return user ? JSON.parse(user) : null;
+  }
+
+  getCurrentUser(): User | null {
+    return this.currentUserSubject.value;
   }
 
   logout(): void {

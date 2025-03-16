@@ -120,6 +120,16 @@ export const routes: Routes = [
         loadComponent: () =>
           import("./features/client/parking-detail/parking-detail.component").then((m) => m.ParkingDetailComponent),
       },
+      {
+        path: "reservations",
+        loadComponent: () =>
+          import("./features/client/my-reservation/my-reservation.component").then((m) => m.MyReservationComponent),
+      },
+      {
+        path: "vehicle",
+        loadComponent: () =>
+          import("./features/client/vehicle-form/vehicle-form.component").then((m) => m.VehicleFormComponent),
+      },
     ],
   },
   {
