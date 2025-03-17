@@ -1,3 +1,4 @@
+import { ToastService } from './toast.service';
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { BehaviorSubject, Observable, throwError } from 'rxjs';
@@ -23,9 +24,9 @@ export class AuthService {
   constructor(
     private http: HttpClient,
     private tokenService: TokenService,
+    private toastService: ToastService,
     private router: Router
   ) {
-    // Initialize current user from token on service creation
     this.initCurrentUser();
   }
 
@@ -63,7 +64,10 @@ export class AuthService {
       })
       .pipe(
         tap((response) => this.handleAuthResponse(response)),
-        catchError(this.handleError)
+        catchError((error) => {
+          this.toastService.showToast('error', error.error?.message || 'Invalid credentials');
+          return throwError(error);
+        })
       );
   }
 
@@ -75,16 +79,26 @@ export class AuthService {
       })
       .pipe(
         tap((response) => this.handleAuthResponse(response)),
-        catchError(this.handleError)
+        catchError((error) => {
+          this.toastService.showToast('error', error.error?.message || 'Invalid credentials');
+          return throwError(error);
+        })
       );
   }
+
 
   register(registerRequest: RegisterRequest): Observable<JwtResponse> {
     return this.http
       .post<JwtResponse>(`${this.API_URL}/register`, registerRequest)
       .pipe(
-        tap((response) => this.handleAuthResponse(response)),
-        catchError(this.handleError)
+        tap((response) => {
+          this.handleAuthResponse(response);
+          this.toastService.showToast('success', 'You have been successfully registered');
+        }),
+        catchError((error) => {
+          this.toastService.showToast('error', error.error?.message || 'Registration failed');
+          return throwError(error);
+        })
       );
   }
 

@@ -37,7 +37,7 @@ export class ClientDashboardComponent implements OnInit {
         this.isLoading = false
       },
       error: (error) => {
-        this.toastService.showError('error',"Erreur lors du chargement des parkings")
+        this.toastService.showToast('error',"Erreur lors du chargement des parkings")
         console.error("Error loading parkings:", error)
         this.isLoading = false
       },

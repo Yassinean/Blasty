@@ -56,7 +56,7 @@ export class VehicleFormComponent implements OnInit {
         this.isLoading = false
       },
       error: (error) => {
-        this.toastService.showError('error',"Erreur lors du chargement du véhicule")
+        this.toastService.showToast('error',"Erreur lors du chargement du véhicule")
         console.error("Error loading vehicle:", error)
         this.isLoading = false
       },
@@ -65,7 +65,7 @@ export class VehicleFormComponent implements OnInit {
 
   onSubmit(): void {
     if (this.vehicleForm.invalid) {
-      this.toastService.showError('error',"Veuillez corriger les erreurs dans le formulaire")
+      this.toastService.showToast('error',"Veuillez corriger les erreurs dans le formulaire")
       return
     }
 
@@ -75,7 +75,7 @@ export class VehicleFormComponent implements OnInit {
     if (this.isEditMode) {
       this.vehicleService.updateVehicle(vehicleData).subscribe({
         next: () => {
-          this.toastService.showSuccess('success',"Véhicule mis à jour avec succès")
+          this.toastService.showToast('success',"Véhicule mis à jour avec succès")
           this.isSubmitting = false
           this.Location.back()
         },
@@ -84,14 +84,14 @@ export class VehicleFormComponent implements OnInit {
           if (error.error && error.error.message) {
             errorMessage = error.error.message
           }
-          this.toastService.showError('error',errorMessage)
+          this.toastService.showToast('error',errorMessage)
           this.isSubmitting = false
         },
       })
     } else {
       this.vehicleService.createVehicle(vehicleData).subscribe({
         next: () => {
-          this.toastService.showSuccess('success',"Véhicule enregistré avec succès")
+          this.toastService.showToast('success',"Véhicule enregistré avec succès")
           this.isSubmitting = false
           this.Location.back()
         },
@@ -100,7 +100,7 @@ export class VehicleFormComponent implements OnInit {
           if (error.error && error.error.message) {
             errorMessage = error.error.message
           }
-          this.toastService.showError('error',errorMessage)
+          this.toastService.showToast('error',errorMessage)
           this.isSubmitting = false
         },
       })
@@ -112,12 +112,12 @@ export class VehicleFormComponent implements OnInit {
       this.isSubmitting = true
       this.vehicleService.deleteVehicle().subscribe({
         next: () => {
-          this.toastService.showSuccess('success',"Véhicule supprimé avec succès")
+          this.toastService.showToast('success',"Véhicule supprimé avec succès")
           this.isSubmitting = false
           this.Location.back()
         },
         error: (error) => {
-          this.toastService.showError('error',"Erreur lors de la suppression du véhicule")
+          this.toastService.showToast('error',"Erreur lors de la suppression du véhicule")
           console.error("Error deleting vehicle:", error)
           this.isSubmitting = false
         },

@@ -1,13 +1,25 @@
 import { Component, type OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ActivatedRoute, Router, RouterModule } from '@angular/router';
-import { FormsModule, ReactiveFormsModule, FormBuilder, FormGroup, Validators } from '@angular/forms';
+import {
+  FormsModule,
+  ReactiveFormsModule,
+  FormBuilder,
+  FormGroup,
+  Validators,
+} from '@angular/forms';
 import { PlaceService } from '../../../../core/services/place.service';
-import { PlaceResponse, PlaceRequest, PlaceStatus, PlaceType } from '../../../../core/models/place.model';
+import {
+  PlaceResponse,
+  PlaceRequest,
+  PlaceStatus,
+  PlaceType,
+} from '../../../../core/models/place.model';
 import { switchMap, tap, catchError } from 'rxjs/operators';
 import { of } from 'rxjs';
 import { ParkingService } from '../../../../core/services/parking.service';
-import { ToastService } from '../../../../core/services/toast.service'; // Import ToastService
+import { Toast } from '../../../../core/models/toast';
+import { ToastService } from '../../../../core/services/toast.service';
 
 @Component({
   selector: 'app-place-management',
@@ -21,6 +33,8 @@ export class PlaceManagementComponent implements OnInit {
   parkingName = '';
   places: PlaceResponse[] = [];
   filteredPlaces: PlaceResponse[] = [];
+  toasts: Toast[] = [];
+  toastIdCounter = 0;
   placeForm!: FormGroup;
   isLoading = false;
 
@@ -39,8 +53,8 @@ export class PlaceManagementComponent implements OnInit {
     private route: ActivatedRoute,
     private router: Router,
     private fb: FormBuilder,
-    private parkingService: ParkingService,
-    private toastService: ToastService // Inject ToastService
+    private toastService: ToastService,
+    private parkingService: ParkingService
   ) {}
 
   ngOnInit(): void {
@@ -71,7 +85,10 @@ export class PlaceManagementComponent implements OnInit {
         }),
         catchError((error) => {
           console.error('Error loading parking details:', error);
-          this.toastService.showError('Failed to load parking details', 'Please try again later.');
+          this.toastService.showToast(
+            'error',
+            'Échec du chargement des détails de parking.'
+          );
           return of(null);
         }),
         // Only proceed to fetch places if we got a valid parking
@@ -84,13 +101,15 @@ export class PlaceManagementComponent implements OnInit {
         tap((places) => {
           console.log('All Places fetched:', places);
           // Filter places by parking ID
-          this.places = places.filter((place) => place.parkingId === this.parkingId);
+          this.places = places.filter(
+            (place) => place.parkingId === this.parkingId
+          );
           console.log('Filtered Places for this parking:', this.places);
           this.applyFilters();
         }),
         catchError((error) => {
           console.error('Error loading places:', error);
-          this.toastService.showError('Failed to load places', 'Please try again later.');
+          this.toastService.showToast('error', 'Échec du chargement des places.');
           return of([]);
         })
       )
@@ -103,7 +122,7 @@ export class PlaceManagementComponent implements OnInit {
         error: (err) => {
           console.error('Subscription error:', err);
           this.isLoading = false;
-          this.toastService.showError('An unexpected error occurred', 'Please try again later.');
+          this.toastService.showToast('error', `Une erreur inattendue s'est produite.`);
         },
       });
   }
@@ -154,7 +173,7 @@ export class PlaceManagementComponent implements OnInit {
 
   submitForm(): void {
     if (this.placeForm.invalid) {
-      this.toastService.showError('Please fill all required fields correctly.', 'Check the form and try again.');
+      this.toastService.showToast('error', 'Please fill all required fields correctly.');
       return;
     }
 
@@ -172,6 +191,7 @@ export class PlaceManagementComponent implements OnInit {
             const index = this.places.findIndex(
               (p) => p.id === updatedPlace.id
             );
+            this.toastService.showToast('success','La place est modifié avec succès')
             if (index !== -1) {
               this.places[index] = updatedPlace;
               this.applyFilters();
@@ -183,24 +203,25 @@ export class PlaceManagementComponent implements OnInit {
               error.status === 400 &&
               error.error.message.includes('maximum capacity')
             ) {
-              this.toastService.showError(
-                'Parking has reached its maximum capacity. Cannot add more places.',
-                'Please consider removing some places to add new ones.'
+              this.toastService.showToast(
+                'error',
+                `Le parking a atteint sa capacité maximale. Impossible d'ajouter des places.`
               );
             } else {
-              this.toastService.showError(
-                'Error updating place: ' + (error.message || error),
-                'Please try again later.'
+              this.toastService.showToast(
+                'error',
+                'Erreur lors de la mise à jour du place: ' +
+                  (error.message || error)
               );
             }
             console.error('Error updating place:', error);
           },
         });
     } else {
-      this.placeService.createPlace(this.parkingId, placeRequest).subscribe({        
+      this.placeService.createPlace(this.parkingId, placeRequest).subscribe({
         next: (newPlace) => {
           this.places.push(newPlace);
-          this.toastService.showSuccess('Place created successfully.', 'The new place has been added.');
+          this.toastService.showToast('success', 'Place créé avec succès.');
           this.applyFilters();
           this.closeForm();
         },
@@ -209,14 +230,14 @@ export class PlaceManagementComponent implements OnInit {
             error.status === 400 &&
             error.error.message.includes('maximum capacity')
           ) {
-            this.toastService.showError(
-              'Parking has reached its maximum capacity. Cannot add more places.',
-              'Consider removing some places to add new ones.'
+            this.toastService.showToast(
+              'error',
+              `Le parking a atteint sa capacité maximale. Impossible d'ajouter des places.`
             );
           } else {
-            this.toastService.showError(
-              'Error creating place: ' + (error.message || error),
-              'Please try again later.'
+            this.toastService.showToast(
+              'error',
+              'Erreur lors de la création du Place: ' + (error.message || error)
             );
           }
           console.error('Error creating place:', error);
@@ -243,6 +264,7 @@ export class PlaceManagementComponent implements OnInit {
         next: () => {
           this.places = this.places.filter((place) => place.id !== id);
           this.applyFilters();
+          this.toastService.showToast('success','Place est supprimée avec succès')
         },
         error: (error) => console.error('Error deleting place:', error),
       });

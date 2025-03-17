@@ -33,7 +33,7 @@ export class MyReservationComponent implements OnInit {
         this.isLoading = false
       },
       error: (error) => {
-        this.toastService.showError('error',"Erreur lors du chargement des réservations")
+        this.toastService.showToast('error',"Erreur lors du chargement des réservations")
         console.error("Error loading reservations:", error)
         this.isLoading = false
       },
@@ -47,12 +47,12 @@ export class MyReservationComponent implements OnInit {
       this.cancellingReservation = id
       this.reservationService.cancelReservation(id).subscribe({
         next: () => {
-          this.toastService.showSuccess('success',"Réservation annulée avec succès")
+          this.toastService.showToast('success',"Réservation annulée avec succès")
           this.loadReservations()
           this.cancellingReservation = null
         },
         error: (error) => {
-          this.toastService.showError('error',"Erreur lors de l'annulation de la réservation")
+          this.toastService.showToast('error',"Erreur lors de l'annulation de la réservation")
           console.error("Error cancelling reservation:", error)
           this.cancellingReservation = null
         },

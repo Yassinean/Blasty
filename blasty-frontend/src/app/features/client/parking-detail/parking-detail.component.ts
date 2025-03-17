@@ -83,7 +83,7 @@ export class ParkingDetailComponent implements OnInit {
         this.loadParking();
         this.loadUserVehicle();
       } else {
-        this.toastService.showError('error', 'ID de parking non trouvé');
+        this.toastService.showToast('error', 'ID de parking non trouvé');
         this.goBackToDashboard();
       }
     });
@@ -99,7 +99,7 @@ export class ParkingDetailComponent implements OnInit {
         this.loadPlaces();
       },
       error: (error) => {
-        this.toastService.showError(
+        this.toastService.showToast(
           'error',
           'Erreur lors du chargement du parking'
         );
@@ -122,7 +122,7 @@ export class ParkingDetailComponent implements OnInit {
         this.isLoading = false;
       },
       error: (error) => {
-        this.toastService.showError(
+        this.toastService.showToast(
           'error',
           'Erreur lors du chargement des places'
         );
@@ -140,7 +140,7 @@ export class ParkingDetailComponent implements OnInit {
         this.loadingVehicle = false;
       },
       error: (error) => {
-        this.toastService.showError(
+        this.toastService.showToast(
           'error',
           'Erreur lors du chargement de vos véhicules'
         );
@@ -178,8 +178,8 @@ export class ParkingDetailComponent implements OnInit {
 
       // Check if user has a vehicle
       if (!this.vehicle) {
-        this.toastService.showInfo(
-          'error',
+        this.toastService.showToast(
+          'info',
           'Vous devez enregistrer un véhicule avant de pouvoir réserver une place'
         );
         this.router.navigate(['/client/dashboard/vehicle']);
@@ -188,7 +188,7 @@ export class ParkingDetailComponent implements OnInit {
 
       // Check vehicle compatibility with place
       if (!this.isVehicleCompatible()) {
-        this.toastService.showError(
+        this.toastService.showToast(
           'error',
           `Votre véhicule (${this.getVehicleTypeLabel(
             this.vehicle.type
@@ -217,7 +217,7 @@ export class ParkingDetailComponent implements OnInit {
         reservationTime: timeString,
       });
     } else {
-      this.toastService.showInfo('info', "Cette place n'est pas disponible");
+      this.toastService.showToast('info', "Cette place n'est pas disponible");
     }
   }
 
@@ -225,7 +225,7 @@ export class ParkingDetailComponent implements OnInit {
     console.log('current user logged in ', this.authService.getCurrentUser());
     
     if (this.reservationForm.invalid || !this.selectedPlace || !this.vehicle) {
-      this.toastService.showError(
+      this.toastService.showToast(
         'error',
         'Veuillez remplir tous les champs requis'
       );
@@ -237,7 +237,7 @@ export class ParkingDetailComponent implements OnInit {
     // Get current user ID
     const currentUser = this.authService.getCurrentUser();
     if (!currentUser || !currentUser.id) {
-      this.toastService.showError(
+      this.toastService.showToast(
         'error',
         'Vous devez être connecté pour réserver une place'
       );
@@ -260,7 +260,7 @@ export class ParkingDetailComponent implements OnInit {
 
     this.reservationService.createReservation(request).subscribe({
       next: (response) => {
-        this.toastService.showSuccess(
+        this.toastService.showToast(
           'success',
           'Réservation créée avec succès'
         );
@@ -278,7 +278,7 @@ export class ParkingDetailComponent implements OnInit {
           errorMessage = error.error.message;
         }
 
-        this.toastService.showError('error', errorMessage);
+        this.toastService.showToast('error', errorMessage);
         this.submittingReservation = false;
       },
     });

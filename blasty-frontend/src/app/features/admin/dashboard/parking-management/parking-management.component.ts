@@ -1,3 +1,4 @@
+import { ToastService } from './../../../../core/services/toast.service';
 import { Component, OnInit } from '@angular/core';
 import {
   Parking,
@@ -15,7 +16,6 @@ import {
 } from '@angular/forms';
 import { Toast } from '../../../../core/models/toast';
 import { Router } from '@angular/router';
-import { ToastService } from '../../../../core/services/toast.service';
 
 @Component({
   selector: 'app-parking-management',
@@ -70,7 +70,7 @@ export class ParkingManagementComponent implements OnInit {
       },
       error: (error) => {
         console.error('Error loading parkings:', error);
-        this.showToast('error', 'Erreur lors du chargement des parkings');
+        this.toastService.showToast('error', 'Erreur lors du chargement des parkings');
         this.loading = false;
       },
     });
@@ -117,14 +117,14 @@ export class ParkingManagementComponent implements OnInit {
     this.loading = true;
     this.parkingService.createParking(parkingData).subscribe({
       next: (response) => {
-        this.showToast('success', 'Parking créé avec succès');
+        this.toastService.showToast('success', 'Parking créé avec succès');
         this.loadParkings();
         this.closeModal();
         this.loading = false;
       },
       error: (error) => {
         console.error('Error creating parking:', error);
-        this.showToast(
+        this.toastService.showToast(
           'error',
           this.getErrorMessage(error) || 'Erreur lors de la création du parking'
         );
@@ -137,14 +137,14 @@ export class ParkingManagementComponent implements OnInit {
     this.loading = true;
     this.parkingService.updateParking(id, parkingData).subscribe({
       next: (response) => {
-        this.showToast('success', 'Parking mis à jour avec succès');
+        this.toastService.showToast('success', 'Parking mis à jour avec succès');
         this.loadParkings();
         this.closeModal();
         this.loading = false;
       },
       error: (error) => {
         console.error('Error updating parking:', error);
-        this.showToast(
+        this.toastService.showToast(
           'error',
           this.getErrorMessage(error) ||
             'Erreur lors de la mise à jour du parking'
@@ -159,13 +159,13 @@ export class ParkingManagementComponent implements OnInit {
       this.loading = true;
       this.parkingService.deleteParking(id).subscribe({
         next: () => {
-          this.showToast('success', 'Parking supprimé avec succès');
+          this.toastService.showToast('success', 'Parking supprimé avec succès');
           this.loadParkings();
           this.loading = false;
         },
         error: (error) => {
           console.error('Error deleting parking:', error);
-          this.showToast('error', 'Erreur lors de la suppression du parking');
+          this.toastService.showToast('error', 'Erreur lors de la suppression du parking');
           this.loading = false;
         },
       });
@@ -221,11 +221,11 @@ export class ParkingManagementComponent implements OnInit {
   getAvailablePlaces(parkingId: number): void {
     this.parkingService.getAvailablePlaces(parkingId).subscribe({
       next: (availablePlaces) => {
-        this.showToast('info', `Places disponibles: ${availablePlaces}`);
+        this.toastService.showToast('info', `Places disponibles: ${availablePlaces}`);
       },
       error: (error) => {
         console.error('Error getting available places:', error);
-        this.showToast(
+        this.toastService.showToast(
           'error',
           'Erreur lors de la récupération des places disponibles'
         );
@@ -263,7 +263,7 @@ export class ParkingManagementComponent implements OnInit {
     const id = +parkingId; // Convert to number
     console.log('Parking ID:', id);
     if (isNaN(id)) {
-      this.toastService.showError('Error', 'Invalid parking ID');
+      this.toastService.showToast('error', 'Invalid parking ID');
       return;
     }
     this.router.navigate([`/admin/dashboard/parkings/${id}/places`]);
@@ -297,11 +297,11 @@ export class ParkingManagementComponent implements OnInit {
             }
             this.applyFilters();
             this.closeModal();
-            this.showToast('success', 'Parking mis à jour avec succès');
+            this.toastService.showToast('success', 'Parking mis à jour avec succès');
           },
           error: (error) => {
             console.error('Erreur lors de la mise à jour du parking', error);
-            this.showToast('error', 'Erreur lors de la mise à jour du parking');
+            this.toastService.showToast('error', 'Erreur lors de la mise à jour du parking');
           },
         });
     } else {
@@ -311,11 +311,11 @@ export class ParkingManagementComponent implements OnInit {
           this.parkings.push(newParking);
           this.applyFilters();
           this.closeModal();
-          this.showToast('success', 'Parking créé avec succès');
+          this.toastService.showToast('success', 'Parking créé avec succès');
         },
         error: (error) => {
           console.error('Erreur lors de la création du parking', error);
-          this.showToast('error', 'Erreur lors de la création du parking');
+          this.toastService.showToast('error', 'Erreur lors de la création du parking');
         },
       });
     }
@@ -327,34 +327,6 @@ export class ParkingManagementComponent implements OnInit {
     this.parkingForm.reset({ status: 'open' }); // Reset form with default status
     this.currentParkingId = null;
     this.isEditMode = false;
-  }
-
-  // Toast notification methods
-  showToast(
-    type: 'success' | 'error' | 'info',
-    message: string,
-    duration: number = 5000
-  ): void {
-    const id = ++this.toastIdCounter;
-    const toast: Toast = { id, type, message };
-
-    // Add toast to the array
-    this.toasts.push(toast);
-
-    // Set timeout to remove the toast after duration
-    toast.timeout = setTimeout(() => {
-      this.removeToast(id);
-    }, duration);
-  }
-
-  removeToast(id: number): void {
-    const index = this.toasts.findIndex((t) => t.id === id);
-    if (index !== -1) {
-      // Clear the timeout to prevent memory leaks
-      clearTimeout(this.toasts[index].timeout);
-      // Remove the toast from the array
-      this.toasts.splice(index, 1);
-    }
   }
 
   // Helper method to extract error message from backend response

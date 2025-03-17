@@ -1,0 +1,39 @@
+<!-- Toast Notifications -->
+<div class="fixed bottom-4 right-4 z-50 flex flex-col gap-2">
+    <div
+      *ngFor="let toast of toasts"
+      class="flex items-center p-4 rounded-lg shadow-lg transition-all duration-300 transform translate-y-0 opacity-100"
+      [ngClass]="{
+        'bg-green-100 text-green-600 dark:bg-green-700 dark:text-green-100': toast.type === 'success',
+        'bg-red-100 text-red-600 dark:bg-red-700 dark:text-red-100': toast.type === 'error',
+        'bg-blue-100 text-blue-600 dark:bg-blue-700 dark:text-blue-100': toast.type === 'info'
+      }"
+    >
+      <div class="mr-3">
+        <svg *ngIf="toast.type === 'success'" xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14" />
+          <path d="M22 4L12 14.01l-3-3" />
+        </svg>
+        <svg *ngIf="toast.type === 'error'" xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <circle cx="12" cy="12" r="10" />
+          <path d="M15 9l-6 6" />
+          <path d="M9 9l6 6" />
+        </svg>
+        <svg *ngIf="toast.type === 'info'" xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <circle cx="12" cy="12" r="10" />
+          <path d="M12 16v-4" />
+          <path d="M12 8h.01" />
+        </svg>
+      </div>
+      <div>{{ toast.message }}</div>
+      <button
+        class="ml-auto pl-3 text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-300"
+        (click)="removeToast(toast.id)"
+      >
+        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M18 6L6 18M6 6l12 12" />
+        </svg>
+      </button>
+    </div>
+  </div>
+  
