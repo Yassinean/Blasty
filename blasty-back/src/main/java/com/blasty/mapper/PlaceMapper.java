@@ -11,17 +11,17 @@ import org.springframework.beans.factory.annotation.Autowired;
 
 
 @Mapper(componentModel = "spring")
-public abstract class PlaceMapper implements GenericMapper<PlaceRequest, PlaceResponse, Place> {
+public abstract class PlaceMapper{
 
     @Autowired
     private ParkingRepository parkingRepository;
 
-    @Override
+
     @Mapping(target = "id", ignore = true)
     @Mapping(target = "etat", expression = "java(com.blasty.model.enums.PlaceStatus.DISPONIBLE)")
     public abstract Place toEntity(PlaceRequest request);
 
-    @Override
+
     @Mapping(target = "parkingId", source = "parking.id")
     public abstract PlaceResponse toResponse(Place place);
 
