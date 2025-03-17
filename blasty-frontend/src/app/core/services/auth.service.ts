@@ -227,7 +227,7 @@ export class AuthService {
   logout(): void {
     this.tokenService.clear();
     this.currentUserSubject.next(null);
-    this.router.navigate(['/auth/login']);
+    this.router.navigate(['/auth']);
   }
 
   getToken(): string | null {

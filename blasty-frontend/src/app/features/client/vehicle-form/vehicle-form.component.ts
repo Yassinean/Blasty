@@ -1,7 +1,7 @@
 import { Component, type OnInit } from "@angular/core"
 import { CommonModule } from "@angular/common"
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from "@angular/forms"
-import { Router, RouterModule } from "@angular/router"
+import { Location } from '@angular/common';
 import { VehicleService } from "../../../core/services/vehicle.service"
 import { ToastService } from "../../../core/services/toast.service"
 import { VehicleResponse, VehicleType } from "../../../core/models/vehicle.model"
@@ -9,7 +9,7 @@ import { VehicleResponse, VehicleType } from "../../../core/models/vehicle.model
 @Component({
   selector: "app-vehicle-form",
   standalone: true,
-  imports: [CommonModule, ReactiveFormsModule, RouterModule],
+  imports: [CommonModule, ReactiveFormsModule],
   templateUrl: "./vehicle-form.component.html",
 })
 export class VehicleFormComponent implements OnInit {
@@ -29,7 +29,7 @@ export class VehicleFormComponent implements OnInit {
     private fb: FormBuilder,
     private vehicleService: VehicleService,
     private toastService: ToastService,
-    private router: Router,
+    private Location: Location,
   ) {
     this.vehicleForm = this.fb.group({
       immatriculation: ["", [Validators.required, Validators.pattern(/^[A-Z0-9-]{5,10}$/)]],
@@ -77,7 +77,7 @@ export class VehicleFormComponent implements OnInit {
         next: () => {
           this.toastService.showSuccess('success',"Véhicule mis à jour avec succès")
           this.isSubmitting = false
-          this.router.navigate(["/client/dashboard"])
+          this.Location.back()
         },
         error: (error) => {
           let errorMessage = "Erreur lors de la mise à jour du véhicule"
@@ -93,7 +93,7 @@ export class VehicleFormComponent implements OnInit {
         next: () => {
           this.toastService.showSuccess('success',"Véhicule enregistré avec succès")
           this.isSubmitting = false
-          this.router.navigate(["/client/dashboard"])
+          this.Location.back()
         },
         error: (error) => {
           let errorMessage = "Erreur lors de l'enregistrement du véhicule"
@@ -114,7 +114,7 @@ export class VehicleFormComponent implements OnInit {
         next: () => {
           this.toastService.showSuccess('success',"Véhicule supprimé avec succès")
           this.isSubmitting = false
-          this.router.navigate(["/client/dashboard"])
+          this.Location.back()
         },
         error: (error) => {
           this.toastService.showError('error',"Erreur lors de la suppression du véhicule")

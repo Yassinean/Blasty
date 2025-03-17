@@ -38,6 +38,8 @@ export class MyReservationComponent implements OnInit {
         this.isLoading = false
       },
     })
+    console.log('reesrvartion:',this.reservations);
+    
   }
 
   cancelReservation(id: number): void {

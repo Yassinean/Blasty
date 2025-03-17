@@ -3,9 +3,13 @@ package com.blasty.dto.request;
 import com.blasty.model.enums.ParkingStatus;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
+import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 @Data
+@NoArgsConstructor
+@AllArgsConstructor
 public class ParkingRequest {
 
     @NotBlank(message = "Le nom du parking est obligatoire")
