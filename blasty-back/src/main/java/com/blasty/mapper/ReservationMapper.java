@@ -17,7 +17,6 @@ public interface ReservationMapper {
     ReservationMapper INSTANCE = Mappers.getMapper(ReservationMapper.class);
 
     @Mapping(target = "id", ignore = true)
-    @Mapping(target = "startDate", expression = "java(java.time.LocalDateTime.now())")
     @Mapping(target = "status", expression = "java(com.blasty.model.enums.ReservationStatus.PENDING)")
     @Mapping(target = "client", source = "clientId")
     @Mapping(target = "place", source = "placeId")
@@ -25,8 +24,14 @@ public interface ReservationMapper {
     Reservation toEntity(ReservationRequest request);
 
     @Mapping(target = "clientId", source = "client.id")
+    @Mapping(target = "clientName", source = "client.name")
     @Mapping(target = "placeId", source = "place.id")
+    @Mapping(target = "placeNumber", source = "place.numero")
     @Mapping(target = "vehicleId", source = "vehicle.id")
+    @Mapping(target = "parkingId", source = "place.parking.id")
+    @Mapping(target = "parkingName", source = "place.parking.name")
+    @Mapping(target = "tarif", source = "place.tarifHoraire")
+    @Mapping(target = "vehicleImmatriculation", source = "vehicle.immatriculation")
     ReservationResponse toResponse(Reservation reservation);
 
     @Mapping(target = "id", source = "clientId")

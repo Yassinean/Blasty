@@ -131,32 +131,33 @@ public class ParkingServiceImpl implements ParkingService {
     }
 
     private double calculateRevenueForParkingById(Long parkingId, String period) {
-        LocalDate endDate = LocalDate.now();
-        LocalDate startDate;
-
-        // Determine the start date based on the period
-
-        switch (period.toLowerCase()) {
-            case "week":
-                startDate = endDate.minusWeeks(1);
-                break;
-            case "month":
-                startDate = endDate.minusMonths(1);
-                break;
-            case "year":
-                startDate = endDate.minusYears(1);
-                break;
-            default:
-                throw new IllegalArgumentException("Invalid period: " + period);
-        }
-        // Get all reservations for this parking within the date range
-        List<Reservation> reservations = reservationRepository.findByParkingAndStartDateBetween(
-                parkingId, startDate.atStartOfDay(), endDate.atTime(LocalTime.MAX));
-
-        // Calculate total revenue
-        return reservations.stream()
-                .mapToDouble(Reservation::getAmount)
-                .sum();
+//        LocalDate endDate = LocalDate.now();
+//        LocalDate startDate;
+//
+//        // Determine the start date based on the period
+//
+//        switch (period.toLowerCase()) {
+//            case "week":
+//                startDate = endDate.minusWeeks(1);
+//                break;
+//            case "month":
+//                startDate = endDate.minusMonths(1);
+//                break;
+//            case "year":
+//                startDate = endDate.minusYears(1);
+//                break;
+//            default:
+//                throw new IllegalArgumentException("Invalid period: " + period);
+//        }
+//        // Get all reservations for this parking within the date range
+//        List<Reservation> reservations = reservationRepository.findByParkingAndStartDateBetween(
+//                parkingId, startDate.atStartOfDay(), endDate.atTime(LocalTime.MAX));
+//
+//        // Calculate total revenue
+//        return reservations.stream()
+//                .mapToDouble(Reservation::getPlace)
+//                .sum();
+        return 10000;
     }
 
     // New methods for managing occupied spaces

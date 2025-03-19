@@ -1,13 +1,12 @@
 import { Component } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { RouterLink, RouterOutlet } from '@angular/router';
-import { HeaderComponent } from '../../shared/header/header.component';
+import { RouterOutlet } from '@angular/router';
 import { SidebarComponent } from '../../shared/sidebar/sidebar.component';
 
 @Component({
   selector: 'app-dashboard',
   standalone: true,
-  imports: [CommonModule, RouterLink, RouterOutlet, SidebarComponent, HeaderComponent],
+  imports: [CommonModule, RouterOutlet, SidebarComponent],
   template: `
     <div class="flex h-screen bg-gray-100 dark:bg-gray-900">
       <!-- Sidebar -->

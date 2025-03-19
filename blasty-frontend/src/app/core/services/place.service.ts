@@ -77,18 +77,6 @@ export class PlaceService {
       .pipe(catchError(this.handleError<PlaceResponse>("reservePlace")));
   }
 
-  occupyPlace(placeId: number): Observable<PlaceResponse> {
-    return this.http
-      .post<PlaceResponse>(`${this.apiUrl}/places/${placeId}/occupy`, {})
-      .pipe(catchError(this.handleError<PlaceResponse>("occupyPlace")));
-  }
-
-  freePlace(placeId: number): Observable<PlaceResponse> {
-    return this.http
-      .post<PlaceResponse>(`${this.apiUrl}/places/${placeId}/free`, {})
-      .pipe(catchError(this.handleError<PlaceResponse>("freePlace")));
-  }
-
   // Generic error handler
   private handleError<T>(operation = "operation", result?: T) {
     return (error: any): Observable<T> => {

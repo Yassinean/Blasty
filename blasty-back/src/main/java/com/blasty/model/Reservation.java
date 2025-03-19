@@ -40,7 +40,9 @@ public class Reservation{
     @Column(nullable = false)
     private ReservationStatus status;
 
-    private Long parking;
+    @Transient
+    private Parking parking;
 
-    private Long amount;
+    @Transient
+    private double tarif;
 }

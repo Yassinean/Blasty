@@ -101,6 +101,13 @@ export const routes: Routes = [
             './features/admin/dashboard/place-management/place-management.component'
           ).then((m) => m.PlaceManagementComponent),
       },
+      {
+        path: "reservation-management",
+        loadComponent: () =>
+          import("./features/admin/dashboard/reservation-management/reservation-management.component").then(
+            (m) => m.ReservationManagementComponent,
+          ),
+      },
     ],
   },
   {

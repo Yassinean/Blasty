@@ -18,6 +18,6 @@ public class ReservationRequest {
     private Long vehicleId;
 
     @NotNull(message="Veuillez entrer la date de reservation")
-    private LocalDateTime reservationDate;
+    private LocalDateTime startDate;
 
 }

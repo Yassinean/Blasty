@@ -4,6 +4,7 @@ import { CommonModule } from '@angular/common';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { ActivatedRoute, RouterLink } from '@angular/router';
 import { AuthService } from '../../../core/services/auth.service';
+import { ToastService } from '../../../core/services/toast.service';
 
 @Component({
   selector: 'app-login',
@@ -26,6 +27,7 @@ export class LoginComponent implements OnInit {
   constructor(
     private fb: FormBuilder,
     private authService: AuthService,
+    private toastService: ToastService,
     private route: ActivatedRoute
   ) {}
 
@@ -71,46 +73,18 @@ export class LoginComponent implements OnInit {
       next: (response) => {
         this.loading = false;
         if (!response.error) {
-          this.showToast('success','Vous avez été connecté avec succès');
+          this.toastService.showToast('success','Vous avez été connecté avec succès');
           this.authService.redirectUser();
         } else {
           this.error = response.message;
-          this.showToast('error', response.message);
+          this.toastService.showToast('error', response.message);
         }
       },
       error: (error) => {
         this.loading = false;
         this.error = error.message || `Une erreur s'est produite lors de la connexion`;
-        this.showToast('error', 'numero ou password incorrect');
+        this.toastService.showToast('error', 'numero ou password incorrect');
       },
     });
   }
-
-  // Toast notification methods
-    showToast(
-      type: 'success' | 'error' | 'info',
-      message: string,
-      duration: number = 5000
-    ): void {
-      const id = ++this.toastIdCounter;
-      const toast: Toast = { id, type, message };
-  
-      // Add toast to the array
-      this.toasts.push(toast);
-  
-      // Set timeout to remove the toast after duration
-      toast.timeout = setTimeout(() => {
-        this.removeToast(id);
-      }, duration);
-    }
-  
-    removeToast(id: number): void {
-      const index = this.toasts.findIndex((t) => t.id === id);
-      if (index !== -1) {
-        // Clear the timeout to prevent memory leaks
-        clearTimeout(this.toasts[index].timeout);
-        // Remove the toast from the array
-        this.toasts.splice(index, 1);
-      }
-    }
 }

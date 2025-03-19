@@ -71,7 +71,7 @@ public class ReservationServiceImplTest {
         reservationRequest.setClientId(1L);
         reservationRequest.setPlaceId(2L);
         reservationRequest.setVehicleId(3L);
-        reservationRequest.setReservationDate(LocalDateTime.now().plusHours(1));
+        reservationRequest.setStartDate(LocalDateTime.now().plusHours(1));
 
         client = new Client();
         client.setId(1L);
@@ -93,8 +93,8 @@ public class ReservationServiceImplTest {
                 .client(client)
                 .place(place)
                 .vehicle(vehicle)
-                .startDate(reservationRequest.getReservationDate())
-                .endDate(reservationRequest.getReservationDate().plusHours(1))
+                .startDate(reservationRequest.getStartDate())
+                .endDate(reservationRequest.getStartDate().plusHours(1))
                 .status(ReservationStatus.PENDING)
                 .build();
 
@@ -103,8 +103,8 @@ public class ReservationServiceImplTest {
                 .clientId(1L)
                 .placeId(2L)
                 .vehicleId(3L)
-                .reservationDate(reservationRequest.getReservationDate())
-                .endDate(reservationRequest.getReservationDate().plusHours(1))
+                .startDate(reservationRequest.getStartDate())
+                .endDate(reservationRequest.getStartDate().plusHours(1))
                 .status(ReservationStatus.PENDING)
                 .build();
     }
@@ -115,7 +115,7 @@ public class ReservationServiceImplTest {
         when(clientRepository.findById(1L)).thenReturn(Optional.of(client));
         when(placeRepository.findById(2L)).thenReturn(Optional.of(place));
         when(vehicleRepository.findById(3L)).thenReturn(Optional.of(vehicle));
-        when(placeService.isPlaceAvailableInTime(2L, reservationRequest.getReservationDate())).thenReturn(true);
+        when(placeService.isPlaceAvailableInTime(2L, reservationRequest.getStartDate())).thenReturn(true);
         when(reservationMapper.toEntity(reservationRequest)).thenReturn(reservation);
         when(reservationRepository.save(reservation)).thenReturn(reservation);
         when(reservationMapper.toResponse(reservation)).thenReturn(reservationResponse);
@@ -129,7 +129,7 @@ public class ReservationServiceImplTest {
         verify(clientRepository, times(1)).findById(1L);
         verify(placeRepository, times(1)).findById(2L);
         verify(vehicleRepository, times(1)).findById(3L);
-        verify(placeService, times(1)).isPlaceAvailableInTime(2L, reservationRequest.getReservationDate());
+        verify(placeService, times(1)).isPlaceAvailableInTime(2L, reservationRequest.getStartDate());
         verify(reservationMapper, times(1)).toEntity(reservationRequest);
         verify(reservationRepository, times(1)).save(reservation);
         verify(reservationMapper, times(1)).toResponse(reservation);
@@ -201,7 +201,7 @@ public class ReservationServiceImplTest {
         when(clientRepository.findById(1L)).thenReturn(Optional.of(client));
         when(placeRepository.findById(2L)).thenReturn(Optional.of(place));
         when(vehicleRepository.findById(3L)).thenReturn(Optional.of(vehicle));
-        when(placeService.isPlaceAvailableInTime(2L, reservationRequest.getReservationDate())).thenReturn(false);
+        when(placeService.isPlaceAvailableInTime(2L, reservationRequest.getStartDate())).thenReturn(false);
 
         // Call method and assert exception
         PlaceNotAvailableException exception = assertThrows(PlaceNotAvailableException.class, () -> {

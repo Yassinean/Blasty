@@ -431,29 +431,14 @@
         <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
           <div>
             <label
-              for="reservationDate"
+              for="startDate"
               class="block text-sm font-medium text-gray-700 dark:text-gray-300"
               >Date</label
             >
             <input
-              type="date"
-              id="reservationDate"
-              formControlName="reservationDate"
-              [min]="minDate"
-              [max]="maxDate"
-              class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white"
-            />
-          </div>
-          <div>
-            <label
-              for="reservationTime"
-              class="block text-sm font-medium text-gray-700 dark:text-gray-300"
-              >Heure</label
-            >
-            <input
-              type="time"
-              id="reservationTime"
-              formControlName="reservationTime"
+              type="datetime-local"
+              id="startDate"
+              formControlName="startDate"
               class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white"
             />
           </div>

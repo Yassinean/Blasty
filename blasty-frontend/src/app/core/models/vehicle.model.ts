@@ -1,7 +1,7 @@
 export enum VehicleType {
   VOITURE = "VOITURE",
   MOTO = "MOTO",
-  CAMION = "CAMION",
+  CAMION = "CAMIONNETTE",
 }
 
 export interface VehicleRequest {

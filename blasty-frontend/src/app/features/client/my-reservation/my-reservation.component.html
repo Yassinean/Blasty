@@ -62,7 +62,7 @@
                 </div>
                 <div class="ml-4">
                   <h3 class="text-lg font-medium text-gray-900 dark:text-white">
-                    {{ reservation.parkingName }} - Place {{ reservation.placeNumber }}
+                    {{ reservation.parkingName || 'Parking inconnu' }} - Place {{ reservation.placeNumber || 'N/A' }}
                   </h3>
                   <div class="mt-1 flex items-center flex-wrap gap-2">
                     <span
@@ -72,10 +72,10 @@
                       {{ getStatusLabel(reservation.status) }}
                     </span>
                     <span class="text-sm text-gray-500 dark:text-gray-400">
-                      Véhicule: {{ reservation.vehiclePlateNumber }}
+                      Véhicule: {{ reservation.vehicleImmatriculation || 'Non spécifié' }}
                     </span>
                     <span class="text-sm text-gray-500 dark:text-gray-400">
-                      Prix: {{ reservation.totalPrice }}Dh
+                      Prix: {{ reservation.tarif || 0 }}Dh
                     </span>
                   </div>
                   <div class="mt-2 text-sm text-gray-500 dark:text-gray-400">

@@ -9,7 +9,7 @@ import { AuthService } from "./auth.service"
   providedIn: "root",
 })
 export class VehicleService {
-  private apiUrl = "http://localhost:8080/api"
+  private apiUrl = "http://localhost:8080/api/vehicles"
 
   constructor(
     private http: HttpClient,
@@ -23,7 +23,7 @@ export class VehicleService {
       return of(null)
     }
 
-    return this.http.get<VehicleResponse>(`${this.apiUrl}/${currentUser.id}/my-vehicle`).pipe(
+    return this.http.get<VehicleResponse>(`${this.apiUrl}/${currentUser.id}`).pipe(
       catchError((error) => {
         // If 404, the user doesn't have a vehicle yet
         if (error.status === 404) {
@@ -41,7 +41,7 @@ export class VehicleService {
       throw new Error("User not authenticated")
     }
 
-    return this.http.post<VehicleResponse>(`${this.apiUrl}/${currentUser.id}/my-vehicle`, vehicle)
+    return this.http.post<VehicleResponse>(`${this.apiUrl}/${currentUser.id}`, vehicle)
   }
 
   // Update the current client's vehicle
@@ -51,7 +51,7 @@ export class VehicleService {
       throw new Error("User not authenticated")
     }
 
-    return this.http.put<VehicleResponse>(`${this.apiUrl}/${currentUser.id}/my-vehicle`, vehicle)
+    return this.http.put<VehicleResponse>(`${this.apiUrl}/${currentUser.id}`, vehicle)
   }
 
   // Delete the current client's vehicle
@@ -61,7 +61,7 @@ export class VehicleService {
       throw new Error("User not authenticated")
     }
 
-    return this.http.delete<void>(`${this.apiUrl}/${currentUser.id}/my-vehicle`)
+    return this.http.delete<void>(`${this.apiUrl}/${currentUser.id}`)
   }
 }
 

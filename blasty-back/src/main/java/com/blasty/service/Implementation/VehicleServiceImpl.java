@@ -28,21 +28,17 @@ public class VehicleServiceImpl implements VehicleService {
     @Override
     @Transactional
     public VehicleResponse createVehicle(Long clientId, VehicleRequest requestDto) {
-        // Check if client exists
         Client client = clientRepository.findById(clientId)
                 .orElseThrow(() -> new ResourceNotFoundException("Client not found with id: " + clientId));
 
-        // Check if client already has a vehicle
         if (vehicleRepository.existsByClientId(clientId)) {
             throw new IllegalArgumentException("Client already has a registered vehicle");
         }
 
-        // Check if immatriculation already exists
         if (vehicleRepository.existsByImmatriculation(requestDto.getImmatriculation())) {
             throw new IllegalArgumentException("Vehicle with this immatriculation already exists");
         }
 
-        // Create and save vehicle
         Vehicle vehicle = vehicleMapper.toEntity(requestDto);
         vehicle.setClient(client);
         Vehicle savedVehicle = vehicleRepository.save(vehicle);
@@ -53,12 +49,10 @@ public class VehicleServiceImpl implements VehicleService {
 
     @Override
     public VehicleResponse getVehicleByClientId(Long clientId) {
-        // Check if client exists
         if (!clientRepository.existsById(clientId)) {
             throw new ResourceNotFoundException("Client not found with id: " + clientId);
         }
 
-        // Find vehicle by client id
         Vehicle vehicle = vehicleRepository.findByClientId(clientId)
                 .orElseThrow(() -> new ResourceNotFoundException("Vehicle not found for client id: " + clientId));
 
@@ -68,16 +62,13 @@ public class VehicleServiceImpl implements VehicleService {
     @Override
     @Transactional
     public VehicleResponse updateVehicleByClientId(Long clientId, VehicleRequest requestDto) {
-        // Check if client exists
         if (!clientRepository.existsById(clientId)) {
             throw new ResourceNotFoundException("Client not found with id: " + clientId);
         }
 
-        // Find vehicle by client id
         Vehicle vehicle = vehicleRepository.findByClientId(clientId)
                 .orElseThrow(() -> new ResourceNotFoundException("Vehicle not found for client id: " + clientId));
 
-        // Check if updating to an existing immatriculation
         if (!vehicle.getImmatriculation().equals(requestDto.getImmatriculation()) &&
                 vehicleRepository.existsByImmatriculation(requestDto.getImmatriculation())) {
             throw new IllegalArgumentException("Vehicle with this immatriculation already exists");
@@ -94,17 +85,14 @@ public class VehicleServiceImpl implements VehicleService {
     @Override
     @Transactional
     public void deleteVehicleByClientId(Long clientId) {
-        // Check if client exists
         if (!clientRepository.existsById(clientId)) {
             throw new ResourceNotFoundException("Client not found with id: " + clientId);
         }
 
-        // Find the vehicle by client id
         Vehicle vehicle = vehicleRepository.findByClientId(clientId)
                 .orElseThrow(() -> new ResourceNotFoundException("Vehicle not found for client id: " + clientId));
 
-        // Delete the vehicle by its ID
-        vehicleRepository.deleteById(vehicle.getId());
+        vehicleRepository.delete(vehicle);
 
         log.info("Deleted vehicle with id: {} for client: {}", vehicle.getId(), clientId);
     }

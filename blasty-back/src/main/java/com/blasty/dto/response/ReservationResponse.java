@@ -11,9 +11,15 @@ import java.time.LocalDateTime;
 public class ReservationResponse {
     private Long id;
     private Long clientId;
+    private String clientName;
+    private Long parkingId;
+    private String parkingName;
+    private double tarif;
     private Long placeId;
+    private String placeNumber;
     private Long vehicleId;
-    private LocalDateTime reservationDate;
+    private String vehicleImmatriculation;
+    private LocalDateTime startDate;
     private LocalDateTime endDate;
     private ReservationStatus status;
 }

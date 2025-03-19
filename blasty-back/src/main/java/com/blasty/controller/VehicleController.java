@@ -12,12 +12,12 @@ import org.springframework.web.bind.annotation.*;
 
 @RequiredArgsConstructor
 @RestController
-@RequestMapping("/api/{clientId}/my-vehicle")
+@RequestMapping("/api/vehicles")
 public class VehicleController {
 
     private final VehicleService vehicleService;
 
-    @PostMapping
+    @PostMapping("/{clientId}")
     public ResponseEntity<VehicleResponse> registerVehicle(
             @PathVariable Long clientId,
             @Valid @RequestBody VehicleRequest requestDto) {
@@ -25,13 +25,13 @@ public class VehicleController {
         return new ResponseEntity<>(responseDto, HttpStatus.CREATED);
     }
 
-    @GetMapping
+    @GetMapping("/{clientId}")
     public ResponseEntity<VehicleResponse> getClientVehicle(@PathVariable Long clientId) {
         VehicleResponse vehicle = vehicleService.getVehicleByClientId(clientId);
         return ResponseEntity.ok(vehicle);
     }
 
-    @PutMapping
+    @PutMapping("/{clientId}")
     public ResponseEntity<VehicleResponse> updateClientVehicle(
             @PathVariable Long clientId,
             @Valid @RequestBody VehicleRequest requestDto) {
@@ -39,7 +39,7 @@ public class VehicleController {
         return ResponseEntity.ok(vehicle);
     }
 
-    @DeleteMapping
+    @DeleteMapping("/{clientId}")
     public ResponseEntity<Void> deleteClientVehicle(@PathVariable Long clientId) {
         vehicleService.deleteVehicleByClientId(clientId);
         return ResponseEntity.noContent().build();

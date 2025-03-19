@@ -7,17 +7,11 @@ import com.blasty.exception.InvalidReservationStatusException;
 import com.blasty.exception.PlaceNotAvailableException;
 import com.blasty.exception.ResourceNotFoundException;
 import com.blasty.mapper.ReservationMapper;
-import com.blasty.model.Client;
-import com.blasty.model.Place;
-import com.blasty.model.Reservation;
-import com.blasty.model.Vehicle;
+import com.blasty.model.*;
 import com.blasty.model.enums.ReservationStatus;
 import com.blasty.model.enums.TypePlace;
 import com.blasty.model.enums.VehiculeType;
-import com.blasty.repository.ClientRepository;
-import com.blasty.repository.PlaceRepository;
-import com.blasty.repository.ReservationRepository;
-import com.blasty.repository.VehicleRepository;
+import com.blasty.repository.*;
 import com.blasty.service.Interface.PlaceService;
 import com.blasty.service.Interface.ReservationService;
 import jakarta.transaction.Transactional;
@@ -39,58 +33,54 @@ public class ReservationServiceImpl implements ReservationService {
     private final PlaceRepository placeRepository;
     private final PlaceService placeService;
     private final VehicleRepository vehicleRepository;
+    private final ParkingRepository parkingRepository;
 
     @Override
     @Transactional
     public ReservationResponse createReservation(ReservationRequest request) {
-
         log.info("1. Create reservation request: {}", request);
-        // Validate client exists
+
+        // Validate that startDate is not null
+        if (request.getStartDate() == null) {
+            throw new IllegalArgumentException("La date de réservation ne peut pas être nulle");
+        }
+
         Client client = clientRepository.findById(request.getClientId())
                 .orElseThrow(() -> new ResourceNotFoundException("Client not found with id: " + request.getClientId()));
 
-        // Validate place exists
         Place place = placeRepository.findById(request.getPlaceId())
                 .orElseThrow(() -> new ResourceNotFoundException("Place not found with id: " + request.getPlaceId()));
 
-        // Validate vehicle exists and belongs to the client
         Vehicle vehicle = vehicleRepository.findById(request.getVehicleId())
                 .orElseThrow(() -> new ResourceNotFoundException("Vehicle not found with id: " + request.getVehicleId()));
 
-        // Ensure vehicle belongs to the requesting client
         if (!vehicle.getClient().getId().equals(request.getClientId())) {
             throw new IllegalArgumentException("Vehicle does not belong to the requesting client");
         }
 
-        // Validate vehicle type is compatible with place type
         validateVehiclePlaceCompatibility(vehicle, place);
 
-        // Validate reservation date
-        validateReservationDate(request.getReservationDate());
+        validateStartDate(request.getStartDate());
 
-        // Check if the place is available at the specified time
-        if (!placeService.isPlaceAvailableInTime(request.getPlaceId(), request.getReservationDate())) {
+        if (!placeService.isPlaceAvailableInTime(request.getPlaceId(), request.getStartDate())) {
             throw new PlaceNotAvailableException("Place is not available at the requested time");
         }
 
-        // Calculate end time (reservation duration)
-        LocalDateTime endTime = request.getReservationDate().plusHours(1);
-        // Reserve the place
+        LocalDateTime endTime = request.getStartDate().plusHours(1);
+
         placeService.reservePlace(request.getPlaceId(), endTime);
-        // Create a reservation entity
+
         Reservation reservation = reservationMapper.toEntity(request);
         reservation.setClient(client);
         reservation.setPlace(place);
         reservation.setVehicle(vehicle);
         reservation.setStatus(ReservationStatus.PENDING);
-        reservation.setStartDate(request.getReservationDate());
+        reservation.setStartDate(request.getStartDate());
         reservation.setEndDate(endTime);
 
         log.info("Reservation created successfully {} ", reservation);
-        // Save and return the reservation
         Reservation savedReservation = reservationRepository.save(reservation);
         return reservationMapper.toResponse(savedReservation);
-
     }
 
     private void validateVehiclePlaceCompatibility(Vehicle vehicle, Place place) {
@@ -99,19 +89,16 @@ public class ReservationServiceImpl implements ReservationService {
 
         switch (placeType) {
             case STANDARD:
-                // Standard places can only accommodate cars
                 if (vehicleType != VehiculeType.VOITURE) {
                     throw new InvalidReservationException("Standard places can only accommodate cars");
                 }
                 break;
             case HANDICAPE:
-                // Handicap places can only accommodate cars
                 if (vehicleType != VehiculeType.VOITURE) {
                     throw new InvalidReservationException("Handicap places can only accommodate cars");
                 }
                 break;
             case VIP:
-                // Large places can accommodate all vehicle types
                 break;
             default:
                 throw new InvalidReservationException("Unknown place type");
@@ -133,7 +120,6 @@ public class ReservationServiceImpl implements ReservationService {
 
     @Override
     public List<ReservationResponse> getReservationsByClientId(Long clientId) {
-        // Validate client exists
         if (!clientRepository.existsById(clientId)) {
             throw new ResourceNotFoundException("Client not found with id: " + clientId);
         }
@@ -149,16 +135,13 @@ public class ReservationServiceImpl implements ReservationService {
     public ReservationResponse confirmReservation(Long id) {
         Reservation reservation = findReservationById(id);
 
-        // Can only confirm if it's in PENDING status
         if (reservation.getStatus() != ReservationStatus.PENDING) {
             throw new InvalidReservationStatusException("Reservation is already " +
                     reservation.getStatus().toString().toLowerCase());
         }
 
-        // Update place status to OCCUPEE
         placeService.occupyPlace(reservation.getPlace().getId());
 
-        // Update reservation status
         reservation.setStatus(ReservationStatus.CONFIRMED);
         Reservation savedReservation = reservationRepository.save(reservation);
         log.info("Confirmed reservation with id: {}", id);
@@ -231,16 +214,16 @@ public class ReservationServiceImpl implements ReservationService {
     /**
      * Validate that the reservation date is not in the past and is within allowed range
      */
-    private void validateReservationDate(LocalDateTime reservationDate) {
+    private void validateStartDate(LocalDateTime startDate) {
         LocalDateTime now = LocalDateTime.now();
 
-        if (reservationDate.isBefore(now)) {
+        if (startDate.isBefore(now)) {
             throw new InvalidReservationException("Reservation date cannot be in the past");
         }
 
         // Optional: Add more validation logic here, such as maximum advance booking time
         LocalDateTime maxAdvanceDate = now.plusDays(30); // Allow bookings up to 30 days in advance
-        if (reservationDate.isAfter(maxAdvanceDate)) {
+        if (startDate.isAfter(maxAdvanceDate)) {
             throw new InvalidReservationException("Reservations can only be made up to 30 days in advance");
         }
     }

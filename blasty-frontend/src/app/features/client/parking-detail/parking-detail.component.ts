@@ -17,10 +17,10 @@ import {
   VehicleResponse,
   VehicleType,
 } from '../../../core/models/vehicle.model';
-import { ReservationRequest } from '../../../core/models/reservation.model';
 import { VehicleService } from '../../../core/services/vehicle.service';
-import { ReservationService } from '../../../core/services/reservation.service';
 import { AuthService } from '../../../core/services/auth.service';
+import { ReservationService } from '../../../core/services/reservation.service';
+import { ReservationRequest } from '../../../core/models/reservation.model';
 
 @Component({
   selector: 'app-parking-detail',
@@ -63,7 +63,7 @@ export class ParkingDetailComponent implements OnInit {
     // Initialize reservation form
     this.reservationForm = this.fb.group({
       reservationDate: ['', Validators.required],
-      reservationTime: ['', Validators.required],
+      startDate: ['', Validators.required],
     });
 
     // Set min and max dates for reservation
@@ -214,7 +214,7 @@ export class ParkingDetailComponent implements OnInit {
 
       this.reservationForm.patchValue({
         reservationDate: this.minDate,
-        reservationTime: timeString,
+        startDate: timeString,
       });
     } else {
       this.toastService.showToast('info', "Cette place n'est pas disponible");
@@ -222,8 +222,6 @@ export class ParkingDetailComponent implements OnInit {
   }
 
   bookPlace(): void {
-    console.log('current user logged in ', this.authService.getCurrentUser());
-    
     if (this.reservationForm.invalid || !this.selectedPlace || !this.vehicle) {
       this.toastService.showToast(
         'error',
@@ -246,39 +244,32 @@ export class ParkingDetailComponent implements OnInit {
     }
 
     // Combine date and time
-    const dateStr = this.reservationForm.get('reservationDate')?.value;
-    const timeStr = this.reservationForm.get('reservationTime')?.value;
-    const reservationDateTime = new Date(`${dateStr}T${timeStr}:00`);
+    const reservationDateTime = this.reservationForm.get('startDate')?.value;
 
     // Create reservation request
     const request: ReservationRequest = {
       clientId: currentUser.id,
       placeId: this.selectedPlace.id,
       vehicleId: this.vehicle.id,
-      reservationDate: reservationDateTime.toISOString(),
+      startDate: reservationDateTime, // Ensure startDate is set
     };
 
     this.reservationService.createReservation(request).subscribe({
       next: (response) => {
-        this.toastService.showToast(
-          'success',
-          'Réservation créée avec succès'
-        );
+        this.toastService.showToast('success', 'Réservation créée avec succès');
         this.submittingReservation = false;
         this.showBookingModal = false;
-
-        // Navigate to my reservations page
         this.router.navigate(['/client/dashboard/reservations']);
       },
       error: (error) => {
         let errorMessage = 'Erreur lors de la création de la réservation';
-
-        // Handle specific error messages from the backend
         if (error.error && error.error.message) {
           errorMessage = error.error.message;
         }
-
-        this.toastService.showToast('error', errorMessage);
+        this.toastService.showToast(
+          'error',
+          'Erreur au niveau de réservation , vérifiez les entrées du formulaire'
+        );
         this.submittingReservation = false;
       },
     });
@@ -294,8 +285,8 @@ export class ParkingDetailComponent implements OnInit {
   }
 
   getVehicleLabel(): string {
-    if (!this.vehicle) return ""
-    return `${this.vehicle.type}(${this.vehicle.immatriculation})`
+    if (!this.vehicle) return '';
+    return `${this.vehicle.type}(${this.vehicle.immatriculation})`;
   }
 
   getVehicleTypeLabel(type: VehicleType): string {
@@ -305,25 +296,25 @@ export class ParkingDetailComponent implements OnInit {
       case VehicleType.MOTO:
         return 'Moto';
       case VehicleType.CAMION:
-        return 'Camion';
+        return 'Camionnette';
       default:
         return type;
     }
   }
 
   isVehicleCompatible(): boolean {
-    if (!this.selectedPlace || !this.vehicle) return false
+    if (!this.selectedPlace || !this.vehicle) return false;
 
     // Check compatibility based on place type and vehicle type
     switch (this.selectedPlace.type) {
-      case "STANDARD":
-        return this.vehicle.type === VehicleType.VOITURE
-      case "HANDICAPE":
-        return this.vehicle.type === VehicleType.VOITURE
-      case "VIP":
-        return true // VIP places can accommodate all vehicle types
+      case 'STANDARD':
+        return this.vehicle.type === VehicleType.VOITURE;
+      case 'HANDICAPE':
+        return this.vehicle.type === VehicleType.VOITURE;
+      case 'VIP':
+        return true; // VIP places can accommodate all vehicle types
       default:
-        return true
+        return true;
     }
   }
 

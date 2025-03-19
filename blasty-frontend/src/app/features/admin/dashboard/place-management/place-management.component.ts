@@ -271,51 +271,6 @@ export class PlaceManagementComponent implements OnInit {
     }
   }
 
-  changeStatus(place: PlaceResponse, newStatus: PlaceStatus): void {
-    if (newStatus === PlaceStatus.DISPONIBLE) {
-      this.placeService.freePlace(place.id).subscribe({
-        next: (updatedPlace) => {
-          const index = this.places.findIndex((p) => p.id === updatedPlace.id);
-          if (index !== -1) {
-            this.places[index] = updatedPlace;
-            this.applyFilters();
-          }
-        },
-        error: (error) => console.error('Error changing status:', error),
-      });
-    } else if (newStatus === PlaceStatus.OCCUPEE) {
-      this.placeService.occupyPlace(place.id).subscribe({
-        next: (updatedPlace) => {
-          const index = this.places.findIndex((p) => p.id === updatedPlace.id);
-          if (index !== -1) {
-            this.places[index] = updatedPlace;
-            this.applyFilters();
-          }
-        },
-        error: (error) => console.error('Error changing status:', error),
-      });
-    } else if (newStatus === PlaceStatus.RESERVEE) {
-      // For simplicity, reserve for 1 hour from now
-      const reservedUntil = new Date();
-      reservedUntil.setHours(reservedUntil.getHours() + 1);
-
-      this.placeService
-        .reservePlace(place.id, reservedUntil.toISOString())
-        .subscribe({
-          next: (updatedPlace) => {
-            const index = this.places.findIndex(
-              (p) => p.id === updatedPlace.id
-            );
-            if (index !== -1) {
-              this.places[index] = updatedPlace;
-              this.applyFilters();
-            }
-          },
-          error: (error) => console.error('Error changing status:', error),
-        });
-    }
-  }
-
   getStatusClass(status: PlaceStatus): string {
     switch (status) {
       case PlaceStatus.DISPONIBLE:

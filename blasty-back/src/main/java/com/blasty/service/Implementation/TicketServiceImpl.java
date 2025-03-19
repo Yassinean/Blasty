@@ -1,5 +1,6 @@
 package com.blasty.service.Implementation;
 
+import com.blasty.service.Interface.PlaceService;
 import org.springframework.stereotype.Service;
 
 import com.blasty.dto.request.TicketRequest;
@@ -21,12 +22,13 @@ import java.util.stream.Collectors;
 public class TicketServiceImpl implements TicketService {
     private final TicketRepository ticketRepository;
     private final TicketMapper ticketMapper;
+    private final PlaceService placeService;
 
     @Override
     public TicketResponse createTicket(TicketRequest request) {
-//        if (!placeService.isPlaceAvailable(request.getPlaceId())) {
-//            throw new RuntimeException("Place non disponible");
-//        }
+        if (!placeService.isPlaceAvailable(request.getPlaceId())) {
+            throw new RuntimeException("Place non disponible");
+        }
         Ticket ticket = ticketMapper.toEntity(request);
         ticket.setDateEmission(LocalDateTime.now());
         ticket.setDateExpiration(LocalDateTime.now().plusHours(1));

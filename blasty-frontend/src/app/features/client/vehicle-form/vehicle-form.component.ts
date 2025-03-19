@@ -1,3 +1,4 @@
+import { routes } from './../../../app.routes';
 import { Component, type OnInit } from "@angular/core"
 import { CommonModule } from "@angular/common"
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from "@angular/forms"
@@ -123,6 +124,10 @@ export class VehicleFormComponent implements OnInit {
         },
       })
     }
+  }
+
+  goBack(){
+    this.Location.back();
   }
 }
 

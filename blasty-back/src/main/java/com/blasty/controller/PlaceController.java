@@ -78,13 +78,13 @@ public class PlaceController {
     }
 
     // Added new endpoint to check availability at a specific time
-    @GetMapping("/places/{id}/availability-at")
-    public ResponseEntity<Boolean> checkPlaceAvailabilityAtTime(
-            @PathVariable Long id,
-            @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime dateTime) {
-        log.debug("Checking availability for place with id: {} at time: {}", id, dateTime);
-        return ResponseEntity.ok(placeService.isPlaceAvailableInTime(id, dateTime));
-    }
+//    @GetMapping("/places/{id}/availability-at")
+//    public ResponseEntity<Boolean> checkPlaceAvailabilityAtTime(
+//            @PathVariable Long id,
+//            @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime dateTime) {
+//        log.debug("Checking availability for place with id: {} at time: {}", id, dateTime);
+//        return ResponseEntity.ok(placeService.isPlaceAvailableInTime(id, dateTime));
+//    }
 
     // Added endpoint to get places by parking
 //    @GetMapping("/parkings/{parkingId}/places")

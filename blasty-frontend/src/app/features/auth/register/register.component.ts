@@ -9,6 +9,7 @@ import {
 import { Router, RouterLink } from '@angular/router';
 import { AuthService } from '../../../core/services/auth.service';
 import { Toast } from '../../../core/models/toast';
+import { ToastService } from '../../../core/services/toast.service';
 
 @Component({
   selector: 'app-register',
@@ -26,6 +27,7 @@ export class RegisterComponent {
   constructor(
     private fb: FormBuilder,
     private authService: AuthService,
+    private toastService: ToastService,
     private router: Router
   ) {
     this.registerForm = this.fb.group({
@@ -42,45 +44,18 @@ export class RegisterComponent {
     if (this.registerForm.valid) {
       this.authService.register(this.registerForm.value).subscribe({
         next: () => {
-          this.showToast(
+          this.toastService.showToast(
             'success',
             'Vous avez été enregistré avec succès'
           );
           this.router.navigate(['/client/dashboard']);
         },
         error: (error) => {
-          this.showToast(
+          this.toastService.showToast(
             'error', error.error?.message || 'Register failed'
           );
         },
       });
-    }
-  }
-  // Toast notification methods
-  showToast(
-    type: 'success' | 'error' | 'info',
-    message: string,
-    duration: number = 5000
-  ): void {
-    const id = ++this.toastIdCounter;
-    const toast: Toast = { id, type, message };
-
-    // Add toast to the array
-    this.toasts.push(toast);
-
-    // Set timeout to remove the toast after duration
-    toast.timeout = setTimeout(() => {
-      this.removeToast(id);
-    }, duration);
-  }
-
-  removeToast(id: number): void {
-    const index = this.toasts.findIndex((t) => t.id === id);
-    if (index !== -1) {
-      // Clear the timeout to prevent memory leaks
-      clearTimeout(this.toasts[index].timeout);
-      // Remove the toast from the array
-      this.toasts.splice(index, 1);
     }
   }
 }

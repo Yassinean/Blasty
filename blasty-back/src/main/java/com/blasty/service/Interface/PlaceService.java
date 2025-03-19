@@ -13,7 +13,7 @@ public interface PlaceService {
     void deletePlace(Long id);
     PlaceResponse reservePlace(Long placeId, LocalDateTime reservedUntil);
     boolean isPlaceAvailable(Long placeId);
-    boolean isPlaceAvailableInTime(Long placeId, LocalDateTime reservationDate);
+    boolean isPlaceAvailableInTime(Long placeId, LocalDateTime startDate);
     PlaceResponse occupyPlace(Long placeId);
     PlaceResponse freePlace(Long placeId);
     List<PlaceResponse> getPlacesByParkingId(Long parkingId);

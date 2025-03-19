@@ -29,34 +29,76 @@ export class MyReservationComponent implements OnInit {
     this.isLoading = true
     this.reservationService.getMyReservations().subscribe({
       next: (data) => {
-        this.reservations = data
+        console.log("Received reservation data:", data)
+        // Transform the data if needed
+        this.reservations = this.transformReservationData(data)
         this.isLoading = false
       },
       error: (error) => {
-        this.toastService.showToast('error',"Erreur lors du chargement des réservations")
+        this.toastService.showToast("error", "Erreur lors du chargement des réservations")
         console.error("Error loading reservations:", error)
         this.isLoading = false
       },
     })
-    console.log('reesrvartion:',this.reservations);
-    
+  }
+
+  // Add this method to transform API data if needed
+  private transformReservationData(apiData: any[]): ReservationResponse[] {
+    return apiData.map((item) => {
+      // Ensure all required fields are present with default values if missing
+      return {
+        id: item.id || 0,
+        clientId: item.clientId || 0,
+        clientName: item.clientName || "Client inconnu",
+        placeId: item.placeId || 0,
+        placeNumber: item.placeNumber || "N/A",
+        vehicleId: item.vehicleId || 0,
+        vehicleImmatriculation: item.vehicleImmatriculation || "N/A",
+        parkingId: item.parkingId || 0,
+        parkingName: item.parkingName || "Parking inconnu",
+        status: item.status || ReservationStatus.PENDING,
+        startDate: item.startDate ? new Date(item.startDate) : new Date(),
+        endDate: item.endDate ? new Date(item.endDate) : new Date(),
+        createdAt: item.createdAt ? new Date(item.createdAt) : new Date(),
+        tarif: item.tarif || 0,
+      }
+    })
   }
 
   cancelReservation(id: number): void {
-    if (confirm("Êtes-vous sûr de vouloir annuler cette réservation ?")) {
-      this.cancellingReservation = id
-      this.reservationService.cancelReservation(id).subscribe({
-        next: () => {
-          this.toastService.showToast('success',"Réservation annulée avec succès")
-          this.loadReservations()
-          this.cancellingReservation = null
-        },
-        error: (error) => {
-          this.toastService.showToast('error',"Erreur lors de l'annulation de la réservation")
-          console.error("Error cancelling reservation:", error)
-          this.cancellingReservation = null
-        },
-      })
+    const reservation = this.reservations.find((r) => r.id === id)
+
+    if (!reservation) {
+      this.toastService.showToast("error", "Réservation introuvable")
+      return
+    }
+
+    // Check if the reservation can be cancelled
+    if (reservation.status === ReservationStatus.CONFIRMED || reservation.status === ReservationStatus.PENDING) {
+      if (confirm("Êtes-vous sûr de vouloir annuler cette réservation ?")) {
+        this.cancellingReservation = id
+        this.reservationService.cancelReservation(id).subscribe({
+          next: () => {
+            this.toastService.showToast("success", "Réservation annulée avec succès")
+            this.loadReservations()
+            this.cancellingReservation = null
+          },
+          error: (error) => {
+            let errorMessage = "Erreur lors de l'annulation de la réservation"
+
+            // Handle specific error messages from the backend
+            if (error.error && error.error.message) {
+              errorMessage = error.error.message
+            }
+
+            this.toastService.showToast("error", errorMessage)
+            console.error("Error cancelling reservation:", error)
+            this.cancellingReservation = null
+          },
+        })
+      }
+    } else {
+      this.toastService.showToast("error", "Cette réservation ne peut pas être annulée")
     }
   }
 
@@ -90,7 +132,7 @@ export class MyReservationComponent implements OnInit {
     }
   }
 
-  formatDate(dateString: string): string {
+  formatDate(dateString: Date): string {
     if (!dateString) return ""
     const date = new Date(dateString)
     return date.toLocaleString("fr-FR", {
@@ -103,7 +145,9 @@ export class MyReservationComponent implements OnInit {
   }
 
   canCancel(reservation: ReservationResponse): boolean {
-    return reservation.status === ReservationStatus.PENDING || reservation.status === ReservationStatus.CONFIRMED
+    // Only allow cancellation for PENDING reservations
+    // For CONFIRMED reservations, the backend will reject the cancellation
+    return reservation.status === ReservationStatus.PENDING
   }
 }
 
