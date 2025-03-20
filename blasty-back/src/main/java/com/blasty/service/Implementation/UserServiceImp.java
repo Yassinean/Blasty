@@ -62,38 +62,4 @@ public class UserServiceImp implements UserService {
         return adminMapper.toResponse(admin);
     }
 
-    @Override
-    public void changePassword(String username, String oldPassword, String newPassword) {
-//        // Recherche de l'utilisateur par email ou téléphone
-//        User user = adminRepository.findByEmail(username)
-//                .orElse(clientRepository.findByPhone(username)
-//                        .orElseThrow(() -> new UserNotFoundException("Utilisateur non trouvé")));
-//
-//        // Vérification que l'ancien mot de passe est correct
-//        if (!passwordEncoder.matches(oldPassword, user.getPassword())) {
-//            throw new IncorrectPasswordException("Ancien mot de passe incorrect");
-//        }
-//
-//        // Validation du nouveau mot de passe (par exemple, vous pouvez vérifier des règles de complexité ici)
-//        if (newPassword.equals(oldPassword)) {
-//            throw new InvalidPasswordException("Le nouveau mot de passe doit être différent de l'ancien");
-//        }
-//
-//        // Encryptage du nouveau mot de passe et mise à jour
-//        user.setPassword(passwordEncoder.encode(newPassword));
-//
-//        // Sauvegarde de l'utilisateur avec le nouveau mot de passe
-//        userRepository.save(user);
-    }
-
-
-    // @Override
-    public User updateUser(String username, User updatedUser) {
-        return null;
-        // User user = getUserByUsername(username);
-        // user.setName(updatedUser.getName());
-        // user.setPhone(updatedUser.getPhone());
-        // return userRepository.save(user);
-    }
-
 }

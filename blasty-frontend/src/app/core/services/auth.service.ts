@@ -1,3 +1,4 @@
+import { logout } from './../../store/auth/auth.action';
 import { ToastService } from './toast.service';
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
@@ -236,12 +237,6 @@ export class AuthService {
 
   getCurrentUser(): User | null {
     return this.currentUserSubject.value;
-  }
-
-  logout(): void {
-    this.tokenService.clear();
-    this.currentUserSubject.next(null);
-    this.router.navigate(['/auth']);
   }
 
   getToken(): string | null {

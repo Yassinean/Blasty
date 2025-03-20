@@ -1,301 +1,627 @@
 <div class="space-y-6">
-  <div>
-    <h2 class="text-2xl font-bold text-gray-800 dark:text-white">
-      Statistiques
-    </h2>
-    <p class="text-gray-600 dark:text-gray-300">
-      Aperçu des performances et de l'utilisation des parkings
-    </p>
+  <!-- Header with Period Selector -->
+  <div class="bg-white dark:bg-gray-800 rounded-lg shadow-md p-6">
+    <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
+      <div>
+        <h1 class="text-2xl font-bold text-gray-900 dark:text-white">Tableau de Bord</h1>
+        <p class="text-gray-600 dark:text-gray-400">Vue d'ensemble des performances de vos parkings</p>
+      </div>
+      
+      <div class="flex items-center gap-3">
+        <div class="relative">
+          <select
+            [(ngModel)]="selectedPeriod"
+            (change)="updateCharts()"
+            class="appearance-none bg-gray-50 dark:bg-gray-700 border border-gray-300 dark:border-gray-600 text-gray-900 dark:text-white text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 pr-10"
+          >
+            <option value="day">Aujourd'hui</option>
+            <option value="week">Cette semaine</option>
+            <option value="month">Ce mois</option>
+            <option value="year">Cette année</option>
+          </select>
+          <div class="pointer-events-none absolute inset-y-0 right-0 flex items-center px-2 text-gray-700 dark:text-gray-300">
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
+            </svg>
+          </div>
+        </div>
+        
+        <button
+          (click)="refreshData()"
+          class="flex items-center justify-center p-2.5 bg-blue-50 dark:bg-blue-900/20 text-blue-600 dark:text-blue-400 rounded-lg hover:bg-blue-100 dark:hover:bg-blue-900/40 focus:outline-none focus:ring-2 focus:ring-blue-500"
+          title="Actualiser les données"
+        >
+          <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M21 12a9 9 0 0 0-9-9 9.75 9.75 0 0 0-6.74 2.74L3 8" />
+            <path d="M3 3v5h5" />
+            <path d="M3 12a9 9 0 0 1 9 9 9.75 9.75 0 0 1-6.74 2.74L8 21" />
+            <path d="M21 21v-5h-5" />
+          </svg>
+        </button>
+      </div>
+    </div>
   </div>
 
   <!-- Loading Indicator -->
-  <div *ngIf="isLoading" class="flex justify-center items-center py-10">
-    <div
-      class="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-blue-500"
-    ></div>
+  <div *ngIf="isLoading" class="flex justify-center items-center py-16">
+    <div class="relative">
+      <div class="h-24 w-24 rounded-full border-t-4 border-b-4 border-blue-500 animate-spin"></div>
+      <div class="absolute top-0 left-0 h-24 w-24 rounded-full border-t-4 border-b-4 border-blue-300 animate-spin" style="animation-duration: 1.5s;"></div>
+    </div>
   </div>
 
-  <div *ngIf="!isLoading">
-    <!-- Time Period Selector -->
-    <div class="bg-white dark:bg-gray-800 rounded-lg shadow-md p-4 m-3">
-      <div class="flex flex-wrap items-center gap-4">
-        <label
-          for="period"
-          class="text-sm font-medium text-gray-700 dark:text-gray-300"
-          >Période:</label
-        >
-        <select
-          id="period"
-          [(ngModel)]="selectedPeriod"
-          (change)="updateCharts()"
-          class="px-3 py-2 border border-gray-300 rounded-md text-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white"
-        >
-          <option value="day">Aujourd'hui</option>
-          <option value="week">Cette semaine</option>
-          <option value="month">Ce mois</option>
-          <option value="year">Cette année</option>
-        </select>
-
-        <div class="ml-auto">
-          <button
-            (click)="refreshData()"
-            class="inline-flex items-center px-3 py-2 border border-transparent text-sm font-medium rounded-md text-blue-700 bg-blue-100 hover:bg-blue-200 dark:bg-blue-900 dark:text-blue-100 dark:hover:bg-blue-800 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
-          >
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              class="h-4 w-4 mr-2"
-              viewBox="0 0 24 24"
-              fill="none"
-              stroke="currentColor"
-              stroke-width="2"
-            >
-              <path d="M21 12a9 9 0 0 0-9-9 9.75 9.75 0 0 0-6.74 2.74L3 8" />
-              <path d="M3 3v5h5" />
-              <path d="M3 12a9 9 0 0 1 9 9 9.75 9.75 0 0 1-6.74 2.74L8 21" />
-              <path d="M21 21v-5h-5" />
-            </svg>
-            Actualiser
-          </button>
-        </div>
-      </div>
-    </div>
-
+  <div *ngIf="!isLoading" class="grid grid-cols-1 gap-6">
     <!-- KPI Cards -->
-    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 m-3">
-      <!-- Total Revenue -->
-      <div
-        class="bg-white dark:bg-gray-800 rounded-lg shadow-md p-6 border-l-4 border-green-500"
-      >
-        <div class="flex items-center">
-          <div class="p-3 rounded-full bg-green-100 dark:bg-green-900 mr-4">
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              class="h-6 w-6 text-green-600 dark:text-green-400"
-              viewBox="0 0 24 24"
-              fill="none"
-              stroke="currentColor"
-              stroke-width="2"
-            >
-              <path
-                d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"
-              />
-            </svg>
+    <div class="grid grid-cols-2 lg:grid-cols-4 gap-4">
+      <!-- Revenue Card -->
+      <div class="bg-gradient-to-br from-green-50 to-emerald-100 dark:from-green-900/30 dark:to-emerald-900/30 rounded-xl shadow-sm overflow-hidden">
+        <div class="p-6">
+          <div class="flex items-center justify-between">
+            <div>
+              <p class="text-sm font-medium text-green-800 dark:text-green-300">Revenu Total</p>
+              <h3 class="mt-1 text-2xl font-bold text-green-900 dark:text-white">{{ totalRevenue | currency : "MAD" }}</h3>
+            </div>
+            <div class="p-3 bg-green-200 dark:bg-green-800 rounded-lg">
+              <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-green-700 dark:text-green-300" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6" />
+              </svg>
+            </div>
           </div>
-          <div>
-            <p class="text-sm font-medium text-gray-600 dark:text-gray-400">
-              Revenu Total
-            </p>
-            <p class="text-2xl font-bold text-gray-800 dark:text-white">
-              {{ totalRevenue | currency : "MAD" }}
-            </p>
-            <p class="text-xs text-gray-500 dark:text-gray-400 mt-1">
-              <span
-                [class.text-green-500]="revenueChange > 0"
-                [class.text-red-500]="revenueChange < 0"
-              >
-                {{ revenueChange > 0 ? "+" : "" }}{{ revenueChange }}%
-              </span>
-              par rapport à la période précédente
-            </p>
+          <div class="mt-4 flex items-center text-sm">
+            <span [class.text-green-600]="revenueChange > 0" [class.text-red-600]="revenueChange < 0" [class.dark:text-green-400]="revenueChange > 0" [class.dark:text-red-400]="revenueChange < 0" class="font-medium">
+              {{ revenueChange > 0 ? '+' : '' }}{{ revenueChange }}%
+            </span>
+            <span class="ml-1.5 text-gray-600 dark:text-gray-400">vs période précédente</span>
           </div>
         </div>
       </div>
 
-      <!-- Occupancy Rate -->
-      <div
-        class="bg-white dark:bg-gray-800 rounded-lg shadow-md p-6 border-l-4 border-blue-500"
-      >
-        <div class="flex items-center">
-          <div class="p-3 rounded-full bg-blue-100 dark:bg-blue-900 mr-4">
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              class="h-6 w-6 text-blue-600 dark:text-blue-400"
-              viewBox="0 0 24 24"
-              fill="none"
-              stroke="currentColor"
-              stroke-width="2"
-            >
-              <rect x="3" y="3" width="18" height="18" rx="2" />
-              <path d="M9 3v18" />
-              <path d="M3 9h6" />
-            </svg>
+      <!-- Occupancy Card -->
+      <div class="bg-gradient-to-br from-blue-50 to-indigo-100 dark:from-blue-900/30 dark:to-indigo-900/30 rounded-xl shadow-sm overflow-hidden">
+        <div class="p-6">
+          <div class="flex items-center justify-between">
+            <div>
+              <p class="text-sm font-medium text-blue-800 dark:text-blue-300">Taux d'Occupation</p>
+              <h3 class="mt-1 text-2xl font-bold text-blue-900 dark:text-white">{{ occupancyRate }}%</h3>
+            </div>
+            <div class="p-3 bg-blue-200 dark:bg-blue-800 rounded-lg">
+              <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-blue-700 dark:text-blue-300" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <rect x="3" y="3" width="18" height="18" rx="2" />
+                <path d="M9 3v18" />
+                <path d="M3 9h6" />
+              </svg>
+            </div>
           </div>
-          <div>
-            <p class="text-sm font-medium text-gray-600 dark:text-gray-400">
-              Taux d'Occupation
-            </p>
-            <p class="text-2xl font-bold text-gray-800 dark:text-white">
-              {{ occupancyRate }}%
-            </p>
-            <p class="text-xs text-gray-500 dark:text-gray-400 mt-1">
-              <span
-                [class.text-green-500]="occupancyChange > 0"
-                [class.text-red-500]="occupancyChange < 0"
-              >
-                {{ occupancyChange > 0 ? "+" : "" }}{{ occupancyChange }}%
-              </span>
-              par rapport à la période précédente
-            </p>
+          <div class="mt-4 flex items-center text-sm">
+            <span [class.text-green-600]="occupancyChange > 0" [class.text-red-600]="occupancyChange < 0" [class.dark:text-green-400]="occupancyChange > 0" [class.dark:text-red-400]="occupancyChange < 0" class="font-medium">
+              {{ occupancyChange > 0 ? '+' : '' }}{{ occupancyChange }}%
+            </span>
+            <span class="ml-1.5 text-gray-600 dark:text-gray-400">vs période précédente</span>
           </div>
         </div>
       </div>
 
-      <!-- Total Parkings -->
-      <div
-        class="bg-white dark:bg-gray-800 rounded-lg shadow-md p-6 border-l-4 border-purple-500"
-      >
-        <div class="flex items-center">
-          <div class="p-3 rounded-full bg-purple-100 dark:bg-purple-900 mr-4">
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              class="h-6 w-6 text-purple-600 dark:text-purple-400"
-              viewBox="0 0 24 24"
-              fill="none"
-              stroke="currentColor"
-              stroke-width="2"
-            >
-              <path
-                d="M5 4h14a2 2 0 0 1 2 2v12a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2z"
-              />
-              <path d="M12 4v16" />
-            </svg>
+      <!-- Parkings Card -->
+      <div class="bg-gradient-to-br from-purple-50 to-violet-100 dark:from-purple-900/30 dark:to-violet-900/30 rounded-xl shadow-sm overflow-hidden">
+        <div class="p-6">
+          <div class="flex items-center justify-between">
+            <div>
+              <p class="text-sm font-medium text-purple-800 dark:text-purple-300">Parkings Actifs</p>
+              <h3 class="mt-1 text-2xl font-bold text-purple-900 dark:text-white">{{ totalParkings }}</h3>
+            </div>
+            <div class="p-3 bg-purple-200 dark:bg-purple-800 rounded-lg">
+              <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-purple-700 dark:text-purple-300" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M5 4h14a2 2 0 0 1 2 2v12a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2z" />
+                <path d="M12 4v16" />
+              </svg>
+            </div>
           </div>
-          <div>
-            <p class="text-sm font-medium text-gray-600 dark:text-gray-400">
-              Parkings Actifs
-            </p>
-            <p class="text-2xl font-bold text-gray-800 dark:text-white">
-              {{ totalParkings }}
-            </p>
-            <p class="text-xs text-gray-500 dark:text-gray-400 mt-1">
-              <span
-                [class.text-green-500]="parkingsChange > 0"
-                [class.text-red-500]="parkingsChange < 0"
-              >
-                {{ parkingsChange > 0 ? "+" : "" }}{{ parkingsChange }}
-              </span>
-              nouveaux ce mois
-            </p>
+          <div class="mt-4 flex items-center text-sm">
+            <span [class.text-green-600]="parkingsChange > 0" [class.text-red-600]="parkingsChange < 0" [class.dark:text-green-400]="parkingsChange > 0" [class.dark:text-red-400]="parkingsChange < 0" class="font-medium">
+              {{ parkingsChange > 0 ? '+' : '' }}{{ parkingsChange }}
+            </span>
+            <span class="ml-1.5 text-gray-600 dark:text-gray-400">nouveaux ce mois</span>
           </div>
         </div>
       </div>
 
-      <!-- Total Places -->
-      <div
-        class="bg-white dark:bg-gray-800 rounded-lg shadow-md p-6 border-l-4 border-yellow-500"
-      >
-        <div class="flex items-center">
-          <div class="p-3 rounded-full bg-yellow-100 dark:bg-yellow-900 mr-4">
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              class="h-6 w-6 text-yellow-600 dark:text-yellow-400"
-              viewBox="0 0 24 24"
-              fill="none"
-              stroke="currentColor"
-              stroke-width="2"
-            >
-              <path d="M4 9h16" />
-              <path d="M4 15h16" />
-              <path d="M10 3v18" />
-            </svg>
+      <!-- Places Card -->
+      <div class="bg-gradient-to-br from-amber-50 to-yellow-100 dark:from-amber-900/30 dark:to-yellow-900/30 rounded-xl shadow-sm overflow-hidden">
+        <div class="p-6">
+          <div class="flex items-center justify-between">
+            <div>
+              <p class="text-sm font-medium text-amber-800 dark:text-amber-300">Places Totales</p>
+              <h3 class="mt-1 text-2xl font-bold text-amber-900 dark:text-white">{{ totalPlaces }}</h3>
+            </div>
+            <div class="p-3 bg-amber-200 dark:bg-amber-800 rounded-lg">
+              <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-amber-700 dark:text-amber-300" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M4 9h16" />
+                <path d="M4 15h16" />
+                <path d="M10 3v18" />
+              </svg>
+            </div>
           </div>
-          <div>
-            <p class="text-sm font-medium text-gray-600 dark:text-gray-400">
-              Places Totales
-            </p>
-            <p class="text-2xl font-bold text-gray-800 dark:text-white">
-              {{ totalPlaces }}
-            </p>
-            <p class="text-xs text-gray-500 dark:text-gray-400 mt-1">
-              <span
-                [class.text-green-500]="placesChange > 0"
-                [class.text-red-500]="placesChange < 0"
-              >
-                {{ placesChange > 0 ? "+" : "" }}{{ placesChange }}
-              </span>
-              nouvelles ce mois
-            </p>
+          <div class="mt-4 flex items-center text-sm">
+            <span [class.text-green-600]="placesChange > 0" [class.text-red-600]="placesChange < 0" [class.dark:text-green-400]="placesChange > 0" [class.dark:text-red-400]="placesChange < 0" class="font-medium">
+              {{ placesChange > 0 ? '+' : '' }}{{ placesChange }}
+            </span>
+            <span class="ml-1.5 text-gray-600 dark:text-gray-400">nouvelles ce mois</span>
           </div>
         </div>
       </div>
     </div>
 
-    <!-- Charts -->
-    <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 m-3">
+    <!-- Charts Section -->
+    <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
       <!-- Revenue Chart -->
-      <div class="bg-white dark:bg-gray-800 rounded-lg shadow-md p-6">
-        <h3 class="text-lg font-semibold text-gray-800 dark:text-white mb-4">
-          Revenus
-        </h3>
-        <div class="h-80">
-          <canvas #revenueChart></canvas>
+      <div class="bg-white dark:bg-gray-800 rounded-xl shadow-md overflow-hidden">
+        <div class="p-6">
+          <h3 class="text-lg font-semibold text-gray-900 dark:text-white">Évolution des Revenus</h3>
+          <p class="text-sm text-gray-500 dark:text-gray-400">Analyse des revenus par parking</p>
+          <div class="h-80 mt-4">
+            <canvas #revenueChart></canvas>
+          </div>
         </div>
       </div>
 
       <!-- Occupancy Chart -->
-      <div class="bg-white dark:bg-gray-800 rounded-lg shadow-md p-6">
-        <h3 class="text-lg font-semibold text-gray-800 dark:text-white mb-4">
-          Taux d'Occupation
-        </h3>
-        <div class="h-80">
-          <canvas #occupancyChart></canvas>
+      <div class="bg-white dark:bg-gray-800 rounded-xl shadow-md overflow-hidden">
+        <div class="p-6">
+          <h3 class="text-lg font-semibold text-gray-900 dark:text-white">Taux d'Occupation</h3>
+          <p class="text-sm text-gray-500 dark:text-gray-400">Comparaison entre les parkings</p>
+          <div class="h-80 mt-4">
+            <canvas #occupancyChart></canvas>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Parking Overview Section -->
+    <div class="bg-white dark:bg-gray-800 rounded-xl shadow-md overflow-hidden">
+      <div class="p-6 border-b border-gray-200 dark:border-gray-700">
+        <div class="flex justify-between items-center">
+          <h3 class="text-lg font-semibold text-gray-900 dark:text-white">Vue d'ensemble des Parkings</h3>
+          <div class="flex gap-2">
+            <button (click)="viewMode = 'occupancy'" [class.bg-blue-100]="viewMode === 'occupancy'" [class.dark:bg-blue-900]="viewMode === 'occupancy'" class="px-3 py-1.5 text-sm font-medium rounded-lg text-blue-700 dark:text-blue-300 hover:bg-blue-50 dark:hover:bg-blue-900/20">
+              Occupation
+            </button>
+            <button (click)="viewMode = 'revenue'" [class.bg-green-100]="viewMode === 'revenue'" [class.dark:bg-green-900]="viewMode === 'revenue'" class="px-3 py-1.5 text-sm font-medium rounded-lg text-green-700 dark:text-green-300 hover:bg-green-50 dark:hover:bg-green-900/20">
+              Revenus
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Occupancy View -->
+      <div *ngIf="viewMode === 'occupancy'" class="p-6">
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          <div *ngFor="let item of occupancyData" class="bg-gray-50 dark:bg-gray-700/50 rounded-xl p-5 hover:shadow-md transition-shadow">
+            <div class="flex justify-between items-start">
+              <div>
+                <h4 class="text-base font-semibold text-gray-900 dark:text-white">{{ item.parkingName }}</h4>
+                <div class="flex items-center mt-1 text-sm text-gray-500 dark:text-gray-400">
+                  <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-1" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <rect x="3" y="3" width="18" height="18" rx="2" ry="2" />
+                    <line x1="3" y1="9" x2="21" y2="9" />
+                    <line x1="9" y1="21" x2="9" y2="9" />
+                  </svg>
+                  {{ item.totalCapacity }} places
+                </div>
+              </div>
+              <div class="flex flex-col items-end">
+                <div class="text-xl font-bold" [ngClass]="{
+                  'text-green-600 dark:text-green-400': item.occupancyRate < 70,
+                  'text-yellow-600 dark:text-yellow-400': item.occupancyRate >= 70 && item.occupancyRate < 90,
+                  'text-red-600 dark:text-red-400': item.occupancyRate >= 90
+                }">{{ item.occupancyRate }}%</div>
+                <div class="text-xs text-gray-500 dark:text-gray-400 mt-1">d'occupation</div>
+              </div>
+            </div>
+            
+            <div class="mt-4">
+              <div class="w-full bg-gray-200 dark:bg-gray-600 rounded-full h-2.5 overflow-hidden">
+                <div class="h-2.5 rounded-full transition-all duration-500" 
+                  [style.width.%]="item.occupancyRate"
+                  [ngClass]="{
+                    'bg-green-500': item.occupancyRate < 70,
+                    'bg-yellow-500': item.occupancyRate >= 70 && item.occupancyRate < 90,
+                    'bg-red-500': item.occupancyRate >= 90
+                  }">
+                </div>
+              </div>
+              <div class="flex justify-between mt-2 text-xs text-gray-500 dark:text-gray-400">
+                <span>{{ item.occupiedSpaces }} occupées</span>
+                <span>{{ item.totalCapacity - item.occupiedSpaces }} disponibles</span>
+              </div>
+            </div>
+            
+            <div class="mt-5 flex justify-between items-center">
+              <div class="flex -space-x-2">
+                <div class="w-8 h-8 rounded-full bg-blue-100 dark:bg-blue-900 flex items-center justify-center text-xs font-medium text-blue-800 dark:text-blue-200 border-2 border-white dark:border-gray-700">S</div>
+                <div class="w-8 h-8 rounded-full bg-purple-100 dark:bg-purple-900 flex items-center justify-center text-xs font-medium text-purple-800 dark:text-purple-200 border-2 border-white dark:border-gray-700">H</div>
+                <div class="w-8 h-8 rounded-full bg-amber-100 dark:bg-amber-900 flex items-center justify-center text-xs font-medium text-amber-800 dark:text-amber-200 border-2 border-white dark:border-gray-700">V</div>
+              </div>
+              <button 
+                (click)="selectedParking = item.parkingId" 
+                class="text-sm font-medium text-blue-600 dark:text-blue-400 hover:text-blue-800 dark:hover:text-blue-300 flex items-center">
+                Détails
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 ml-1" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <path d="M5 12h14M12 5l7 7-7 7" />
+                </svg>
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Revenue View -->
+      <div *ngIf="viewMode === 'revenue'" class="p-6">
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          <div *ngFor="let item of revenueData" class="bg-gray-50 dark:bg-gray-700/50 rounded-xl p-5 hover:shadow-md transition-shadow">
+            <div class="flex justify-between items-start">
+              <div>
+                <h4 class="text-base font-semibold text-gray-900 dark:text-white">{{ item.parkingName }}</h4>
+                <div class="flex items-center mt-1 text-sm text-gray-500 dark:text-gray-400">
+                  <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-1" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <rect x="3" y="4" width="18" height="18" rx="2" ry="2" />
+                    <line x1="16" y1="2" x2="16" y2="6" />
+                    <line x1="8" y1="2" x2="8" y2="6" />
+                    <line x1="3" y1="10" x2="21" y2="10" />
+                  </svg>
+                  {{ selectedPeriod === 'day' ? 'Aujourd\'hui' : 
+                     selectedPeriod === 'week' ? 'Cette semaine' : 
+                     selectedPeriod === 'month' ? 'Ce mois' : 'Cette année' }}
+                </div>
+              </div>
+              <div class="flex flex-col items-end">
+                <div class="text-xl font-bold text-green-600 dark:text-green-400">
+                  {{ item.totalRevenue | currency : "MAD" }}
+                </div>
+                <div class="text-xs text-gray-500 dark:text-gray-400 mt-1">de revenus</div>
+              </div>
+            </div>
+            
+            <div class="mt-4">
+              <div class="w-full bg-gray-200 dark:bg-gray-600 rounded-full h-2.5 overflow-hidden">
+                <div class="h-2.5 bg-green-500 rounded-full transition-all duration-500" 
+                  [style.width.%]="(item.totalRevenue / (totalRevenue || 1)) * 100">
+                </div>
+              </div>
+              <div class="flex justify-between mt-2 text-xs">
+                <span class="text-gray-500 dark:text-gray-400">{{ ((item.totalRevenue / (totalRevenue || 1)) * 100).toFixed(1) }}% du total</span>
+                <span class="text-gray-700 dark:text-gray-300">{{ item.reservationsCount || 0 }} réservations</span>
+              </div>
+            </div>
+            
+            <div class="mt-5 flex justify-between items-center">
+              <div class="text-sm text-gray-700 dark:text-gray-300">
+                <span class="font-medium">{{ item.reservationsCount ? ((item.totalRevenue / item.reservationsCount) | currency : "MAD") : '0 MAD' }}</span>
+                <span class="text-xs text-gray-500 dark:text-gray-400"> / réservation</span>
+              </div>
+              <button 
+                (click)="selectedParking = item.parkingId" 
+                class="text-sm font-medium text-green-600 dark:text-green-400 hover:text-green-800 dark:hover:text-green-300 flex items-center">
+                Détails
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 ml-1" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <path d="M5 12h14M12 5l7 7-7 7" />
+                </svg>
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Parking Details Modal -->
+    <div *ngIf="selectedParking" class="fixed inset-0 z-50 overflow-y-auto" aria-labelledby="modal-title" role="dialog" aria-modal="true">
+      <div class="flex items-end justify-center min-h-screen pt-4 px-4 pb-20 text-center sm:block sm:p-0">
+        <!-- Background overlay -->
+        <div class="fixed inset-0 bg-gray-500 bg-opacity-75 dark:bg-gray-900 dark:bg-opacity-75 transition-opacity" aria-hidden="true"></div>
+
+        <!-- Modal panel -->
+        <div class="inline-block align-bottom bg-white dark:bg-gray-800 rounded-lg text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:align-middle sm:max-w-4xl sm:w-full">
+          <div class="absolute top-0 right-0 pt-4 pr-4">
+            <button 
+              (click)="selectedParking = null" 
+              type="button" 
+              class="bg-white dark:bg-gray-800 rounded-md text-gray-400 hover:text-gray-500 dark:hover:text-gray-300 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
+            >
+              <span class="sr-only">Fermer</span>
+              <svg class="h-6 w-6" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+              </svg>
+            </button>
+          </div>
+          
+          <div class="px-6 pt-5 pb-6 border-b border-gray-200 dark:border-gray-700">
+            <div class="flex items-center">
+              <div class="flex-shrink-0 bg-blue-100 dark:bg-blue-900 rounded-lg p-3">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-blue-700 dark:text-blue-300" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <path d="M5 4h14a2 2 0 0 1 2 2v12a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2z" />
+                  <path d="M12 4v16" />
+                </svg>
+              </div>
+              <div class="ml-4">
+                <h3 class="text-lg font-medium leading-6 text-gray-900 dark:text-white" id="modal-title">
+                  {{ (parkings | filter:selectedParking:'id')[0]?.name }}
+                </h3>
+                <p class="text-sm text-gray-500 dark:text-gray-400">
+                  {{ (parkings | filter:selectedParking:'id')[0]?.address }}
+                </p>
+              </div>
+            </div>
+          </div>
+          
+          <div class="px-6 py-4">
+            <div class="flex flex-col md:flex-row gap-6">
+              <!-- Occupancy Details -->
+              <div class="flex-1">
+                <h4 class="text-base font-medium text-gray-900 dark:text-white mb-4">Détails d'Occupation</h4>
+                
+                <div class="space-y-4">
+                  <!-- Standard Places -->
+                  <div class="bg-gray-50 dark:bg-gray-700/50 rounded-lg p-4">
+                    <div class="flex justify-between items-center mb-2">
+                      <div class="flex items-center">
+                        <div class="w-3 h-3 bg-blue-500 rounded-full mr-2"></div>
+                        <span class="text-sm font-medium text-gray-700 dark:text-gray-300">Places Standard</span>
+                      </div>
+                      <span class="text-sm font-bold text-gray-900 dark:text-white">
+                        {{ (occupancyData | filter:selectedParking:'parkingId')[0]?.standardPlaces || 0 }}
+                      </span>
+                    </div>
+                    
+                    <div class="flex items-center">
+                      <div class="flex-1">
+                        <div class="w-full bg-gray-200 dark:bg-gray-600 rounded-full h-2">
+                          <div 
+                            class="h-2 bg-blue-500 rounded-full"
+                            [style.width.%]="(occupancyData | filter:selectedParking:'parkingId')[0]?.standardPlaces ? 
+                              ((occupancyData | filter:selectedParking:'parkingId')[0]?.occupiedStandardPlaces / 
+                               (occupancyData | filter:selectedParking:'parkingId')[0]?.standardPlaces) * 100 : 0"
+                          ></div>
+                        </div>
+                      </div>
+                      <span class="ml-3 text-xs font-medium text-gray-700 dark:text-gray-300">
+                        {{ (occupancyData | filter:selectedParking:'parkingId')[0]?.standardPlaces ? 
+                           (((occupancyData | filter:selectedParking:'parkingId')[0]?.occupiedStandardPlaces / 
+                             (occupancyData | filter:selectedParking:'parkingId')[0]?.standardPlaces) * 100).toFixed(1) : 0 }}%
+                      </span>
+                    </div>
+                    
+                    <div class="flex justify-between mt-2 text-xs text-gray-500 dark:text-gray-400">
+                      <span>{{ (occupancyData | filter:selectedParking:'parkingId')[0]?.occupiedStandardPlaces || 0 }} occupées</span>
+                      <span>
+                        {{ ((occupancyData | filter:selectedParking:'parkingId')[0]?.standardPlaces || 0) - 
+                           ((occupancyData | filter:selectedParking:'parkingId')[0]?.occupiedStandardPlaces || 0) }} disponibles
+                      </span>
+                    </div>
+                  </div>
+                  
+                  <!-- Handicap Places -->
+                  <div class="bg-gray-50 dark:bg-gray-700/50 rounded-lg p-4">
+                    <div class="flex justify-between items-center mb-2">
+                      <div class="flex items-center">
+                        <div class="w-3 h-3 bg-purple-500 rounded-full mr-2"></div>
+                        <span class="text-sm font-medium text-gray-700 dark:text-gray-300">Places Handicapé</span>
+                      </div>
+                      <span class="text-sm font-bold text-gray-900 dark:text-white">
+                        {{ (occupancyData | filter:selectedParking:'parkingId')[0]?.handicapPlaces || 0 }}
+                      </span>
+                    </div>
+                    
+                    <div class="flex items-center">
+                      <div class="flex-1">
+                        <div class="w-full bg-gray-200 dark:bg-gray-600 rounded-full h-2">
+                          <div 
+                            class="h-2 bg-purple-500 rounded-full"
+                            [style.width.%]="(occupancyData | filter:selectedParking:'parkingId')[0]?.handicapPlaces ? 
+                              ((occupancyData | filter:selectedParking:'parkingId')[0]?.occupiedHandicapPlaces / 
+                               (occupancyData | filter:selectedParking:'parkingId')[0]?.handicapPlaces) * 100 : 0"
+                          ></div>
+                        </div>
+                      </div>
+                      <span class="ml-3 text-xs font-medium text-gray-700 dark:text-gray-300">
+                        {{ (occupancyData | filter:selectedParking:'parkingId')[0]?.handicapPlaces ? 
+                           (((occupancyData | filter:selectedParking:'parkingId')[0]?.occupiedHandicapPlaces / 
+                             (occupancyData | filter:selectedParking:'parkingId')[0]?.handicapPlaces) * 100).toFixed(1) : 0 }}%
+                      </span>
+                    </div>
+                    
+                    <div class="flex justify-between mt-2 text-xs text-gray-500 dark:text-gray-400">
+                      <span>{{ (occupancyData | filter:selectedParking:'parkingId')[0]?.occupiedHandicapPlaces || 0 }} occupées</span>
+                      <span>
+                        {{ ((occupancyData | filter:selectedParking:'parkingId')[0]?.handicapPlaces || 0) - 
+                           ((occupancyData | filter:selectedParking:'parkingId')[0]?.occupiedHandicapPlaces || 0) }} disponibles
+                      </span>
+                    </div>
+                  </div>
+                  
+                  <!-- VIP Places -->
+                  <div class="bg-gray-50 dark:bg-gray-700/50 rounded-lg p-4">
+                    <div class="flex justify-between items-center mb-2">
+                      <div class="flex items-center">
+                        <div class="w-3 h-3 bg-amber-500 rounded-full mr-2"></div>
+                        <span class="text-sm font-medium text-gray-700 dark:text-gray-300">Places VIP</span>
+                      </div>
+                      <span class="text-sm font-bold text-gray-900 dark:text-white">
+                        {{ (occupancyData | filter:selectedParking:'parkingId')[0]?.vipPlaces || 0 }}
+                      </span>
+                    </div>
+                    
+                    <div class="flex items-center">
+                      <div class="flex-1">
+                        <div class="w-full bg-gray-200 dark:bg-gray-600 rounded-full h-2">
+                          <div 
+                            class="h-2 bg-amber-500 rounded-full"
+                            [style.width.%]="(occupancyData | filter:selectedParking:'parkingId')[0]?.vipPlaces ? 
+                              ((occupancyData | filter:selectedParking:'parkingId')[0]?.occupiedVipPlaces / 
+                               (occupancyData | filter:selectedParking:'parkingId')[0]?.vipPlaces) * 100 : 0"
+                          ></div>
+                        </div>
+                      </div>
+                      <span class="ml-3 text-xs font-medium text-gray-700 dark:text-gray-300">
+                        {{ (occupancyData | filter:selectedParking:'parkingId')[0]?.vipPlaces ? 
+                           (((occupancyData | filter:selectedParking:'parkingId')[0]?.occupiedVipPlaces / 
+                             (occupancyData | filter:selectedParking:'parkingId')[0]?.vipPlaces) * 100).toFixed(1) : 0 }}%
+                      </span>
+                    </div>
+                    
+                    <div class="flex justify-between mt-2 text-xs text-gray-500 dark:text-gray-400">
+                      <span>{{ (occupancyData | filter:selectedParking:'parkingId')[0]?.occupiedVipPlaces || 0 }} occupées</span>
+                      <span>
+                        {{ ((occupancyData | filter:selectedParking:'parkingId')[0]?.vipPlaces || 0) - 
+                           ((occupancyData | filter:selectedParking:'parkingId')[0]?.occupiedVipPlaces || 0) }} disponibles
+                      </span>
+                    </div>
+                  </div>
+                  
+                  <!-- Total -->
+                  <div class="bg-blue-50 dark:bg-blue-900/20 rounded-lg p-4">
+                    <div class="flex justify-between items-center mb-2">
+                      <span class="text-sm font-medium text-blue-700 dark:text-blue-300">Occupation Totale</span>
+                      <span class="text-sm font-bold text-blue-800 dark:text-blue-200">
+                        {{ (occupancyData | filter:selectedParking:'parkingId')[0]?.occupancyRate || 0 }}%
+                      </span>
+                    </div>
+                    
+                    <div class="flex items-center">
+                      <div class="flex-1">
+                        <div class="w-full bg-blue-200 dark:bg-blue-800 rounded-full h-2.5">
+                          <div 
+                            class="h-2.5 bg-blue-600 dark:bg-blue-400 rounded-full"
+                            [style.width.%]="(occupancyData | filter:selectedParking:'parkingId')[0]?.occupancyRate || 0"
+                          ></div>
+                        </div>
+                      </div>
+                    </div>
+                    
+                    <div class="flex justify-between mt-2 text-xs text-blue-600 dark:text-blue-300">
+                      <span>{{ (occupancyData | filter:selectedParking:'parkingId')[0]?.occupiedSpaces || 0 }} / {{ (occupancyData | filter:selectedParking:'parkingId')[0]?.totalCapacity || 0 }} places occupées</span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              
+              <!-- Revenue Details -->
+              <div class="flex-1">
+                <h4 class="text-base font-medium text-gray-900 dark:text-white mb-4">Détails des Revenus</h4>
+                
+                <div class="bg-gray-50 dark:bg-gray-700/50 rounded-lg p-4">
+                  <div class="flex justify-between items-center mb-4">
+                    <span class="text-sm font-medium text-gray-700 dark:text-gray-300">
+                      {{ selectedPeriod === 'day' ? 'Aujourd\'hui' : 
+                         selectedPeriod === 'week' ? 'Cette semaine' : 
+                         selectedPeriod === 'month' ? 'Ce mois' : 'Cette année' }}
+                    </span>
+                    <span class="text-lg font-bold text-green-600 dark:text-green-400">
+                      {{ (revenueData | filter:selectedParking:'parkingId')[0]?.totalRevenue | currency : "MAD" }}
+                    </span>
+                  </div>
+                  
+                  <div class="space-y-4">
+                    <div class="flex justify-between items-center">
+                      <span class="text-sm text-gray-600 dark:text-gray-400">Réservations</span>
+                      <span class="text-sm font-medium text-gray-900 dark:text-white">
+                        {{ (revenueData | filter:selectedParking:'parkingId')[0]?.reservationsCount || 0 }}
+                      </span>
+                    </div>
+                    
+                    <div class="flex justify-between items-center">
+                      <span class="text-sm text-gray-600 dark:text-gray-400">Revenu moyen par réservation</span>
+                      <span class="text-sm font-medium text-gray-900 dark:text-white">
+                        {{ (revenueData | filter:selectedParking:'parkingId')[0]?.reservationsCount ? 
+                           ((revenueData | filter:selectedParking:'parkingId')[0]?.totalRevenue / 
+                            ((revenueData | filter:selectedParking:'parkingId')[0]?.reservationsCount) | currency : "MAD" ): '0 MAD' }}
+                      </span>
+                    </div>
+                    
+                    <div class="flex justify-between items-center">
+                      <span class="text-sm text-gray-600 dark:text-gray-400">Pourcentage du revenu total</span>
+                      <span class="text-sm font-medium text-gray-900 dark:text-white">
+                        {{ totalRevenue ? 
+                           (((revenueData | filter:selectedParking:'parkingId')[0]?.totalRevenue / totalRevenue) * 100).toFixed(1) : 0 }}%
+                      </span>
+                    </div>
+                    
+                    <div class="pt-4 mt-4 border-t border-gray-200 dark:border-gray-600">
+                      <div class="flex items-center justify-between">
+                        <span class="text-sm font-medium text-gray-700 dark:text-gray-300">Contribution au revenu total</span>
+                      </div>
+                      <div class="mt-2">
+                        <div class="w-full bg-gray-200 dark:bg-gray-600 rounded-full h-2.5">
+                          <div 
+                            class="h-2.5 bg-green-500 rounded-full"
+                            [style.width.%]="totalRevenue ? 
+                              ((revenueData | filter:selectedParking:'parkingId')[0]?.totalRevenue / totalRevenue) * 100 : 0"
+                          ></div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+          
+          <div class="px-6 py-4 bg-gray-50 dark:bg-gray-700/50 text-right">
+            <button 
+              (click)="selectedParking = null" 
+              type="button" 
+              class="inline-flex justify-center px-4 py-2 text-sm font-medium text-gray-700 dark:text-gray-300 bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm hover:bg-gray-50 dark:hover:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
+            >
+              Fermer
+            </button>
+          </div>
         </div>
       </div>
     </div>
 
     <!-- Parking Performance Table -->
-    <div class="bg-white dark:bg-gray-800 rounded-lg shadow-md overflow-hidden">
+    <div class="bg-white dark:bg-gray-800 rounded-xl shadow-md overflow-hidden">
       <div class="p-6 border-b border-gray-200 dark:border-gray-700">
-        <h3 class="text-lg font-semibold text-gray-800 dark:text-white">
-          Performance des Parkings
-        </h3>
+        <h3 class="text-lg font-semibold text-gray-900 dark:text-white">Performance des Parkings</h3>
+        <p class="text-sm text-gray-500 dark:text-gray-400">Vue détaillée de tous les parkings</p>
       </div>
       <div class="overflow-x-auto">
         <table class="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
           <thead class="bg-gray-50 dark:bg-gray-700">
             <tr>
-              <th
-                scope="col"
-                class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider"
-              >
+              <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
                 Parking
               </th>
-              <th
-                scope="col"
-                class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider"
-              >
+              <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
                 Capacité
               </th>
-              <th
-                scope="col"
-                class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider"
-              >
+              <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
                 Occupation
               </th>
-              <th
-                scope="col"
-                class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider"
-              >
+              <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
                 Revenu
               </th>
-              <th
-                scope="col"
-                class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider"
-              >
+              <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
                 Statut
               </th>
             </tr>
           </thead>
-          <tbody
-            class="bg-white dark:bg-gray-800 divide-y divide-gray-200 dark:divide-gray-700"
-          >
-            <tr *ngFor="let parking of parkingPerformance">
+          <tbody class="bg-white dark:bg-gray-800 divide-y divide-gray-200 dark:divide-gray-700">
+            <tr *ngFor="let parking of parkingPerformance" class="hover:bg-gray-50 dark:hover:bg-gray-700/50 transition-colors">
               <td class="px-6 py-4 whitespace-nowrap">
-                <div class="text-sm font-medium text-gray-900 dark:text-white">
-                  {{ parking.name }}
-                </div>
-                <div class="text-xs text-gray-500 dark:text-gray-400">
-                  {{ parking.address }}
+                <div class="flex items-center">
+                  <div class="flex-shrink-0 h-10 w-10 bg-blue-100 dark:bg-blue-900 rounded-full flex items-center justify-center">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-blue-700 dark:text-blue-300" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                      <path d="M5 4h14a2 2 0 0 1 2 2v12a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2z" />
+                      <path d="M12 4v16" />
+                    </svg>
+                  </div>
+                  <div class="ml-4">
+                    <div class="text-sm font-medium text-gray-900 dark:text-white">
+                      {{ parking.name }}
+                    </div>
+                    <div class="text-xs text-gray-500 dark:text-gray-400">
+                      {{ parking.address }}
+                    </div>
+                  </div>
                 </div>
               </td>
               <td class="px-6 py-4 whitespace-nowrap">
@@ -305,60 +631,40 @@
               </td>
               <td class="px-6 py-4 whitespace-nowrap">
                 <div class="flex items-center">
-                  <div
-                    class="w-full bg-gray-200 dark:bg-gray-700 rounded-full h-2.5 mr-2"
-                  >
+                  <div class="w-full max-w-[100px] bg-gray-200 dark:bg-gray-700 rounded-full h-2 mr-2">
                     <div
-                      class="h-2.5 rounded-full"
+                      class="h-2 rounded-full"
                       [style.width.%]="parking.occupancyRate"
                       [ngClass]="{
                         'bg-green-500': parking.occupancyRate < 70,
-                        'bg-yellow-500':
-                          parking.occupancyRate >= 70 &&
-                          parking.occupancyRate < 90,
+                        'bg-yellow-500': parking.occupancyRate >= 70 && parking.occupancyRate < 90,
                         'bg-red-500': parking.occupancyRate >= 90
                       }"
                     ></div>
                   </div>
-                  <span class="text-sm text-gray-900 dark:text-white"
-                    >{{ parking.occupancyRate }}%</span
-                  >
+                  <span class="text-sm text-gray-900 dark:text-white">{{ parking.occupancyRate }}%</span>
                 </div>
               </td>
-              <td
-                class="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-white"
-              >
-                {{ parking.revenue | currency : "MAD " }}
+              <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-white">
+                {{ parking.revenue | currency : "MAD" }}
               </td>
               <td class="px-6 py-4 whitespace-nowrap">
                 <span
-                  class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full"
+                  class="px-2 py-1 inline-flex text-xs leading-5 font-semibold rounded-full"
                   [ngClass]="{
-                    'bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200':
-                      parking.status === 'open',
-                    'bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-200':
-                      parking.status === 'closed',
-                    'bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-200':
-                      parking.status === 'maintenance'
+                    'bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-300': parking.status === 'open',
+                    'bg-red-100 text-red-800 dark:bg-red-900/30 dark:text-red-300': parking.status === 'closed',
+                    'bg-yellow-100 text-yellow-800 dark:bg-yellow-900/30 dark:text-yellow-300': parking.status === 'maintenance'
                   }"
                 >
-                  {{
-                    parking.status === "open"
-                      ? "Ouvert"
-                      : parking.status === "closed"
-                      ? "Fermé"
-                      : "Maintenance"
-                  }}
+                  {{ parking.status === "open" ? "Ouvert" : parking.status === "closed" ? "Fermé" : "Maintenance" }}
                 </span>
               </td>
             </tr>
 
             <!-- Empty state -->
             <tr *ngIf="parkingPerformance.length === 0">
-              <td
-                colspan="5"
-                class="px-6 py-10 text-center text-sm text-gray-500 dark:text-gray-400"
-              >
+              <td colspan="5" class="px-6 py-10 text-center text-sm text-gray-500 dark:text-gray-400">
                 Aucune donnée disponible
               </td>
             </tr>
@@ -368,3 +674,4 @@
     </div>
   </div>
 </div>
+

@@ -1,5 +1,6 @@
 package com.blasty.security;
 
+import com.blasty.service.Implementation.JwtTokenBlacklistService;
 import com.blasty.service.Implementation.UserDetailsServiceImpl;
 import io.jsonwebtoken.ExpiredJwtException;
 
@@ -13,24 +14,25 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.security.web.authentication.WebAuthenticationDetailsSource;
 import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
 
 import java.io.IOException;
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 @Slf4j
 @Component
-//@RequiredArgsConstructor
 public class JwtFilter extends OncePerRequestFilter {
+
     @Autowired
     private JwtUtil jwtUtil;
+
     @Autowired
     private UserDetailsServiceImpl userDetailsService;
+
+    @Autowired
+    private JwtTokenBlacklistService jwtTokenBlacklistService;
 
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain chain)
@@ -47,6 +49,13 @@ public class JwtFilter extends OncePerRequestFilter {
 
             if (authHeader != null && authHeader.startsWith("Bearer ")) {
                 token = authHeader.substring(7);
+
+                // Check if the token is blacklisted
+                if (jwtTokenBlacklistService.isTokenBlacklisted(token)) {
+                    response.sendError(HttpServletResponse.SC_UNAUTHORIZED, "Token is blacklisted");
+                    return;
+                }
+
                 try {
                     username = jwtUtil.extractUsername(token);
                 } catch (ExpiredJwtException e) {
@@ -65,16 +74,9 @@ public class JwtFilter extends OncePerRequestFilter {
                     List<SimpleGrantedAuthority> authorities = Collections.singletonList(
                             new SimpleGrantedAuthority("ROLE_" + role));
                     log.info("Granted authorities: {}", authorities);
-                    // Create custom authentication details with userId
-                    Map<String, String> userInfo = new HashMap<>();
-                    userInfo.put("userId", userId);
 
                     UsernamePasswordAuthenticationToken authentication = new UsernamePasswordAuthenticationToken(
                             userDetails, null, authorities);
-                    // Set authentication details with userId
-                    WebAuthenticationDetailsSource detailsSource = new WebAuthenticationDetailsSource();
-                    authentication.setDetails(userInfo);
-
                     SecurityContextHolder.getContext().setAuthentication(authentication);
                 }
             }

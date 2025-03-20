@@ -35,6 +35,7 @@ export interface ParkingResponse {
   length: number;
   status: ParkingStatus;
   occupiedSpaces: number;
+  reservationsCount: number;
 }
 
 export interface ParkingOccupancyResponse {
@@ -46,6 +47,7 @@ export interface ParkingOccupancyResponse {
 }
 
 export interface ParkingRevenueResponse {
+reservationsCount: any;
   parkingId: number;
   parkingName: string;
   totalRevenue: number;

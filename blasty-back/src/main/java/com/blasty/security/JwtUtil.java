@@ -122,4 +122,18 @@ public class JwtUtil {
                 .signWith(getSigningKey(), SignatureAlgorithm.HS512)
                 .compact();
     }
+
+    public boolean isTokenExpired(String token) {
+        try {
+            Date expiration = Jwts.parserBuilder()
+                    .setSigningKey(getSigningKey())
+                    .build()
+                    .parseClaimsJws(token)
+                    .getBody()
+                    .getExpiration();
+            return expiration.before(new Date());
+        } catch (Exception e) {
+            return true;
+        }
+    }
 }

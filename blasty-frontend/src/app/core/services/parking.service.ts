@@ -31,16 +31,25 @@ export class ParkingService {
     return this.http.delete<void>(`${this.baseUrl}/${id}`);
   }
 
-  getParkingOccupancy(id:number): Observable<ParkingOccupancyResponse[]> {
-    return this.http.get<ParkingOccupancyResponse[]>(`${this.baseUrl}/${id}/occupancy`);
+  getParkingOccupancy(id: number): Observable<ParkingOccupancyResponse> {
+    return this.http.get<ParkingOccupancyResponse>(`${this.baseUrl}/parkings/${id}/occupancy`)
   }
 
-  getParkingRevenue(id:number ,period: string = 'month'): Observable<ParkingRevenueResponse[]> {
-    const params = new HttpParams().set('period', period);
-    return this.http.get<ParkingRevenueResponse[]>(`${this.baseUrl}/${id}/revenue`, { params });
+  // Get occupancy data for all parkings
+  getAllParkingsOccupancy(): Observable<ParkingOccupancyResponse[]> {
+    return this.http.get<ParkingOccupancyResponse[]>(`${this.baseUrl}/occupancy`)
   }
 
-  // Client accessible endpoints
+  // Get revenue data for a specific parking
+  getParkingRevenue(id: number, period:string = "month"): Observable<ParkingRevenueResponse> {
+    return this.http.get<ParkingRevenueResponse>(`${this.baseUrl}/${id}/revenue?period=${period}`)
+  }
+
+  // Get revenue data for all parkings
+  getAllParkingsRevenue(period = "month"): Observable<ParkingRevenueResponse[]> {
+    return this.http.get<ParkingRevenueResponse[]>(`${this.baseUrl}/revenue?period=${period}`)
+  }
+
   getParkingById(id: number): Observable<ParkingResponse> {
     return this.http.get<ParkingResponse>(`${this.baseUrl}/${id}`);
   }

@@ -48,11 +48,24 @@ public class ParkingController {
         return ResponseEntity.ok(parkingService.getParkingOccupancy(id));
     }
 
+    @GetMapping("/occupancy")
+    @PreAuthorize("hasRole('ADMIN')")
+    public ResponseEntity<List<ParkingOccupancyResponse>> getAllParkingsOccupancy() {
+        return ResponseEntity.ok(parkingService.getAllParkingsOccupancy());
+    }
+
     @GetMapping("/{id}/revenue")
     @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<ParkingRevenueResponse> getParkingRevenue(
-            @PathVariable Long id ,@RequestParam(defaultValue = "month") String period) {
+            @PathVariable Long id, @RequestParam(defaultValue = "month") String period) {
         return ResponseEntity.ok(parkingService.getParkingRevenue(id, period));
+    }
+
+    @GetMapping("/revenue")
+    @PreAuthorize("hasRole('ADMIN')")
+    public ResponseEntity<List<ParkingRevenueResponse>> getAllParkingsRevenue(
+            @RequestParam(defaultValue = "month") String period) {
+        return ResponseEntity.ok(parkingService.getAllParkingsRevenue(period));
     }
 
     // Client accessible endpoints

@@ -12,9 +12,12 @@ import com.blasty.repository.AdminRepository;
 import com.blasty.repository.ClientRepository;
 import com.blasty.security.JwtUtil;
 
+import com.blasty.service.Implementation.JwtTokenBlacklistService;
+import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -32,6 +35,7 @@ import java.util.Map;
 @RestController
 @RequestMapping("/api/auth")
 @RequiredArgsConstructor
+@Slf4j
 public class AuthController {
 
     private final AuthenticationManager authenticationManager;
@@ -39,6 +43,7 @@ public class AuthController {
     private final ClientRepository clientRepository;
     private final PasswordEncoder passwordEncoder;
     private final JwtUtil jwtUtil;
+    private final JwtTokenBlacklistService tokenBlacklistService;
 
     // 🔹 1. Connexion (Admin avec email, Client avec téléphone)
     @PostMapping("/login")
@@ -116,6 +121,17 @@ public class AuthController {
         String refreshToken = jwtUtil.refreshToken(newClient);
 
         return ResponseEntity.ok(new JwtResponse(token, refreshToken, "Client enregistré avec succès"));
+    }
+
+    @PostMapping("/logout")
+    public ResponseEntity<?> logout(HttpServletRequest request) {
+        String authHeader = request.getHeader("Authorization");
+        if (authHeader != null && authHeader.startsWith("Bearer ")) {
+            String token = authHeader.substring(7);
+            tokenBlacklistService.blacklistToken(token);
+            return ResponseEntity.ok().body("Logged out successfully");
+        }
+        return ResponseEntity.badRequest().body("Invalid token");
     }
 
     // 🔹 3. Rafraîchissement du Token

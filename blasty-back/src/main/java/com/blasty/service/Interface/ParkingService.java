@@ -21,9 +21,13 @@ public interface ParkingService {
 
     ParkingOccupancyResponse getParkingOccupancy(Long id);
 
+    List<ParkingRevenueResponse> getAllParkingsRevenue(String period);
+
     ParkingRevenueResponse getParkingRevenue(Long id , String period);
 
-    public void incrementOccupiedSpaces(Long parkingId);
+    List<ParkingOccupancyResponse> getAllParkingsOccupancy();
+
+    void incrementOccupiedSpaces(Long parkingId);
 
     void decrementOccupiedSpaces(Long parkingId);
 }
