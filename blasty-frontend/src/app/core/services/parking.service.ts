@@ -8,12 +8,13 @@ import {
   ParkingOccupancyResponse, 
   ParkingRevenueResponse 
 } from '../models/parking.model';
+import { environment } from '../../environment/environment';
 
 @Injectable({
   providedIn: 'root'
 })
 export class ParkingService {
-  private baseUrl = 'http://localhost:8080/api/parkings';
+  private baseUrl = `${environment.apiURL}/parkings`;
 
   constructor(private http: HttpClient) { }
 

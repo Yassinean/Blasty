@@ -4,12 +4,13 @@ import { Observable, of } from "rxjs"
 import { catchError } from "rxjs/operators"
 import { VehicleRequest, VehicleResponse } from "../models/vehicle.model"
 import { AuthService } from "./auth.service"
+import { environment } from "../../environment/environment"
 
 @Injectable({
   providedIn: "root",
 })
 export class VehicleService {
-  private apiUrl = "http://localhost:8080/api/vehicles"
+  private apiUrl = `${environment.apiURL}/vehicles`
 
   constructor(
     private http: HttpClient,

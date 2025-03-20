@@ -145,7 +145,7 @@ public class ReservationServiceImplTest {
             reservationService.createReservation(reservationRequest);
         });
 
-        assertEquals("Client not found with id: 1", exception.getMessage());
+        assertEquals("Client non trouvé avec id: 1", exception.getMessage());
     }
 
 //    @Test
@@ -159,7 +159,7 @@ public class ReservationServiceImplTest {
 //            reservationService.createReservation(reservationRequest);
 //        });
 //
-//        assertEquals("Place not found with id: 2", exception.getMessage());
+//        assertEquals("Place non trouvé avec id: 2", exception.getMessage());
 //    }
 
 //    @Test
@@ -174,7 +174,7 @@ public class ReservationServiceImplTest {
 //            reservationService.createReservation(reservationRequest);
 //        });
 //
-//        assertEquals("Vehicle not found with id: 3", exception.getMessage());
+//        assertEquals("Vehicle non trouvé avec id: 3", exception.getMessage());
 //    }
 
 //    @Test
@@ -237,7 +237,7 @@ public class ReservationServiceImplTest {
             reservationService.getReservationById(1L);
         });
 
-        assertEquals("Reservation not found with id: 1", exception.getMessage());
+        assertEquals("Reservation non trouvé avec id: 1", exception.getMessage());
     }
 
     @Test

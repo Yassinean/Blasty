@@ -35,7 +35,7 @@ public class PlaceServiceImpl implements PlaceService {
     @Transactional
     public PlaceResponse createPlace(Long parkingId, PlaceRequest request) {
         Parking parking = parkingRepository.findById(parkingId)
-                .orElseThrow(() -> new ResourceNotFoundException("Parking not found with id: " + parkingId));
+                .orElseThrow(() -> new ResourceNotFoundException("Parking non trouvé avec id: " + parkingId));
 
             validateParkingCount(parking);
 
@@ -103,7 +103,7 @@ public class PlaceServiceImpl implements PlaceService {
     public void deletePlace(Long id) {
         Place place = findPlaceById(id);
         if (!placeRepository.existsById(id)) {
-            throw new ResourceNotFoundException("Place not found with id: " + id);
+            throw new ResourceNotFoundException("Place non trouvé avec id: " + id);
         }
         if (place.getEtat() == PlaceStatus.DISPONIBLE){
             placeRepository.deleteById(id);
@@ -119,7 +119,7 @@ public class PlaceServiceImpl implements PlaceService {
 
     @Override
     public List<PlaceResponse> getPlacesByParkingId(Long parkingId) {
-        Parking parking = parkingRepository.findById(parkingId).orElseThrow(()-> new ResourceNotFoundException("Parking not found with id: " + parkingId));
+        Parking parking = parkingRepository.findById(parkingId).orElseThrow(()-> new ResourceNotFoundException("Parking non trouvé avec id: " + parkingId));
         List<Place> places = placeRepository.findByParkingId(parking.getId());
         return places.stream()
                 .map(placeMapper::toResponse)
@@ -204,6 +204,6 @@ public class PlaceServiceImpl implements PlaceService {
      */
     private Place findPlaceById(Long id) {
         return placeRepository.findById(id)
-                .orElseThrow(() -> new ResourceNotFoundException("Place not found with id: " + id));
+                .orElseThrow(() -> new ResourceNotFoundException("Place non trouvé avec id: " + id));
     }
 }

@@ -96,13 +96,13 @@ public class ParkingServiceImpl implements ParkingService {
 
     @Override
     public void deleteParking(Long id) {
-        Parking parking = parkingRepository.findById(id).orElseThrow(()->new ResourceNotFoundException("Pakring not found with id :" + id));
+        Parking parking = parkingRepository.findById(id).orElseThrow(()->new ResourceNotFoundException("Pakring non trouvé avec id :" + id));
         parkingRepository.delete(parking);
     }
 
     @Override
     public ParkingOccupancyResponse getParkingOccupancy(Long id) {
-        Parking parking = parkingRepository.findById(id).orElseThrow(()-> new ResourceNotFoundException("Parking not found with id :"+id));
+        Parking parking = parkingRepository.findById(id).orElseThrow(()-> new ResourceNotFoundException("Parking non trouvé avec id :"+id));
                 return ParkingOccupancyResponse.builder()
                         .parkingId(id)
                         .parkingName(parking.getName())

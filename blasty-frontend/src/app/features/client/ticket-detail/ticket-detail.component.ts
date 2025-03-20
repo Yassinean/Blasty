@@ -66,7 +66,7 @@ export class TicketDetailComponent implements OnInit {
         this.processingAction = false
       },
       error: (error) => {
-        this.toastService.showToast("error", "Erreur lors de la validation du ticket")
+        this.toastService.showToast("error", error.error.message)
         console.error("Error validating ticket:", error)
         this.processingAction = false
       },

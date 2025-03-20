@@ -81,14 +81,14 @@ public class TicketServiceImpl implements TicketService {
     @Override
     public TicketResponse getTicketById(Long id) {
         Ticket ticket = ticketRepository.findById(id)
-                .orElseThrow(() -> new ResourceNotFoundException("Ticket not found with id: " + id));;
+                .orElseThrow(() -> new ResourceNotFoundException("Ticket non trouvé avec id: " + id));;
         return ticketMapper.toResponse(ticket);
     }
 
     @Override
     public TicketResponse getTicketByNumber(String ticketNumber) {
         Ticket ticket = ticketRepository.findByTicketNumber(ticketNumber)
-                .orElseThrow(() -> new ResourceNotFoundException("Ticket not found with number: " + ticketNumber));
+                .orElseThrow(() -> new ResourceNotFoundException("Ticket non trouvé avec number: " + ticketNumber));
         return ticketMapper.toResponse(ticket);
     }
 
@@ -104,17 +104,17 @@ public class TicketServiceImpl implements TicketService {
     @Transactional
     public TicketResponse validateTicket(String ticketNumber) {
         Ticket ticket = ticketRepository.findByTicketNumber(ticketNumber)
-                .orElseThrow(() -> new ResourceNotFoundException("Ticket not found with number: " + ticketNumber));
+                .orElseThrow(() -> new ResourceNotFoundException("Ticket non trouvé avec number: " + ticketNumber));
 
         // Check if ticket is already used
         if (ticket.isUsed()) {
-            throw new InvalidTicketException("Ticket has already been used");
+            throw new InvalidTicketException("Le ticket a déjà été utilisé");
         }
 
         // Check if reservation is still valid (not expired)
         Reservation reservation = ticket.getReservation();
         if (LocalDateTime.now().isAfter(reservation.getEndDate())) {
-            throw new InvalidTicketException("Ticket has expired");
+            throw new InvalidTicketException("Le ticket a expiré");
         }
 
         log.info("Ticket validated: {}", ticketNumber);
@@ -125,7 +125,7 @@ public class TicketServiceImpl implements TicketService {
     @Transactional
     public void markTicketAsUsed(String ticketNumber) {
         Ticket ticket = ticketRepository.findByTicketNumber(ticketNumber)
-                .orElseThrow(() -> new ResourceNotFoundException("Ticket not found with number: " + ticketNumber));
+                .orElseThrow(() -> new ResourceNotFoundException("Ticket non trouvé avec number: " + ticketNumber));
 
         ticket.setUsed(true);
         ticketRepository.save(ticket);

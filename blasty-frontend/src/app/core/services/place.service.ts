@@ -3,12 +3,13 @@ import { HttpClient, HttpParams } from "@angular/common/http";
 import { Observable, catchError, of } from "rxjs";
 import { PlaceRequest, PlaceResponse } from "../models/place.model";
 import { Parking } from "../models/parking.model";
+import { environment } from "../../environment/environment";
 
 @Injectable({
   providedIn: "root",
 })
 export class PlaceService {
-  private apiUrl = "http://localhost:8080/api";
+  private apiUrl = `${environment.apiURL}`;
 
   constructor(private http: HttpClient) {}
 

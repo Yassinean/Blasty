@@ -213,7 +213,7 @@ public class ParkingServiceImplTest {
             parkingService.deleteParking(1L);
         });
 
-        assertEquals("Pakring not found with id :1", exception.getMessage());
+        assertEquals("Pakring non trouvé avec id :1", exception.getMessage());
     }
 
     @Test

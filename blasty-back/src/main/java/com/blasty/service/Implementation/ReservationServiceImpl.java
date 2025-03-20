@@ -48,16 +48,16 @@ public class ReservationServiceImpl implements ReservationService {
         }
 
         Client client = clientRepository.findById(request.getClientId())
-                .orElseThrow(() -> new ResourceNotFoundException("Client not found with id: " + request.getClientId()));
+                .orElseThrow(() -> new ResourceNotFoundException("Client non trouvé avec id: " + request.getClientId()));
 
         Place place = placeRepository.findById(request.getPlaceId())
-                .orElseThrow(() -> new ResourceNotFoundException("Place not found with id: " + request.getPlaceId()));
+                .orElseThrow(() -> new ResourceNotFoundException("Place non trouvé avec id: " + request.getPlaceId()));
 
         Parking parking = parkingRepository.findById(place.getParking().getId())
                 .orElseThrow(() -> new ResourceNotFoundException("Parking not found"));
 
         Vehicle vehicle = vehicleRepository.findById(request.getVehicleId())
-                .orElseThrow(() -> new ResourceNotFoundException("Vehicle not found with id: " + request.getVehicleId()));
+                .orElseThrow(() -> new ResourceNotFoundException("Vehicle non trouvé avec id: " + request.getVehicleId()));
 
         if (!vehicle.getClient().getId().equals(request.getClientId())) {
             throw new IllegalArgumentException("Vehicle does not belong to the requesting client");
@@ -127,7 +127,7 @@ public class ReservationServiceImpl implements ReservationService {
     @Override
     public List<ReservationResponse> getReservationsByClientId(Long clientId) {
         if (!clientRepository.existsById(clientId)) {
-            throw new ResourceNotFoundException("Client not found with id: " + clientId);
+            throw new ResourceNotFoundException("Client non trouvé avec id: " + clientId);
         }
 
         List<Reservation> clientReservations = reservationRepository.findByClientId(clientId);
@@ -224,7 +224,7 @@ public class ReservationServiceImpl implements ReservationService {
      */
     public Reservation findReservationById(Long id) {
         return reservationRepository.findById(id)
-                .orElseThrow(() -> new ResourceNotFoundException("Reservation not found with id: " + id));
+                .orElseThrow(() -> new ResourceNotFoundException("Reservation non trouvé avec id: " + id));
     }
 
     /**

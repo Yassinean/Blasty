@@ -29,7 +29,7 @@ public class VehicleServiceImpl implements VehicleService {
     @Transactional
     public VehicleResponse createVehicle(Long clientId, VehicleRequest requestDto) {
         Client client = clientRepository.findById(clientId)
-                .orElseThrow(() -> new ResourceNotFoundException("Client not found with id: " + clientId));
+                .orElseThrow(() -> new ResourceNotFoundException("Client non trouvé avec id: " + clientId));
 
         if (vehicleRepository.existsByClientId(clientId)) {
             throw new IllegalArgumentException("Client already has a registered vehicle");
@@ -50,7 +50,7 @@ public class VehicleServiceImpl implements VehicleService {
     @Override
     public VehicleResponse getVehicleByClientId(Long clientId) {
         if (!clientRepository.existsById(clientId)) {
-            throw new ResourceNotFoundException("Client not found with id: " + clientId);
+            throw new ResourceNotFoundException("Client non trouvé avec id: " + clientId);
         }
 
         Vehicle vehicle = vehicleRepository.findByClientId(clientId)
@@ -63,7 +63,7 @@ public class VehicleServiceImpl implements VehicleService {
     @Transactional
     public VehicleResponse updateVehicleByClientId(Long clientId, VehicleRequest requestDto) {
         if (!clientRepository.existsById(clientId)) {
-            throw new ResourceNotFoundException("Client not found with id: " + clientId);
+            throw new ResourceNotFoundException("Client non trouvé avec id: " + clientId);
         }
 
         Vehicle vehicle = vehicleRepository.findByClientId(clientId)
@@ -86,7 +86,7 @@ public class VehicleServiceImpl implements VehicleService {
     @Transactional
     public void deleteVehicleByClientId(Long clientId) {
         if (!clientRepository.existsById(clientId)) {
-            throw new ResourceNotFoundException("Client not found with id: " + clientId);
+            throw new ResourceNotFoundException("Client non trouvé avec id: " + clientId);
         }
 
         Vehicle vehicle = vehicleRepository.findByClientId(clientId)

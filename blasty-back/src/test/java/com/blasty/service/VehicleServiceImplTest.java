@@ -102,7 +102,7 @@ public class VehicleServiceImplTest {
             vehicleService.createVehicle(1L, vehicleRequest);
         });
 
-        assertEquals("Client not found with id: 1", exception.getMessage());
+        assertEquals("Client non trouvé avec id: 1", exception.getMessage());
     }
 
     @Test
@@ -162,7 +162,7 @@ public class VehicleServiceImplTest {
             vehicleService.getVehicleByClientId(1L);
         });
 
-        assertEquals("Client not found with id: 1", exception.getMessage());
+        assertEquals("Client non trouvé avec id: 1", exception.getMessage());
     }
 
     @Test
