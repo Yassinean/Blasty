@@ -137,6 +137,16 @@ export const routes: Routes = [
         loadComponent: () =>
           import("./features/client/vehicle-form/vehicle-form.component").then((m) => m.VehicleFormComponent),
       },
+      {
+        path: "tickets",
+        loadComponent: () =>
+          import("./features/client/my-tickets/my-tickets.component").then((m) => m.MyTicketsComponent),
+      },
+      {
+        path: "ticket/:id",
+        loadComponent: () =>
+          import("./features/client/ticket-detail/ticket-detail.component").then((m) => m.TicketDetailComponent),
+      },
     ],
   },
   {

@@ -93,7 +93,6 @@ export class AuthService {
       .pipe(
         tap((response) => {
           this.handleAuthResponse(response);
-          this.toastService.showToast('success', 'You have been successfully registered');
         }),
         catchError((error) => {
           this.toastService.showToast('error', error.error?.message || 'Registration failed');

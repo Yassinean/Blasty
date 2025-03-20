@@ -315,7 +315,7 @@ export class ParkingManagementComponent implements OnInit {
         },
         error: (error) => {
           console.error('Erreur lors de la création du parking', error);
-          this.toastService.showToast('error', 'Erreur lors de la création du parking');
+          this.toastService.showToast('error', error.error.message);
         },
       });
     }

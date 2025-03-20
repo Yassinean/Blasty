@@ -28,8 +28,8 @@ public interface ReservationMapper {
     @Mapping(target = "placeId", source = "place.id")
     @Mapping(target = "placeNumber", source = "place.numero")
     @Mapping(target = "vehicleId", source = "vehicle.id")
-    @Mapping(target = "parkingId", source = "place.parking.id")
-    @Mapping(target = "parkingName", source = "place.parking.name")
+    @Mapping(target = "parkingId", source = "parking.id")
+    @Mapping(target = "parkingName", source = "parking.name")
     @Mapping(target = "tarif", source = "place.tarifHoraire")
     @Mapping(target = "vehicleImmatriculation", source = "vehicle.immatriculation")
     ReservationResponse toResponse(Reservation reservation);

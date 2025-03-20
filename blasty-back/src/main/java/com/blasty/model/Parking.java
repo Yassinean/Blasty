@@ -46,6 +46,9 @@ public class Parking {
     @OneToMany(mappedBy = "parking", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     private List<Place> places;
 
+    @OneToMany(mappedBy = "parking")
+    private List<Reservation> reservations;
+
     // Méthode pour calculer la surface du parking
 
     public double getSurface() {

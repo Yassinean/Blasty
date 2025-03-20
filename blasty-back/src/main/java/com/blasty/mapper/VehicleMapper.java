@@ -19,6 +19,13 @@ public interface VehicleMapper {
 
     @Mapping(target = "id", ignore = true)
     @Mapping(target = "client", ignore = true)
-    void updateEntity(@MappingTarget Vehicle entity, VehicleRequest dto);
+    default void updateEntity(@MappingTarget Vehicle entity, VehicleRequest dto) {
+        if (dto.getImmatriculation() != null) {
+            entity.setImmatriculation(dto.getImmatriculation());
+        }
+        if (dto.getType() != null) {
+            entity.setType(dto.getType());
+        }
+    }
 
 }

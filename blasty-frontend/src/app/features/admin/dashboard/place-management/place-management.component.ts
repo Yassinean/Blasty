@@ -109,7 +109,10 @@ export class PlaceManagementComponent implements OnInit {
         }),
         catchError((error) => {
           console.error('Error loading places:', error);
-          this.toastService.showToast('error', 'Échec du chargement des places.');
+          this.toastService.showToast(
+            'error',
+            'Échec du chargement des places.'
+          );
           return of([]);
         })
       )
@@ -122,7 +125,10 @@ export class PlaceManagementComponent implements OnInit {
         error: (err) => {
           console.error('Subscription error:', err);
           this.isLoading = false;
-          this.toastService.showToast('error', `Une erreur inattendue s'est produite.`);
+          this.toastService.showToast(
+            'error',
+            `Une erreur inattendue s'est produite.`
+          );
         },
       });
   }
@@ -173,7 +179,10 @@ export class PlaceManagementComponent implements OnInit {
 
   submitForm(): void {
     if (this.placeForm.invalid) {
-      this.toastService.showToast('error', 'Please fill all required fields correctly.');
+      this.toastService.showToast(
+        'error',
+        'Please fill all required fields correctly.'
+      );
       return;
     }
 
@@ -191,71 +200,53 @@ export class PlaceManagementComponent implements OnInit {
             const index = this.places.findIndex(
               (p) => p.id === updatedPlace.id
             );
-            this.toastService.showToast('success','La place est modifié avec succès')
+            this.toastService.showToast(
+              'success',
+              'La place est modifié avec succès'
+            );
             if (index !== -1) {
               this.places[index] = updatedPlace;
               this.applyFilters();
+            }else{
+              this.toastService.showToast(
+                'error',
+                'Vous pouvez pas modifier une place non disponible'
+              );
             }
             this.closeForm();
-          },
-          error: (error) => {
-            if (
-              error.status === 400 &&
-              error.error.message.includes('maximum capacity')
-            ) {
-              this.toastService.showToast(
-                'error',
-                `Le parking a atteint sa capacité maximale. Impossible d'ajouter des places.`
-              );
-            } else {
-              this.toastService.showToast(
-                'error',
-                'Erreur lors de la mise à jour du place: ' +
-                  (error.message || error)
-              );
-            }
-            console.error('Error updating place:', error);
-          },
+          }
         });
     } else {
+      console.log('im here before creating place');
+
       this.placeService.createPlace(this.parkingId, placeRequest).subscribe({
         next: (newPlace) => {
-          this.places.push(newPlace);
-          this.toastService.showToast('success', 'Place créé avec succès.');
-          this.applyFilters();
-          this.closeForm();
-        },
-        error: (error) => {
-          if (
-            error.status === 400 &&
-            error.error.message.includes('maximum capacity')
-          ) {
+          if (newPlace && newPlace.id) {
+            this.places.push(newPlace);
+            this.toastService.showToast('success', 'Place créée avec succès.');
+            this.applyFilters();
+            this.closeForm();
+          } else {
+            console.log('im here after creating place');
             this.toastService.showToast(
               'error',
               `Le parking a atteint sa capacité maximale. Impossible d'ajouter des places.`
             );
-          } else {
-            this.toastService.showToast(
-              'error',
-              'Erreur lors de la création du Place: ' + (error.message || error)
-            );
+            this.closeForm();
           }
-          console.error('Error creating place:', error);
         },
       });
     }
   }
 
-  // Function to check if parking is full
   isParkingFull(): boolean {
-    const currentPlaceCount = this.places.length; // Assuming you have the places array populated
-    const parkingCapacity = this.getParkingCapacity(); // Assume this method gives the parking capacity
+    const currentPlaceCount = this.places.length;
+    const parkingCapacity = this.getParkingCapacity();
     return currentPlaceCount >= parkingCapacity;
   }
 
-  // Dummy function for parking capacity (replace with real data)
   getParkingCapacity(): number {
-    return this.parkingService.getAvailablePlaces.length; // Example capacity, replace with actual capacity from your service
+    return this.parkingService.getAvailablePlaces.length;
   }
 
   deletePlace(id: number): void {
@@ -264,7 +255,10 @@ export class PlaceManagementComponent implements OnInit {
         next: () => {
           this.places = this.places.filter((place) => place.id !== id);
           this.applyFilters();
-          this.toastService.showToast('success','Place est supprimée avec succès')
+          this.toastService.showToast(
+            'success',
+            'Place est supprimée avec succès'
+          );
         },
         error: (error) => console.error('Error deleting place:', error),
       });

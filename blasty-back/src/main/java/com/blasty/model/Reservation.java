@@ -40,7 +40,8 @@ public class Reservation{
     @Column(nullable = false)
     private ReservationStatus status;
 
-    @Transient
+    @ManyToOne
+    @JoinColumn(name = "parking_id")
     private Parking parking;
 
     @Transient

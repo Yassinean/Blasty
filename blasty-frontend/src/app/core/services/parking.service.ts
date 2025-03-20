@@ -30,13 +30,13 @@ export class ParkingService {
     return this.http.delete<void>(`${this.baseUrl}/${id}`);
   }
 
-  getParkingOccupancy(): Observable<ParkingOccupancyResponse[]> {
-    return this.http.get<ParkingOccupancyResponse[]>(`${this.baseUrl}/occupancy`);
+  getParkingOccupancy(id:number): Observable<ParkingOccupancyResponse[]> {
+    return this.http.get<ParkingOccupancyResponse[]>(`${this.baseUrl}/${id}/occupancy`);
   }
 
   getParkingRevenue(id:number ,period: string = 'month'): Observable<ParkingRevenueResponse[]> {
     const params = new HttpParams().set('period', period);
-    return this.http.get<ParkingRevenueResponse[]>(`${this.baseUrl}/revenue`, { params });
+    return this.http.get<ParkingRevenueResponse[]>(`${this.baseUrl}/${id}/revenue`, { params });
   }
 
   // Client accessible endpoints

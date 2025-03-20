@@ -2,8 +2,6 @@ package com.blasty.model;
 
 import java.time.LocalDateTime;
 
-import com.blasty.model.enums.StatutTicket;
-
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -21,24 +19,27 @@ public class Ticket {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-    @Column(nullable = false)
-    private String codeQR;
+
+    @Column(nullable = false, unique = true)
+    private String ticketNumber;
+
+    @OneToOne
+    @JoinColumn(name = "reservation_id", nullable = false)
+    private Reservation reservation;
 
     @Column(nullable = false)
-    private LocalDateTime dateEmission;
+    private LocalDateTime issueDate;
 
     @Column(nullable = false)
-    private LocalDateTime dateExpiration;
+    private double price;
 
-    @Enumerated(EnumType.STRING)
     @Column(nullable = false)
-    private StatutTicket statut;
+    private int durationHours;
 
-    @ManyToOne
-    @JoinColumn(name = "client_id", nullable = false)
-    private Client client;
+    @Column(nullable = false)
+    private boolean isUsed;
 
-    @ManyToOne
-    @JoinColumn(name = "place_id", nullable = false)
-    private Place place;
+    // Access code for entry/exit
+    @Column(nullable = false)
+    private String accessCode;
 }

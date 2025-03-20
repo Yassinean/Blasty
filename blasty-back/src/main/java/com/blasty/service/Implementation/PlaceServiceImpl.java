@@ -60,7 +60,7 @@ public class PlaceServiceImpl implements PlaceService {
         log.info("Parking count: {}", currentPlaceCount);
         double capacity = parking.getCapacity();
         if (currentPlaceCount >= capacity) {
-            throw new IllegalArgumentException("Parking has reached its maximum capacity of " + capacity + " places.");
+            throw new IllegalArgumentException("Le parking a atteint sa capacité maximale de " + capacity + " places.");
         }
     }
 
@@ -83,13 +83,15 @@ public class PlaceServiceImpl implements PlaceService {
         Place place = findPlaceById(id);
 
         // Only update fields that can be modified
-        place.setNumero(request.getNumero());
-        place.setType(request.getType());
-        if (request.getType() == TypePlace.HANDICAPE){
-            place.setTarifHoraire(1.5);
-        }else if (request.getType() == TypePlace.STANDARD){
-            place.setTarifHoraire(5);
-        }else place.setTarifHoraire(10);
+        if (place.getEtat() == PlaceStatus.DISPONIBLE) {
+            place.setNumero(request.getNumero());
+            place.setType(request.getType());
+            if (request.getType() == TypePlace.HANDICAPE){
+                place.setTarifHoraire(1.5);
+            }else if (request.getType() == TypePlace.STANDARD){
+                place.setTarifHoraire(5);
+            }else place.setTarifHoraire(10);
+        }else throw new RuntimeException("You can't update reserved or occupied place");
 
         Place savedPlace = placeRepository.save(place);
         log.info("Updated place with id: {}", id);
@@ -99,10 +101,13 @@ public class PlaceServiceImpl implements PlaceService {
     @Override
     @Transactional
     public void deletePlace(Long id) {
+        Place place = findPlaceById(id);
         if (!placeRepository.existsById(id)) {
             throw new ResourceNotFoundException("Place not found with id: " + id);
         }
-        placeRepository.deleteById(id);
+        if (place.getEtat() == PlaceStatus.DISPONIBLE){
+            placeRepository.deleteById(id);
+        }else throw new RuntimeException("You can't update reserved or occupied place");
         log.info("Deleted place with id: {}", id);
     }
 

@@ -184,9 +184,12 @@ public class VehicleServiceImplTest {
         // Mock behavior
         when(clientRepository.existsById(1L)).thenReturn(true);
         when(vehicleRepository.findByClientId(1L)).thenReturn(Optional.of(vehicle));
-        when(vehicleRepository.existsByImmatriculation("ABC-123")).thenReturn(false);
+        when(vehicleRepository.existsByImmatriculation("NEW-123")).thenReturn(false); // New immatriculation
         when(vehicleRepository.save(vehicle)).thenReturn(vehicle);
         when(vehicleMapper.toResponse(vehicle)).thenReturn(vehicleResponse);
+
+        // Set a new immatriculation in the request
+        vehicleRequest.setImmatriculation("NEW-123");
 
         // Call method
         VehicleResponse response = vehicleService.updateVehicleByClientId(1L, vehicleRequest);
@@ -196,7 +199,7 @@ public class VehicleServiceImplTest {
         assertEquals(vehicleResponse, response);
         verify(clientRepository, times(1)).existsById(1L);
         verify(vehicleRepository, times(1)).findByClientId(1L);
-        verify(vehicleRepository, times(1)).existsByImmatriculation("ABC-123");
+        verify(vehicleRepository, times(1)).existsByImmatriculation("NEW-123");
         verify(vehicleRepository, times(1)).save(vehicle);
         verify(vehicleMapper, times(1)).toResponse(vehicle);
     }
@@ -206,7 +209,10 @@ public class VehicleServiceImplTest {
         // Mock behavior
         when(clientRepository.existsById(1L)).thenReturn(true);
         when(vehicleRepository.findByClientId(1L)).thenReturn(Optional.of(vehicle));
-        when(vehicleRepository.existsByImmatriculation("ABC-123")).thenReturn(true);
+        when(vehicleRepository.existsByImmatriculation("NEW-123")).thenReturn(true); // New immatriculation already exists
+
+        // Set a new immatriculation in the request
+        vehicleRequest.setImmatriculation("NEW-123");
 
         // Call method and assert exception
         IllegalArgumentException exception = assertThrows(IllegalArgumentException.class, () -> {
@@ -214,6 +220,9 @@ public class VehicleServiceImplTest {
         });
 
         assertEquals("Vehicle with this immatriculation already exists", exception.getMessage());
+        verify(clientRepository, times(1)).existsById(1L);
+        verify(vehicleRepository, times(1)).findByClientId(1L);
+        verify(vehicleRepository, times(1)).existsByImmatriculation("NEW-123");
     }
 
     @Test
@@ -228,7 +237,7 @@ public class VehicleServiceImplTest {
         // Verify
         verify(clientRepository, times(1)).existsById(1L);
         verify(vehicleRepository, times(1)).findByClientId(1L);
-        verify(vehicleRepository, times(1)).deleteById(1L);
+        verify(vehicleRepository, times(1)).delete(vehicle); // Verify delete(entity) is called
     }
 
     @Test

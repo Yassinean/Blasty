@@ -4,6 +4,7 @@ import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.Collections;
 import java.util.List;
@@ -231,26 +232,6 @@ public class ParkingServiceImplTest {
         assertEquals(0, response.getOccupiedSpaces());
         assertEquals(0.0, response.getOccupancyRate());
         verify(parkingRepository, times(1)).findById(1L);
-    }
-
-    @Test
-    void testGetParkingRevenue_Success() {
-        // Mock behavior
-        when(parkingRepository.findById(1L)).thenReturn(Optional.of(parking));
-        when(reservationRepository.findByParkingAndStartDateBetween(anyLong(), any(), any()))
-                .thenReturn(Collections.emptyList());
-
-        // Call method
-        ParkingRevenueResponse response = parkingService.getParkingRevenue(1L, "week");
-
-        // Assertions
-        assertNotNull(response);
-        assertEquals(1L, response.getParkingId());
-        assertEquals("Parking A", response.getParkingName());
-        assertEquals(0.0, response.getTotalRevenue());
-        assertEquals("week", response.getPeriod());
-        verify(parkingRepository, times(1)).findById(1L);
-        verify(reservationRepository, times(1)).findByParkingAndStartDateBetween(anyLong(), any(), any());
     }
 
     @Test

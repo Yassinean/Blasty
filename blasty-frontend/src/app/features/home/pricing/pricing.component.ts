@@ -12,7 +12,7 @@ export class PricingComponent {
   plans = [
     {
       name: 'Handicap',
-      price: '1.5DH',
+      price: '1.5MAD',
       features: [
         'Place Handicap',
         'Réservation simple',
@@ -22,7 +22,7 @@ export class PricingComponent {
     },
     {
       name: 'Standard',
-      price: '5DH',
+      price: '5MAD',
       features: [
         'Place Standard',
         'Proche des entrées',
@@ -33,7 +33,7 @@ export class PricingComponent {
     },
     {
       name: 'VIP',
-      price: '10DH',
+      price: '10MAD',
       features: [
         'Place réservée',
         'Accès prioritaire',

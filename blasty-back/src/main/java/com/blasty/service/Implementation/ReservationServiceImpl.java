@@ -14,6 +14,7 @@ import com.blasty.model.enums.VehiculeType;
 import com.blasty.repository.*;
 import com.blasty.service.Interface.PlaceService;
 import com.blasty.service.Interface.ReservationService;
+import com.blasty.service.Interface.TicketService;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -34,6 +35,7 @@ public class ReservationServiceImpl implements ReservationService {
     private final PlaceService placeService;
     private final VehicleRepository vehicleRepository;
     private final ParkingRepository parkingRepository;
+    private final TicketService ticketService;
 
     @Override
     @Transactional
@@ -50,6 +52,9 @@ public class ReservationServiceImpl implements ReservationService {
 
         Place place = placeRepository.findById(request.getPlaceId())
                 .orElseThrow(() -> new ResourceNotFoundException("Place not found with id: " + request.getPlaceId()));
+
+        Parking parking = parkingRepository.findById(place.getParking().getId())
+                .orElseThrow(() -> new ResourceNotFoundException("Parking not found"));
 
         Vehicle vehicle = vehicleRepository.findById(request.getVehicleId())
                 .orElseThrow(() -> new ResourceNotFoundException("Vehicle not found with id: " + request.getVehicleId()));
@@ -73,6 +78,7 @@ public class ReservationServiceImpl implements ReservationService {
         Reservation reservation = reservationMapper.toEntity(request);
         reservation.setClient(client);
         reservation.setPlace(place);
+        reservation.setParking(parking);
         reservation.setVehicle(vehicle);
         reservation.setStatus(ReservationStatus.PENDING);
         reservation.setStartDate(request.getStartDate());
@@ -145,6 +151,16 @@ public class ReservationServiceImpl implements ReservationService {
         reservation.setStatus(ReservationStatus.CONFIRMED);
         Reservation savedReservation = reservationRepository.save(reservation);
         log.info("Confirmed reservation with id: {}", id);
+
+        // Generate ticket after confirmation
+        try {
+            ticketService.generateTicket(savedReservation.getId());
+            log.info("Ticket generated for reservation id: {}", id);
+        } catch (Exception e) {
+            log.error("Failed to generate ticket for reservation id: {}", id, e);
+            // Don't rollback reservation confirmation if ticket generation fails
+        }
+
         return reservationMapper.toResponse(savedReservation);
     }
 

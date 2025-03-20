@@ -13,6 +13,8 @@ export interface Parking {
   length: number;
   status: ParkingStatus;
   occupiedSpaces?: number;
+  parkingOccupancyResponse?: ParkingOccupancyResponse;
+  parkingRevenueResponse?: ParkingRevenueResponse;
 }
 
 export interface ParkingRequest {

@@ -113,7 +113,7 @@ export class StatisticsComponent implements OnInit, AfterViewInit {
 
   loadOccupancyData(parkingIds: number[]): void {
     const occupancyRequests = parkingIds.map((id) =>
-      this.parkingService.getParkingOccupancy()
+      this.parkingService.getParkingOccupancy(id)
     );
 
     forkJoin(occupancyRequests)

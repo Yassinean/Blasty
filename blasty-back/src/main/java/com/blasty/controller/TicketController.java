@@ -1,56 +1,55 @@
 package com.blasty.controller;
 
-import com.blasty.dto.request.TicketRequest;
 import com.blasty.dto.response.TicketResponse;
 import com.blasty.service.Interface.TicketService;
-import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.time.LocalDateTime;
 import java.util.List;
 
 @RestController
 @RequestMapping("/api/tickets")
 @RequiredArgsConstructor
+@Slf4j
 public class TicketController {
     private final TicketService ticketService;
 
-    @PostMapping
-    public ResponseEntity<TicketResponse> createTicket(@Valid @RequestBody TicketRequest request) {
-        TicketResponse response = ticketService.createTicket(request);
-        return ResponseEntity.status(HttpStatus.CREATED).body(response);
+    @PostMapping("/generate/{reservationId}")
+    public ResponseEntity<TicketResponse> generateTicket(@PathVariable Long reservationId) {
+        TicketResponse ticket = ticketService.generateTicket(reservationId);
+        return ResponseEntity.status(HttpStatus.CREATED).body(ticket);
     }
 
     @GetMapping("/{id}")
     public ResponseEntity<TicketResponse> getTicketById(@PathVariable Long id) {
-        TicketResponse response = ticketService.getTicketById(id);
-        return ResponseEntity.ok(response);
+        TicketResponse ticket = ticketService.getTicketById(id);
+        return ResponseEntity.ok(ticket);
     }
 
-    @GetMapping
-    public ResponseEntity<List<TicketResponse>> getAllTickets() {
-        List<TicketResponse> responses = ticketService.getAllTickets();
-        return ResponseEntity.ok(responses);
+    @GetMapping("/number/{ticketNumber}")
+    public ResponseEntity<TicketResponse> getTicketByNumber(@PathVariable String ticketNumber) {
+        TicketResponse ticket = ticketService.getTicketByNumber(ticketNumber);
+        return ResponseEntity.ok(ticket);
     }
 
-    @PostMapping("/{id}/validate")
-    public ResponseEntity<TicketResponse> validateTicket(@PathVariable Long id) {
-        TicketResponse response = ticketService.validateTicket(id);
-        return ResponseEntity.ok(response);
+    @GetMapping("/client/{clientId}")
+    public ResponseEntity<List<TicketResponse>> getTicketsByClientId(@PathVariable Long clientId) {
+        List<TicketResponse> tickets = ticketService.getTicketsByClientId(clientId);
+        return ResponseEntity.ok(tickets);
     }
 
-    @PostMapping("/{id}/cancel")
-    public ResponseEntity<TicketResponse> cancelTicket(@PathVariable Long id) {
-        TicketResponse response = ticketService.cancelTicket(id);
-        return ResponseEntity.ok(response);
+    @PostMapping("/validate/{ticketNumber}")
+    public ResponseEntity<TicketResponse> validateTicket(@PathVariable String ticketNumber) {
+        TicketResponse ticket = ticketService.validateTicket(ticketNumber);
+        return ResponseEntity.ok(ticket);
     }
 
-    @PostMapping("/{id}/extend")
-    public ResponseEntity<TicketResponse> extendTicket(@PathVariable Long id, @RequestParam LocalDateTime newExpirationDate) {
-        TicketResponse response = ticketService.extendTicket(id, newExpirationDate);
-        return ResponseEntity.ok(response);
+    @PostMapping("/use/{ticketNumber}")
+    public ResponseEntity<Void> markTicketAsUsed(@PathVariable String ticketNumber) {
+        ticketService.markTicketAsUsed(ticketNumber);
+        return ResponseEntity.ok().build();
     }
 }
