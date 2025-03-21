@@ -36,10 +36,10 @@ public class Parking {
     private ParkingStatus status;
 
     @Column(nullable = false)
-    private int width; // Largeur du parking en mètres
+    private int width;
 
     @Column(nullable = false)
-    private int length; // Longueur du parking en mètres
+    private int length;
 
     private int occupiedSpaces;
 
@@ -49,14 +49,9 @@ public class Parking {
     @OneToMany(mappedBy = "parking")
     private List<Reservation> reservations;
 
-    // Méthode pour calculer la surface du parking
-
     public double getSurface() {
         return width * length;
     }
-    // Méthode pour calculer les places occupées
-
-    // Méthode pour calculer les places disponibles
     public int getAvailablePlaces() {
         return capacity - occupiedSpaces;
     }

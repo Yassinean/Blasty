@@ -1,4 +1,3 @@
-import { logout } from './../../store/auth/auth.action';
 import { ToastService } from './toast.service';
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';

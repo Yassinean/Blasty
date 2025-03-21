@@ -14,7 +14,7 @@ import { ToastService } from '../../../core/services/toast.service';
 })
 export class LoginComponent implements OnInit {
   loginForm = this.fb.group({
-    identifier: ['', [Validators.required]], // Validation mise à jour dynamiquement
+    identifier: ['', [Validators.required]],
     password: ['', [Validators.required, Validators.minLength(6)]],
   });
 

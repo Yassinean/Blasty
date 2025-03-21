@@ -167,8 +167,8 @@ public class ParkingServiceImpl implements ParkingService {
 
         // Determine the start date based on the period
         switch (period.toLowerCase()) {
-            case "week":
-                startDate = endDate.minusWeeks(1);
+            case "day":
+                startDate = endDate.minusDays(1);
                 break;
             case "month":
                 startDate = endDate.minusMonths(1);
