@@ -142,10 +142,6 @@ export class TicketDetailComponent implements OnInit {
     return new Intl.NumberFormat("fr-FR", { style: "currency", currency: "MAD" }).format(amount)
   }
 
-  printTicket(): void {
-    window.print()
-  }
-
   goBackToTickets(): void {
     this.router.navigate(["/client/dashboard/tickets"])
   }

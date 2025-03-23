@@ -30,31 +30,6 @@
       <div class="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-blue-500"></div>
     </div>
   
-    <!-- Search and Filter -->
-    <div *ngIf="!isLoading" class="flex flex-col md:flex-row gap-4 mb-6">
-      <div class="flex-1">
-        <input
-          type="text"
-          placeholder="Rechercher un ticket..."
-          [(ngModel)]="searchTerm"
-          (input)="filterTickets()"
-          class="w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-800 dark:border-gray-600 dark:text-white"
-        />
-      </div>
-      <div>
-        <select
-          [(ngModel)]="filterStatus"
-          (change)="filterTickets()"
-          class="w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-800 dark:border-gray-600 dark:text-white"
-        >
-          <option value="">Tous les statuts</option>
-          <option value="ACTIVE">Actif</option>
-          <option value="USED">Utilisé</option>
-          <option value="EXPIRED">Expiré</option>
-        </select>
-      </div>
-    </div>
-  
     <!-- Tickets List -->
     <div *ngIf="!isLoading" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
       <div *ngIf="filteredTickets.length === 0" class="col-span-full flex flex-col items-center justify-center py-12">

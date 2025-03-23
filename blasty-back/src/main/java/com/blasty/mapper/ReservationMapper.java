@@ -13,7 +13,6 @@ import org.mapstruct.factory.Mappers;
 
 @Mapper(componentModel = "spring")
 public interface ReservationMapper {
-
     ReservationMapper INSTANCE = Mappers.getMapper(ReservationMapper.class);
 
     @Mapping(target = "id", ignore = true)
@@ -28,9 +27,9 @@ public interface ReservationMapper {
     @Mapping(target = "placeId", source = "place.id")
     @Mapping(target = "placeNumber", source = "place.numero")
     @Mapping(target = "vehicleId", source = "vehicle.id")
-    @Mapping(target = "parkingId", source = "parking.id")
-    @Mapping(target = "parkingName", source = "parking.name")
-    @Mapping(target = "tarif", source = "place.tarifHoraire")
+    @Mapping(target = "parkingId", source = "place.parking.id")
+    @Mapping(target = "parkingName", source = "place.parking.name")
+    @Mapping(target = "tarif", expression = "java(reservation.calculateCost())")
     @Mapping(target = "vehicleImmatriculation", source = "vehicle.immatriculation")
     ReservationResponse toResponse(Reservation reservation);
 
@@ -40,6 +39,6 @@ public interface ReservationMapper {
     @Mapping(target = "id", source = "placeId")
     Place toPlace(Long placeId);
 
-    @Mapping(target = "id" , source = "vehicleId")
+    @Mapping(target = "id", source = "vehicleId")
     Vehicle toVehicle(Long vehicleId);
 }

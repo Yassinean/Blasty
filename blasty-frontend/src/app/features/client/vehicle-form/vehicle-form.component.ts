@@ -33,7 +33,7 @@ export class VehicleFormComponent implements OnInit {
     private Location: Location,
   ) {
     this.vehicleForm = this.fb.group({
-      immatriculation: ["", [Validators.required, Validators.pattern(/^[A-Z0-9-]{5,10}$/)]],
+      immatriculation: ["", [Validators.required, Validators.pattern(/^\d{6}-[A-Z]{1}-\d{1,2}$/)]],
       type: [VehicleType.VOITURE, Validators.required],
     })
   }

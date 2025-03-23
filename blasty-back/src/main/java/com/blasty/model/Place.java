@@ -10,6 +10,7 @@ import lombok.Builder;
 import lombok.NoArgsConstructor;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 @Data
 @Builder
@@ -18,7 +19,6 @@ import java.time.LocalDateTime;
 @AllArgsConstructor
 @Table(name = "places")
 public class Place {
-
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -43,4 +43,7 @@ public class Place {
     @ManyToOne
     @JoinColumn(name = "parking_id", nullable = false)
     private Parking parking;
+
+    @OneToMany(mappedBy = "place", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    private List<Reservation> reservations;
 }

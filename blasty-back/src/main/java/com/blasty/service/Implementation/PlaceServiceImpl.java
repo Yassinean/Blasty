@@ -37,22 +37,33 @@ public class PlaceServiceImpl implements PlaceService {
         Parking parking = parkingRepository.findById(parkingId)
                 .orElseThrow(() -> new ResourceNotFoundException("Parking non trouvé avec id: " + parkingId));
 
-            validateParkingCount(parking);
+        validateParkingCount(parking);
+        if (placeRepository.existsByNumeroAndParkingId(request.getNumero(), parkingId)) {
+            throw new IllegalArgumentException("Une place avec ce numéro existe déjà dans ce parking");
+        }
 
         Place place = placeMapper.toEntity(request);
         place.setParking(parking);
-        place.setEtat(PlaceStatus.DISPONIBLE); // Initialize as available
+        place.setEtat(PlaceStatus.DISPONIBLE);
         place.setType(request.getType());
-        if (request.getType() == TypePlace.HANDICAPE){
-            place.setTarifHoraire(1.5);
-        }else if (request.getType() == TypePlace.STANDARD){
-            place.setTarifHoraire(5);
-        }else place.setTarifHoraire(10);
+        place.setTarifHoraire(calculateTarifHoraire(request.getType()));
 
         place = placeRepository.save(place);
-
         log.info("Created new place with id: {} in parking: {}", place.getId(), parkingId);
         return placeMapper.toResponse(place);
+    }
+
+    private double calculateTarifHoraire(TypePlace type) {
+        switch (type) {
+            case HANDICAPE:
+                return 1.5;
+            case STANDARD:
+                return 5;
+            case VIP:
+                return 10;
+            default:
+                throw new IllegalArgumentException("Invalid place type: " + type);
+        }
     }
 
     private void validateParkingCount(Parking parking) {
@@ -65,12 +76,14 @@ public class PlaceServiceImpl implements PlaceService {
     }
 
     @Override
+    @Transactional
     public PlaceResponse getPlaceById(Long id) {
         Place place = findPlaceById(id);
         return placeMapper.toResponse(place);
     }
 
     @Override
+    @Transactional
     public List<PlaceResponse> getAllPlaces() {
         return placeRepository.findAll().stream()
                 .map(placeMapper::toResponse)
@@ -82,16 +95,13 @@ public class PlaceServiceImpl implements PlaceService {
     public PlaceResponse updatePlace(Long id, PlaceRequest request) {
         Place place = findPlaceById(id);
 
-        // Only update fields that can be modified
         if (place.getEtat() == PlaceStatus.DISPONIBLE) {
             place.setNumero(request.getNumero());
             place.setType(request.getType());
-            if (request.getType() == TypePlace.HANDICAPE){
-                place.setTarifHoraire(1.5);
-            }else if (request.getType() == TypePlace.STANDARD){
-                place.setTarifHoraire(5);
-            }else place.setTarifHoraire(10);
-        }else throw new RuntimeException("You can't update reserved or occupied place");
+            place.setTarifHoraire(calculateTarifHoraire(request.getType()));
+        } else {
+            throw new IllegalStateException("You can't update reserved or occupied place");
+        }
 
         Place savedPlace = placeRepository.save(place);
         log.info("Updated place with id: {}", id);
@@ -102,24 +112,26 @@ public class PlaceServiceImpl implements PlaceService {
     @Transactional
     public void deletePlace(Long id) {
         Place place = findPlaceById(id);
-        if (!placeRepository.existsById(id)) {
-            throw new ResourceNotFoundException("Place non trouvé avec id: " + id);
-        }
-        if (place.getEtat() == PlaceStatus.DISPONIBLE){
+        if (place.getEtat() == PlaceStatus.DISPONIBLE) {
             placeRepository.deleteById(id);
-        }else throw new RuntimeException("You can't update reserved or occupied place");
+        } else {
+            throw new IllegalStateException("You can't delete reserved or occupied place");
+        }
         log.info("Deleted place with id: {}", id);
     }
 
     @Override
+    @Transactional
     public boolean isPlaceAvailable(Long placeId) {
         Place place = findPlaceById(placeId);
         return place.getEtat() == PlaceStatus.DISPONIBLE;
     }
 
     @Override
+    @Transactional
     public List<PlaceResponse> getPlacesByParkingId(Long parkingId) {
-        Parking parking = parkingRepository.findById(parkingId).orElseThrow(()-> new ResourceNotFoundException("Parking non trouvé avec id: " + parkingId));
+        Parking parking = parkingRepository.findById(parkingId)
+                .orElseThrow(() -> new ResourceNotFoundException("Parking non trouvé avec id: " + parkingId));
         List<Place> places = placeRepository.findByParkingId(parking.getId());
         return places.stream()
                 .map(placeMapper::toResponse)
@@ -127,20 +139,18 @@ public class PlaceServiceImpl implements PlaceService {
     }
 
     @Override
+    @Transactional
     public boolean isPlaceAvailableInTime(Long placeId, LocalDateTime requestedTime) {
         Place place = findPlaceById(placeId);
 
-        // If place is currently available, check if there are any future reservations
         if (place.getEtat() == PlaceStatus.DISPONIBLE) {
             return true;
         }
 
-        // If place is reserved, check if the reservation ends before the requested time
         if (place.getEtat() == PlaceStatus.RESERVEE && place.getReservedUntil() != null) {
             return place.getReservedUntil().isBefore(requestedTime);
         }
 
-        // If occupied, it's not available
         return false;
     }
 
@@ -170,10 +180,7 @@ public class PlaceServiceImpl implements PlaceService {
             throw new PlaceNotAvailableException("Place is already occupied");
         }
 
-        // Change status to occupied
         place.setEtat(PlaceStatus.OCCUPEE);
-
-        // Increment occupied spaces in the parking
         parkingService.incrementOccupiedSpaces(place.getParking().getId());
 
         Place savedPlace = placeRepository.save(place);
@@ -186,7 +193,6 @@ public class PlaceServiceImpl implements PlaceService {
     public PlaceResponse freePlace(Long placeId) {
         Place place = findPlaceById(placeId);
 
-        // Only decrement if the place was actually occupied
         if (place.getEtat() == PlaceStatus.OCCUPEE) {
             parkingService.decrementOccupiedSpaces(place.getParking().getId());
         }
@@ -199,9 +205,6 @@ public class PlaceServiceImpl implements PlaceService {
         return placeMapper.toResponse(savedPlace);
     }
 
-    /**
-     * Helper method to find a place by ID or throw a standardized exception
-     */
     private Place findPlaceById(Long id) {
         return placeRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Place non trouvé avec id: " + id));

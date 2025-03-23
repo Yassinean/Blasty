@@ -13,4 +13,5 @@ public interface PlaceRepository extends JpaRepository<Place,Long>{
     List<Place> findByEtatAndReservedUntilBefore(PlaceStatus etat, LocalDateTime dateTime);
     List<Place> findByParkingId(Long parkingId);
     long countByParking(Parking parking);
+    boolean existsByNumeroAndParkingId(Long numero, Long parkingId);
 }

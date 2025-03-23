@@ -13,7 +13,7 @@ public interface TicketMapper {
     @Mapping(target = "vehicleImmatriculation" , source = "reservation.vehicle.immatriculation")
     @Mapping(target = "placeId" , source = "reservation.place.id")
     @Mapping(target = "placeNumber" , source = "reservation.place.numero")
-    @Mapping(target = "parkingName" , source = "reservation.parking.name")
+    @Mapping(target = "parkingName" , source = "reservation.place.parking.name")
     @Mapping(target = "startDate" , source = "reservation.startDate")
     @Mapping(target = "endDate" , source = "reservation.endDate")
     TicketResponse toResponse(Ticket ticket);

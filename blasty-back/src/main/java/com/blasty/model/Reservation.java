@@ -4,6 +4,7 @@ import com.blasty.model.enums.ReservationStatus;
 import jakarta.persistence.*;
 import lombok.*;
 
+import java.time.Duration;
 import java.time.LocalDateTime;
 
 @Data
@@ -12,8 +13,7 @@ import java.time.LocalDateTime;
 @Builder
 @Entity
 @Table(name = "reservations")
-public class Reservation{
-
+public class Reservation {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -40,10 +40,8 @@ public class Reservation{
     @Column(nullable = false)
     private ReservationStatus status;
 
-    @ManyToOne
-    @JoinColumn(name = "parking_id")
-    private Parking parking;
-
-    @Transient
-    private double tarif;
+    public double calculateCost() {
+        long durationHours = Duration.between(startDate, endDate).toHours();
+        return place.getTarifHoraire() * durationHours;
+    }
 }

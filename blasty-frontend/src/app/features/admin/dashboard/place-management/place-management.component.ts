@@ -230,7 +230,7 @@ export class PlaceManagementComponent implements OnInit {
             console.log('im here after creating place');
             this.toastService.showToast(
               'error',
-              `Le parking a atteint sa capacité maximale. Impossible d'ajouter des places.`
+              `Place avec ce numero est deja creer OU Parking atteing sa capacity maximum.`
             );
             this.closeForm();
           }
