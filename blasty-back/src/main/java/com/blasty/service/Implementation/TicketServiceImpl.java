@@ -101,6 +101,11 @@ public class TicketServiceImpl implements TicketService {
     }
 
     @Override
+    public void deleteTicket(Long ticketId){
+        ticketRepository.deleteById(ticketId);
+    }
+
+    @Override
     @Transactional
     public TicketResponse validateTicket(String ticketNumber) {
         Ticket ticket = ticketRepository.findByTicketNumber(ticketNumber)
@@ -132,9 +137,6 @@ public class TicketServiceImpl implements TicketService {
         log.info("Ticket marked as used: {}", ticketNumber);
     }
 
-    /**
-     * Helper method to generate a unique ticket number
-     */
     private String generateUniqueTicketNumber() {
         String ticketNumber;
         do {
@@ -148,25 +150,16 @@ public class TicketServiceImpl implements TicketService {
         return ticketNumber;
     }
 
-    /**
-     * Helper method to generate an access code
-     */
     private String generateAccessCode() {
         // Generate a 6-digit numeric code
         return String.format("%06d", random.nextInt(1000000));
     }
 
-    /**
-     * Calculate duration in hours between start and end dates
-     */
     private int calculateDurationInHours(LocalDateTime startDate, LocalDateTime endDate) {
         Duration duration = Duration.between(startDate, endDate);
         return (int) Math.ceil(duration.toMinutes() / 60.0);
     }
 
-    /**
-     * Calculate price based on place type and duration
-     */
     private double calculatePrice(Place place, int durationHours) {
         // Get hourly rate from place
         double hourlyRate = place.getTarifHoraire();

@@ -11,4 +11,5 @@ public interface TicketService {
     List<TicketResponse> getTicketsByClientId(Long clientId);
     TicketResponse validateTicket(String ticketNumber);
     void markTicketAsUsed(String ticketNumber);
+    void deleteTicket(Long id);
 }

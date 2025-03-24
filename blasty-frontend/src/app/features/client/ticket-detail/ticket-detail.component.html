@@ -217,6 +217,30 @@
                 Marquer comme utilisé
               </span>
             </button>
+            <button
+              (click)="deleteTicket(ticket.id)"
+              [disabled]="processingAction"
+              class="inline-flex items-center px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-red-600 hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500 disabled:opacity-50 disabled:cursor-not-allowed"
+            >
+              <div *ngIf="processingAction" class="flex items-center">
+                <div class="animate-spin h-4 w-4 border-t-2 border-b-2 border-white mr-2"></div>
+                Traitement...
+              </div>
+              <span *ngIf="!processingAction">
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  class="h-5 w-5 mr-2"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  stroke-width="2"
+                >
+                  <path d="M9 11l3 3L22 4" />
+                  <path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11" />
+                </svg>
+                Supprimer
+              </span>
+            </button>
           </div>
         </div>
       </div>

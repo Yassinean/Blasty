@@ -18,6 +18,7 @@ import com.blasty.service.Interface.TicketService;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
@@ -34,7 +35,6 @@ public class ReservationServiceImpl implements ReservationService {
     private final PlaceRepository placeRepository;
     private final PlaceService placeService;
     private final VehicleRepository vehicleRepository;
-    private final ParkingRepository parkingRepository;
     private final TicketService ticketService;
 
     @Override
@@ -51,9 +51,6 @@ public class ReservationServiceImpl implements ReservationService {
 
         Place place = placeRepository.findById(request.getPlaceId())
                 .orElseThrow(() -> new ResourceNotFoundException("Place non trouvé avec id: " + request.getPlaceId()));
-
-        Parking parking = parkingRepository.findById(place.getParking().getId())
-                .orElseThrow(() -> new ResourceNotFoundException("Parking not found"));
 
         Vehicle vehicle = vehicleRepository.findById(request.getVehicleId())
                 .orElseThrow(() -> new ResourceNotFoundException("Vehicle non trouvé avec id: " + request.getVehicleId()));
@@ -93,8 +90,8 @@ public class ReservationServiceImpl implements ReservationService {
 
         switch (placeType) {
             case STANDARD:
-                if (vehicleType != VehiculeType.VOITURE) {
-                    throw new InvalidReservationException("Standard places can only accommodate cars");
+                if (vehicleType != VehiculeType.VOITURE && vehicleType != VehiculeType.MOTO) {
+                    throw new InvalidReservationException("Places Standard juste pour les voitures et motores");
                 }
                 break;
             case HANDICAPE:
@@ -203,12 +200,38 @@ public class ReservationServiceImpl implements ReservationService {
             throw new InvalidReservationStatusException("Only confirmed reservations can be completed");
         }
 
+        // Free the place
         placeService.freePlace(reservation.getPlace().getId());
 
+        // Update reservation status
         reservation.setStatus(ReservationStatus.COMPLETED);
         Reservation savedReservation = reservationRepository.save(reservation);
         log.info("Completed reservation with id: {}", id);
         return reservationMapper.toResponse(savedReservation);
+    }
+
+    /**
+     * Scheduled task to automatically complete reservations that have reached their end time.
+     * This method runs every minute.
+     */
+    @Scheduled(fixedRate = 60000) // Runs every 60 seconds (1 minute)
+    @Transactional
+    public void autoCompleteReservations() {
+        LocalDateTime now = LocalDateTime.now();
+        log.info("Running auto-complete reservations task at: {}", now);
+
+        // Find all confirmed reservations where the end date has passed
+        List<Reservation> reservationsToComplete = reservationRepository
+                .findByStatusAndEndDateBefore(ReservationStatus.CONFIRMED, now);
+
+        for (Reservation reservation : reservationsToComplete) {
+            try {
+                completeReservation(reservation.getId());
+                log.info("Automatically completed reservation with id: {}", reservation.getId());
+            } catch (Exception e) {
+                log.error("Failed to auto-complete reservation with id: {}", reservation.getId(), e);
+            }
+        }
     }
 
     public Reservation findReservationById(Long id) {

@@ -73,6 +73,19 @@ export class TicketDetailComponent implements OnInit {
     })
   }
 
+  deleteTicket(id:number){
+    this.ticketService.deleteTicket(id).subscribe({
+      next:() => {
+        this.toastService.showToast('success', 'Ticket supprimé avec succès');
+        this.loadTicket();
+      },
+      error: (error) => {
+        console.error('Error deleting ticket:', error);
+        this.toastService.showToast('error', 'Erreur lors de la suppression du ticket');
+      },
+    })
+  }
+
   markAsUsed(): void {
     if (!this.ticket) return
 

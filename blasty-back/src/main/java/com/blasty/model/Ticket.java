@@ -39,7 +39,6 @@ public class Ticket {
     @Column(nullable = false)
     private boolean isUsed;
 
-    // Access code for entry/exit
     @Column(nullable = false)
     private String accessCode;
 }

@@ -57,5 +57,9 @@ export class TicketService {
 
     return "ACTIVE"
   }
+
+  deleteTicket(id:number){
+    return this.http.delete<void>(`${this.apiUrl}/tickets/${id}`)
+  }
 }
 

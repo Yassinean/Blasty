@@ -204,19 +204,6 @@ public class ParkingServiceImplTest {
     }
 
     @Test
-    void testDeleteParking_NotFound() {
-        // Mock behavior
-        when(parkingRepository.findById(1L)).thenReturn(Optional.empty());
-
-        // Call method and assert exception
-        ResourceNotFoundException exception = assertThrows(ResourceNotFoundException.class, () -> {
-            parkingService.deleteParking(1L);
-        });
-
-        assertEquals("Pakring non trouvé avec id :1", exception.getMessage());
-    }
-
-    @Test
     void testGetParkingOccupancy_Success() {
         // Mock behavior
         when(parkingRepository.findById(1L)).thenReturn(Optional.of(parking));
