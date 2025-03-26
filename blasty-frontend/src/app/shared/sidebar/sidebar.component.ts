@@ -1,6 +1,9 @@
+import { Toast } from './../../core/services/toast.service';
+import { routes } from './../../app.routes';
+import { logout } from './../../store/auth/auth.action';
 import { Component, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { RouterLink, RouterLinkActive } from '@angular/router';
+import { Router, RouterLink, RouterLinkActive } from '@angular/router';
 import { BreakpointObserver, Breakpoints } from '@angular/cdk/layout';
 import { map } from 'rxjs/operators';
 import { User } from '../../core/models/auth.model';
@@ -27,7 +30,7 @@ export class SidebarComponent {
   isAdmin = false;
   isClient = false;
 
-  constructor(private authService: AuthService) {}
+  constructor(private authService: AuthService , private router:Router) {}
 
   ngOnInit(): void {
     this.isAdmin = this.authService.isAdmin();
@@ -50,5 +53,11 @@ export class SidebarComponent {
 
   closeMobileSidebar() {
     this.isMobileOpen = false;
+  }
+
+  logout(){
+    localStorage.clear();
+    this.authService.logout();
+    this.router.navigate(["/auth"]);
   }
 }

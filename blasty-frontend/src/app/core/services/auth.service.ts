@@ -1,3 +1,4 @@
+import { logout } from './../../store/auth/auth.action';
 import { ToastService } from './toast.service';
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
@@ -106,7 +107,7 @@ export class AuthService {
     const token = this.tokenService.getToken();
     if (!token) {
       console.log('No token found, redirecting to login');
-      this.router.navigate(['/auth/auth']);
+      this.router.navigate(['/auth']);
       return;
     }
   
@@ -125,7 +126,7 @@ export class AuthService {
       }
     } catch (error) {
       console.error('Error during redirect:', error);
-      this.router.navigate(['/auth/auth']);
+      this.router.navigate(['/auth']);
     }
   }
 
@@ -280,5 +281,30 @@ export class AuthService {
       }
     }
     return null;
+  }
+
+  logout(): Observable<any>{
+    const token = this.tokenService.getToken();
+
+    if(!token){
+      return throwError(()=> new Error('Token not Found'))
+    }
+
+    return this.http.post<JwtResponse>(`${this.API_URL}/logout`,{},{
+      headers : {
+        'Authorization' : `Bearer ${token}`
+      }
+    }).pipe(
+      tap(()=> {
+        this.tokenService.clear()
+        this.currentUserSubject.next(null)
+        this.toastService.showToast('success','You are successfully logged out !')
+        this.router.navigate(['/auth'])
+      }),
+      catchError((error)=>{
+        this.toastService.showToast('error',error.error?.message || 'Logout failed')
+        return throwError(error)
+      })
+    )
   }
 }
